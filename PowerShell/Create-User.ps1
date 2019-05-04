@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Short description
+    Create user account from an exisiting user
 .DESCRIPTION
-    Long description
+    Create user account from an exisiting user
 .EXAMPLE
-    PS C:\> <example usage>
+    PS C:\> Create-User -Name Bob.Person -From John.OtherPerson
     Explanation of what the example does
 .INPUTS
     Inputs (if any)
