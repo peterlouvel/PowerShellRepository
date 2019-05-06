@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Create user account from an exisiting user
+    Create user account from an exisiting user.
 .DESCRIPTION
     Create user account from an exisiting user
 .EXAMPLE
