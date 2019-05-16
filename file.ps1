@@ -63,7 +63,7 @@ foreach ($Serv in $Servs) {
 }
 $LBoxPick.text = $Serv[0].name
 #Write your logic code here
-
+ 
 function Click_status_button {
    $LBoxPick.Select()
     
