@@ -13,8 +13,8 @@ $Form.ClientSize                 = '400,400'
 $Form.text                       = "Service Inspector"
 $Form.TopMost                    = $false
 
-$LBoxPick                        = New-Object system.Windows.Forms.ListBox
-$LBoxPick.text                   = "listBox"
+$LBoxPick                        = New-Object System.Windows.Forms.ComboBox
+
 $LBoxPick.width                  = 318
 $LBoxPick.height                 = 30
 $LBoxPick.location               = New-Object System.Drawing.Point(24,62)
@@ -56,8 +56,17 @@ $BtnCheckSvc.Add_Click({ Click_status_button })
 #endregion events }
 
 #endregion GUI }
-
-
+$Servs = Get-Service | Select-Object -Property name
+foreach ($Serv in $Servs) {
+    $LBoxPick.Items.Add($Serv.name)
+    #$Serv
+}
+$LBoxPick.text = $Serv[0].name
 #Write your logic code here
+
+function Click_status_button {
+   $LBoxPick.Select()
+    
+}
 
 [void]$Form.ShowDialog()
