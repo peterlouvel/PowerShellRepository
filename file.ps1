@@ -19,6 +19,7 @@ $LBoxPick.width                  = 318
 $LBoxPick.height                 = 30
 $LBoxPick.location               = New-Object System.Drawing.Point(24,62)
 
+
 $LblPick                         = New-Object system.Windows.Forms.Label
 $LblPick.text                    = "Pick Service"
 $LblPick.AutoSize                = $true
@@ -27,12 +28,21 @@ $LblPick.height                  = 10
 $LblPick.location                = New-Object System.Drawing.Point(30,34)
 $LblPick.Font                    = 'Microsoft Sans Serif,10'
 
-$BtnCheckSvc                     = New-Object system.Windows.Forms.Button
-$BtnCheckSvc.text                = "Check Service"
-$BtnCheckSvc.width               = 111
-$BtnCheckSvc.height              = 30
-$BtnCheckSvc.location            = New-Object System.Drawing.Point(231,111)
-$BtnCheckSvc.Font                = 'Microsoft Sans Serif,10'
+# $BtnCheckSvc                     = New-Object system.Windows.Forms.Button
+# $BtnCheckSvc.text                = "Check Service"
+# $BtnCheckSvc.width               = 111
+# $BtnCheckSvc.height              = 30
+# $BtnCheckSvc.location            = New-Object System.Drawing.Point(231,111)
+# $BtnCheckSvc.Font                = 'Microsoft Sans Serif,10'
+
+$LblShow                         = New-Object system.Windows.Forms.Label
+$LblShow.text                    = ""
+$LblShow.AutoSize                = $true
+$LblShow.width                   = 25
+$LblShow.height                  = 10
+$LblShow.location                = New-Object System.Drawing.Point(30,62)
+$LblShow.Font                    = 'Microsoft Sans Serif,10'
+
 
 $TboxStatus                      = New-Object system.Windows.Forms.TextBox
 $TboxStatus.multiline            = $false
@@ -52,21 +62,28 @@ $LblCurrent.Font                 = 'Microsoft Sans Serif,10'
 $Form.controls.AddRange(@($LBoxPick,$LblPick,$BtnCheckSvc,$TboxStatus,$LblCurrent))
 
 #region gui events {
-$BtnCheckSvc.Add_Click({ Click_status_button })
+#$BtnCheckSvc.Add_Click({ Click_status_button })
+$LBoxPick. ({ Click_SelectBox })
+
+
+
 #endregion events }
 
 #endregion GUI }
 $Servs = Get-Service | Select-Object -Property name
-foreach ($Serv in $Servs) {
-    $LBoxPick.Items.Add($Serv.name)
-    #$Serv
-}
-$LBoxPick.text = $Serv[0].name
+$LBoxPick.Items.AddRange($Servs.name)
+$LBoxPick.Text = $Servs[0].name
+
 #Write your logic code here
  
 function Click_status_button {
-   $LBoxPick.Select()
-    
+       
 }
+
+function Click_SelectBox {
+    
+    Write-Host "Selected: " $LBoxPick.Text
+     
+ }
 
 [void]$Form.ShowDialog()
