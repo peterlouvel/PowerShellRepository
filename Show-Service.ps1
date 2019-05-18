@@ -13,7 +13,7 @@
 #region Functions
 function MyFunction1 {
     $LblShow.Text = $LBoxPick.Text
-    $TboxStatus.Text = Get-Service -Name $Servs.Name | Select-Object -Property Status
+    $TboxStatus.Text = (Get-Service -Name  $LBoxPick.Text).Status
 }
 #endregion Functions
 
@@ -85,7 +85,7 @@ $Form.controls.AddRange(@($LBoxPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow))
 #endregion GUI
 
 #region LinkFunctions
-$LBoxPick.Add_SelectedValueChanged({ MyFunction1 $this $_  })
+$LBoxPick.Add_SelectedValueChanged({ MyFunction1 $this $_ })
 #endregion LinkFunctions
 
 # Put your code here
