@@ -40,7 +40,7 @@ $LblShow.text                    = ""
 $LblShow.AutoSize                = $true
 $LblShow.width                   = 25
 $LblShow.height                  = 10
-$LblShow.location                = New-Object System.Drawing.Point(30,62)
+$LblShow.location                = '27,176'
 $LblShow.Font                    = 'Microsoft Sans Serif,10'
 
 
@@ -48,7 +48,7 @@ $TboxStatus                      = New-Object system.Windows.Forms.TextBox
 $TboxStatus.multiline            = $false
 $TboxStatus.width                = 314
 $TboxStatus.height               = 20
-$TboxStatus.location             = New-Object System.Drawing.Point(27,176)
+$TboxStatus.location             = '27,196'
 $TboxStatus.Font                 = 'Microsoft Sans Serif,15'
 
 $LblCurrent                      = New-Object system.Windows.Forms.Label
