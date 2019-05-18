@@ -8,23 +8,31 @@
 .NOTES
     General notes
 #>
+
 # Functions are at the top so the script engine won't complain about not knowing a funciton.
+#region Functions
 function MyFunction1 {
-    
-    # Write-Host "Selected: " $LBoxPick.Text
-    #.Text = $LBoxPick.Text
+    $LblShow.Text = $LBoxPick.Text
+    $TboxStatus.Text = Get-Service -Name $Servs.Name | Select-Object -Property Status
 }
+#endregion Functions
+
+#region Variables
+$NumberOfShownItems = 6
+$Font               = 'Microsoft Sans Serif,10'
+#endregion Variables
 
 #region GUI
+
+#region Form
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
-#region Form
 $Form                            = New-Object system.Windows.Forms.Form
 $Form.ClientSize                 = '400,400'
 $Form.text                       = "Service Inspector"
-$Form.TopMost                    = $false
+$Form.TopMost                    = $true
 #endregion Form
 
 #region LblePick
@@ -33,66 +41,64 @@ $LblPick.text                    = "Pick Service"
 $LblPick.AutoSize                = $true
 $LblPick.width                   = 25
 $LblPick.height                  = 10
-$LblPick.location                = '30,34'
+$LblPick.location                = '25,30'
 $LblPick.Font                    = 'Microsoft Sans Serif,10'
 #endregion LblePick
 
-#region BtnCheckSvc
-# $BtnCheckSvc                     = New-Object system.Windows.Forms.Button
-# $BtnCheckSvc.text                = "Check Service"
-# $BtnCheckSvc.width               = 111
-# $BtnCheckSvc.height              = 30
-# $BtnCheckSvc.location            = New-Object System.Drawing.Point(231,111)
-# $BtnCheckSvc.Font                = 'Microsoft Sans Serif,10'
-#endregion BtnCheckSvc
-
 #region LblShow
-$LblShow                         = New-Object system.Windows.Forms.Label
-# $LblShow.text                    = ""
-$LblShow.AutoSize                = $true
-$LblShow.width                   = 25
-$LblShow.height                  = 10
-$LblShow.location                = '27,176'
-$LblShow.Font                    = 'Microsoft Sans Serif,10'
+$LblShow                        = New-Object system.Windows.Forms.Label
+$LblShow.AutoSize               = $true
+$LblShow.width                  = 25
+$LblShow.height                 = 10
+$LblShow.location               = '25,158'
+$LblShow.Font                   = $Font
+$LblShow.BorderStyle            = 1
 #endregion LblShow
 
 #region TboxStatus
-$TboxStatus                      = New-Object system.Windows.Forms.TextBox
-$TboxStatus.multiline            = $false
-$TboxStatus.width                = 314
-$TboxStatus.height               = 20
-$TboxStatus.location             = '27,196'
-$TboxStatus.Font                 = 'Microsoft Sans Serif,15'
+$TboxStatus                     = New-Object system.Windows.Forms.Label
+$TboxStatus.width               = 314
+$TboxStatus.height              = 20
+$TboxStatus.location            = '27,206'
+$TboxStatus.Font                = $Font
+$TboxStatus.BorderStyle         = 2
 #endregion TboxStatus
 
 #region LblCurrent
-$LblCurrent                      = New-Object system.Windows.Forms.Label
-$LblCurrent.text                 = "Curent Status"
-$LblCurrent.AutoSize             = $true
-$LblCurrent.width                = 25
-$LblCurrent.height               = 10
-$LblCurrent.location             = '30,153'
-$LblCurrent.Font                 = 'Microsoft Sans Serif,10'
+$LblCurrent                     = New-Object system.Windows.Forms.Label
+$LblCurrent.text                = "Curent Status"
+$LblCurrent.AutoSize            = $true
+$LblCurrent.width               = 25
+$LblCurrent.height              = 10
+$LblCurrent.location            = '25,190'
+$LblCurrent.Font                = $Font
 #endregion LblCurrent
 
 #region LBoxPick
-$LBoxPick                        = New-Object System.Windows.Forms.ListBox
-$LBoxPick.width                  = 318
-$LBoxPick.height                 = 100
-$LBoxPick.location               = '24,62'
+$LBoxPick                       = New-Object System.Windows.Forms.ListBox
+$LBoxPick.Width                 = 318
+$LBoxPick.location              = '25,50'
+$LBoxPick.Font                  = $Font
 #endregion LBoxPick
 
+$Form.controls.AddRange(@($LBoxPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow))
+#endregion GUI
 
-$Form.controls.AddRange(@($LBoxPick,$LblPick,$BtnCheckSvc,$TboxStatus,$LblCurrent,$LblShow))
-
-#endregion GUI }
-
-#setup / lnk GUI with code
+#region LinkFunctions
 $LBoxPick.Add_SelectedValueChanged({ MyFunction1 $this $_  })
+#endregion LinkFunctions
 
 # Put your code here
+# $Servs = Get-Service -name Spooler | Select-Object -Property name
 $Servs = Get-Service | Select-Object -Property name
+$ItemsInBox = $Servs.Items.Count 
+if ($ItemsInBox -ge 10 ) {
+    $LBoxPick.Height = 18 * $NumberOfShownItems
+} else {
+    $LBoxPick.Height = 22 * ($ItemsInBox + 1)
+}
 $LBoxPick.Items.AddRange($Servs.name)
+
 
 
 
