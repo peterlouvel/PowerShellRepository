@@ -11,28 +11,45 @@
 
 # Functions are at the top so the script engine won't complain about not knowing a funciton.
 #region Functions
-function MyFunction1 {
+function MyFunction1{
     $LblShow.Text = $LBoxPick.Text
-    $TboxStatus.Text = (Get-Service -Name  $LBoxPick.Text).Status
+    $TboxStatus.Text = (Get-Service -Name  $LblShow.Text).Status
+    if ($TboxStatus.Text -like "Running"){
+        $BtnService.text = "Stop"
+    } elseif ($TboxStatus.Text -like "Stopped"){
+        $BtnService.text = "Start"
+    }
+
 }
-function MyFunction2 {
+function MyFunction2{
     $SearchFilter = '*' + $TxtFilter.Text + '*'
     $Servs = Get-Service -name $SearchFilter  | Select-Object -Property name
     #   $Servs = Get-Service | Select-Object -Property name
     $LBoxPick.Items.Clear()
     $ItemsInBox = $Servs.Items.Count 
-    if ($ItemsInBox -ge ($NumberOfShownItems + 1) ) {
+    if ($ItemsInBox -ge ($NumberOfShownItems + 1) ){
         $LBoxPick.Height = 16 * ($NumberOfShownItems + 1)
-    } elseif ($ItemsInBox -ge 1) {
+    } elseif ($ItemsInBox -ge 1){
         $LBoxPick.Height = 16 * ($ItemsInBox + 1)
-    } elseif ($ItemsInBox -eq 0){
-        $LBoxPick.Height = 0
-        return 
     } else { #can't show one item when height is below 20
         $LBoxPick.Height = 20
     }
+    $LblPick.text = "Pick one of the "+($ItemsInBox+1)+" services"
+    if ( $null -eq $Servs){
 
-    $LBoxPick.Items.AddRange($Servs.Name)
+    }else{
+        $LBoxPick.Items.AddRange($Servs.Name)
+    }
+}
+function MyFunction3{
+    $LblShow.Text 
+    switch ($BtnService.text) {
+        ('Stop')  { Stop-Service  -Name $LblShow.Text }
+        ('Start') { Start-Service -Name $LblShow.Text }
+        Default {}
+    }
+    $BtnService.text = "----"
+    MyFunction1
 }
 #endregion Functions
 
@@ -48,11 +65,20 @@ Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
-$Form                            = New-Object system.Windows.Forms.Form
-$Form.ClientSize                 = '400,400'
-$Form.text                       = "Service Inspector"
-$Form.TopMost                    = $true
+$Form                           = New-Object system.Windows.Forms.Form
+$Form.ClientSize                = '400,400'
+$Form.text                      = "Service Inspector"
+$Form.TopMost                   = $true
 #endregion Form
+
+#region BtnService
+$BtnService                     = New-Object System.Windows.Forms.Button
+$BtnService.text                = "----"
+$BtnService.width               = 90
+$BtnService.height              = 30
+$BtnService.location            = '25,280'
+$BtnService.Font                = 'Microsoft Sans Serif,10'
+#endregion BtnService
 
 #region LblePick
 $LblTxtFilter                   = New-Object system.Windows.Forms.Label
@@ -119,12 +145,13 @@ $LBoxPick.location              = '25,80'
 $LBoxPick.Font                  = $Font
 #endregion LBoxPick
 
-$Form.controls.AddRange(@($LblTxtFilter,$TxtFilter,$LBoxPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow))
+$Form.controls.AddRange(@($BtnService,$LblTxtFilter,$TxtFilter,$LBoxPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow))
 #endregion GUI
 
 #region LinkFunctions
 $LBoxPick.Add_SelectedValueChanged({ MyFunction1 $this $_ })
 $TxtFilter.Add_TextChanged({ MyFunction2 $this $_ })
+$BtnService.Add_Click({ MyFunction3 $this $_ })
 
 #endregion LinkFunctions
 
