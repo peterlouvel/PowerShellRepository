@@ -26,7 +26,6 @@ function MyFunction1{
     }
 
 }
-
 function MyFunction2{
     $SearchFilter = '*' + $TxtFilter.Text + '*'
     $Servs = Get-Service -name $SearchFilter  | Select-Object -Property name
