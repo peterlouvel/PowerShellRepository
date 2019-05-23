@@ -14,6 +14,7 @@
     General notes
 #>
 
+
 #region Variables
 $NumberOfShownItems = 6
 $Font               = 'Microsoft Sans Serif,10'
