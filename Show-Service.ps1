@@ -9,6 +9,11 @@
     General notes
 #>
 
+#region Variables
+$NumberOfShownItems = 6
+$Font               = 'Microsoft Sans Serif,10'
+#endregion Variables
+
 # Functions are at the top so the script engine won't complain about not knowing a funciton.
 #region Functions
 function MyFunction1{
@@ -26,7 +31,7 @@ function MyFunction2{
     $Servs = Get-Service -name $SearchFilter  | Select-Object -Property name
     #   $Servs = Get-Service | Select-Object -Property name
     $LBoxPick.Items.Clear()
-    $ItemsInBox = $Servs.Items.Count 
+    $ItemsInBox = $Servs.Length
     if ($ItemsInBox -ge ($NumberOfShownItems + 1) ){
         $LBoxPick.Height = 16 * ($NumberOfShownItems + 1)
     } elseif ($ItemsInBox -ge 1){
@@ -53,10 +58,6 @@ function MyFunction3{
 }
 #endregion Functions
 
-#region Variables
-$NumberOfShownItems = 6
-$Font               = 'Microsoft Sans Serif,10'
-#endregion Variables
 
 #region GUI
 
@@ -158,7 +159,6 @@ $BtnService.Add_Click({ MyFunction3 $this $_ })
 # Put your code here
 
 MyFunction2
-
 
 
 #Leave at the end of the script
