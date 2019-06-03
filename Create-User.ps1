@@ -18,12 +18,14 @@ $Font               = 'Microsoft Sans Serif,10'
 
 # Functions are at the top so the script engine won't complain about not knowing a funciton.
 function PickStaff{
-    $LblShow.Text = $LBoxPick.Text
+    $LblShow.Text = $UserPick.Text
     # $TboxStatus.Text = (Get-Service -Name  $LblShow.Text).Status
+   # $Groups = 
 }
 
 #region Functions
 function FilterUser{
+    $LblShow.Text = ""
     $SearchFilter = '*' + $TxtFilter.Text + '*'
     if ($SearchFilter -ne '**') {
         $Servs = Get-ADUser -Filter {Name -like $SearchFilter}
@@ -31,20 +33,68 @@ function FilterUser{
         $Servs = ''
     }
     #   $Servs = Get-Service | Select-Object -Property name
-    $LBoxPick.Items.Clear()
+    $UserPick.Items.Clear()
     $ItemsInBox = $Servs.Length
     if ($ItemsInBox -ge ($NumberOfShownItems + 1) ){
-        $LBoxPick.Height = 16 * ($NumberOfShownItems + 1)
+        $UserPick.Height = 16 * ($NumberOfShownItems + 1)
     } elseif ($ItemsInBox -ge 1){
-        $LBoxPick.Height = 16 * ($ItemsInBox + 1)
+        $UserPick.Height = 16 * ($ItemsInBox + 1)
     } else { #can't show one item when height is below 20
-        $LBoxPick.Height = 20
+        $UserPick.Height = 20
     }
     $LblPick.text = "Pick one of the "+($ItemsInBox)+" users"
-    if ( "" -eq $Servs){
+    if ( $ItemsInBox -eq 0){
 
     }else{
-        $LBoxPick.Items.AddRange($Servs.Name)
+        $UserPick.Items.AddRange($Servs.Name)
+    }
+}
+function DoIt{
+    $Username = $UserNameTxtBox.Text
+
+    $passwordAU = $PasswordTxtBox.Text
+    $SecureStringPwdAU = $passwordAU | ConvertTo-SecureString -AsPlainText -Force
+    $credAU = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdAU
+    
+    $passwordNZ = $PasswordTxtBox.Text
+    $SecureStringPwdNZ = $passwordNZ | ConvertTo-SecureString -AsPlainText -Force
+    $credNZ = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdNZ
+    
+    $passwordEDMI = $PasswordTxtBox.Text
+    $SecureStringPwdEDMI = $passwordEDMI | ConvertTo-SecureString -AsPlainText -Force
+    $credEDMI = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdEDMI
+    
+    $passwordSG = $PasswordTxtBox.Text
+    $SecureStringPwdSG = $passwordSG | ConvertTo-SecureString -AsPlainText -Force
+    $credSG = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdSG
+    
+    $User = Get-ADUser -Identity test.user
+    $UserCopyFrom = Get-ADUser -Identity peter.louvel -Properties *
+    
+    $counter = 0
+    foreach ($UserGroup in $UserCopyFrom.MemberOf) { 
+        Write-Host $counter + " " + $UserGroup
+        if ($UserGroup.Contains("DC=au")){
+            $Server = "au.edmi.local"
+            $cred = $credAU
+        } elseif ($UserGroup.Contains("DC=nz")) {
+            $Server = "nz.edmi.local"
+            $cred = $credNZ
+        } elseif ($UserGroup.Contains("DC=sg")) {
+            $Server = "sg.edmi.local"
+            $cred = $credSG
+        } else {
+            $Server = "edmi.local"
+            $cred = $credEDMI
+        }
+        $Server
+        try {
+            Set-ADObject -Identity $UserGroup -Add @{"member"=$User.DistinguishedName} -Server $Server -Credential $cred
+            Write-Host -ForegroundColor Green $server 
+        } Catch {
+            Write-Host -ForegroundColor Red "[ERROR] $server - $($_.distinguishedName) - $($Error[0])"
+        }
+        $counter++
     }
 }
 #endregion Functions
@@ -65,8 +115,42 @@ $BtnService.text                = "----"
 $BtnService.width               = 90
 $BtnService.height              = 30
 $BtnService.location            = '25,360'
-$BtnService.Font                = 'Microsoft Sans Serif,10'
+$BtnService.Font                = $Font
 #endregion BtnService
+#region LbleUsername
+$LbleUsername                   = New-Object system.Windows.Forms.Label
+$LbleUsername.text              = "Admin Username"
+$LbleUsername.AutoSize          = $true
+$LbleUsername.width             = 100
+$LbleUsername.height            = 10
+$LbleUsername.location          = '25,10'
+$LbleUsername.Font              = $Font
+#endregion LbleUsername
+#region UserNameTxtBox
+$UserNameTxtBox                 = New-Object System.Windows.Forms.TextBox
+$UserNameTxtBox.text            = "peterl_"
+$UserNameTxtBox.width           = 100
+$UserNameTxtBox.height          = 10
+$UserNameTxtBox.location        = '25,30'
+$UserNameTxtBox.Font            = $Font
+#endregion UserNameTxtBox
+#region LblePassword
+$LblePassword                   = New-Object system.Windows.Forms.Label
+$LblePassword.text              = "Admin Password"
+$LblePassword.AutoSize          = $true
+$LblePassword.width             = 100
+$LblePassword.height            = 10
+$LblePassword.location          = '150,10'
+$LblePassword.Font              = $Font
+#endregion LbleUsername
+#region PasswordTxtBox
+$PasswordTxtBox                 = New-Object System.Windows.Forms.TextBox
+$PasswordTxtBox.text            = ""
+$PasswordTxtBox.width           = 100
+$PasswordTxtBox.height          = 10
+$PasswordTxtBox.location        = '150,30'
+$PasswordTxtBox.Font            = $Font
+#endregion UserNameTxtBox
 #region LblePick
 $LblTxtFilter                   = New-Object system.Windows.Forms.Label
 $LblTxtFilter.text              = "Search for User (filter box) to copy from"
@@ -74,16 +158,16 @@ $LblTxtFilter.AutoSize          = $true
 $LblTxtFilter.width             = 25
 $LblTxtFilter.height            = 10
 $LblTxtFilter.location          = '25,110'
-$LblTxtFilter.Font              = 'Microsoft Sans Serif,10'
+$LblTxtFilter.Font              = $Font
 #endregion LblePick
-#region LblePick
+#region UserType
 $TxtFilter                      = New-Object System.Windows.Forms.TextBox
 $TxtFilter.text                 = ""
 $TxtFilter.width                = 314
 $TxtFilter.height               = 10
 $TxtFilter.location             = '25,130'
-$TxtFilter.Font                 = 'Microsoft Sans Serif,10'
-#endregion LblePick
+$TxtFilter.Font                 = $Font
+#endregion UserType
 #region LblePick
 $LblPick                        = New-Object system.Windows.Forms.Label
 $LblPick.text                   = "Pick a User to copy from"
@@ -91,7 +175,7 @@ $LblPick.AutoSize               = $true
 $LblPick.width                  = 25
 $LblPick.height                 = 10
 $LblPick.location               = '25,160'
-$LblPick.Font                   = 'Microsoft Sans Serif,10'
+$LblPick.Font                   = $Font
 #endregion LblePick
 #region LblShow
 $LblShow                        = New-Object system.Windows.Forms.Label
@@ -119,17 +203,24 @@ $LblCurrent.height              = 10
 $LblCurrent.location            = '25,320'
 $LblCurrent.Font                = $Font
 #endregion LblCurrent
-#region LBoxPick
-$LBoxPick                       = New-Object System.Windows.Forms.ListBox
-$LBoxPick.Width                 = 318
-$LBoxPick.location              = '25,180'
-$LBoxPick.Font                  = $Font
-#endregion LBoxPick
-$Form.controls.AddRange(@($BtnService,$LblTxtFilter,$TxtFilter,$LBoxPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow))
+#region UserPick
+$UserPick                       = New-Object System.Windows.Forms.ListBox
+$UserPick.Width                 = 318
+$UserPick.location              = '25,180'
+$UserPick.Font                  = $Font
+#endregion UserPick
+#region UserGroups
+$UserGroups                     = New-Object System.Windows.Forms.ListBox
+$UserGroups.Width               = 350
+$UserGroups.Height              = 360
+$UserGroups.location            = '400,20'
+$UserGroups.Font                = $Font
+#endregion UserGroups
+$Form.controls.AddRange(@($BtnService,$LbleUsername,$UserNameTxtBox,$PasswordTxtBox,$LblePassword,$LblTxtFilter,$TxtFilter,$UserPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow,$UserGroups))
 #endregion GUI
 
 #region LinkFunctions
-$LBoxPick.Add_SelectedValueChanged({ PickStaff $this $_ })
+$UserPick.Add_SelectedValueChanged({ PickStaff $this $_ })
 $TxtFilter.Add_TextChanged({ FilterUser $this $_ })
 # $BtnService.Add_Click({ MyFunction3 $this $_ })
 #endregion LinkFunctions
@@ -139,3 +230,5 @@ $TxtFilter.Add_TextChanged({ FilterUser $this $_ })
 FilterUser
 
 #Leave at the end of the script
+
+
