@@ -18,9 +18,9 @@ $Font               = 'Microsoft Sans Serif,10'
 
 # Functions are at the top so the script engine won't complain about not knowing a funciton.
 function PickStaff{
-    $LblShow.Text = $UserPick.Text
-    # $TboxStatus.Text = (Get-Service -Name  $LblShow.Text).Status
-   # $Groups = 
+    $Servs = Get-ADUser -Filter {Name -like $UserPick.Text}
+    $LblShow.Text = $Servs.SamAccountName
+    #$TboxStatus.Text = "Copy Groups"
 }
 
 #region Functions
@@ -50,6 +50,9 @@ function FilterUser{
     }
 }
 function DoIt{
+
+    if ($TxtNewUser.text) {}
+
     $Username = $UserNameTxtBox.Text
 
     $passwordAU = $PasswordTxtBox.Text
@@ -69,8 +72,8 @@ function DoIt{
     $credSG = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdSG
     
     $User = Get-ADUser -Identity test.user
-    $UserCopyFrom = Get-ADUser -Identity peter.louvel -Properties *
-    
+    $UserCopyFrom = Get-ADUser -Identity $LblShow.Text -Properties *
+    $UserCopyFrom
     $counter = 0
     foreach ($UserGroup in $UserCopyFrom.MemberOf) { 
         Write-Host $counter + " " + $UserGroup
@@ -110,12 +113,12 @@ $Form.text                      = "Create User from another users account"
 $Form.TopMost                   = $true
 #endregion Form
 #region BtnService
-$BtnService                     = New-Object System.Windows.Forms.Button
-$BtnService.text                = "----"
-$BtnService.width               = 90
-$BtnService.height              = 30
-$BtnService.location            = '25,360'
-$BtnService.Font                = $Font
+$BtnCommand                     = New-Object System.Windows.Forms.Button
+$BtnCommand.text                = "----"
+$BtnCommand.width               = 90
+$BtnCommand.height              = 30
+$BtnCommand.location            = '25,360'
+$BtnCommand.Font                = $Font
 #endregion BtnService
 #region LbleUsername
 $LbleUsername                   = New-Object system.Windows.Forms.Label
@@ -151,6 +154,23 @@ $PasswordTxtBox.height          = 10
 $PasswordTxtBox.location        = '150,30'
 $PasswordTxtBox.Font            = $Font
 #endregion UserNameTxtBox
+#region LbleNewUser
+$LbleNewUser                    = New-Object system.Windows.Forms.Label
+$LbleNewUser.text               = "New user account to create"
+$LbleNewUser.AutoSize           = $true
+$LbleNewUser.width              = 100
+$LbleNewUser.height             = 10
+$LbleNewUser.location           = '25,60'
+$LbleNewUser.Font               = $Font
+#endregion LbleNewUser
+#region TxtNewUser
+$TxtNewUser                     = New-Object System.Windows.Forms.TextBox
+$TxtNewUser.text                = ""
+$TxtNewUser.width               = 314
+$TxtNewUser.height              = 10
+$TxtNewUser.location            = '25,80'
+$TxtNewUser.Font                = $Font
+#endregion TxtNewUser
 #region LblePick
 $LblTxtFilter                   = New-Object system.Windows.Forms.Label
 $LblTxtFilter.text              = "Search for User (filter box) to copy from"
@@ -216,13 +236,13 @@ $UserGroups.Height              = 360
 $UserGroups.location            = '400,20'
 $UserGroups.Font                = $Font
 #endregion UserGroups
-$Form.controls.AddRange(@($BtnService,$LbleUsername,$UserNameTxtBox,$PasswordTxtBox,$LblePassword,$LblTxtFilter,$TxtFilter,$UserPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow,$UserGroups))
+$Form.controls.AddRange(@($LbleNewUser,$TxtNewUser,$BtnCommand,$LbleUsername,$UserNameTxtBox,$PasswordTxtBox,$LblePassword,$LblTxtFilter,$TxtFilter,$UserPick,$LblPick,$TboxStatus,$LblCurrent,$LblShow,$UserGroups))
 #endregion GUI
 
 #region LinkFunctions
 $UserPick.Add_SelectedValueChanged({ PickStaff $this $_ })
 $TxtFilter.Add_TextChanged({ FilterUser $this $_ })
-# $BtnService.Add_Click({ MyFunction3 $this $_ })
+$BtnCommand.Add_Click({ DoIt $this $_ })
 #endregion LinkFunctions
 [void]$Form.ShowDialog()
 

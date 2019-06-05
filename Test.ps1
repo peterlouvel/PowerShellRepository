@@ -1,19 +1,18 @@
 $Username = "peterl_"
 
-$passwordAU = "Nash"
-
+$passwordAU = "Nashua^edmi^01"
 $SecureStringPwdAU = $passwordAU | ConvertTo-SecureString -AsPlainText -Force
 $credAU = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdAU
 
-$passwordNZ = "Nash"
+$passwordNZ = "Nashua^edmi^01"
 $SecureStringPwdNZ = $passwordNZ | ConvertTo-SecureString -AsPlainText -Force
 $credNZ = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdNZ
 
-$passwordEDMI = "Nash"
+$passwordEDMI = "Nashua^edmi^01"
 $SecureStringPwdEDMI = $passwordEDMI | ConvertTo-SecureString -AsPlainText -Force
 $credEDMI = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdEDMI
 
-$passwordSG = "Nash"
+$passwordSG = "Nashua^edmi^01"
 $SecureStringPwdSG = $passwordSG | ConvertTo-SecureString -AsPlainText -Force
 $credSG = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdSG
 
