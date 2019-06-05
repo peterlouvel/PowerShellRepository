@@ -11,6 +11,7 @@
     -- might add in the future -Create Bob.Person -From John.OtherPerson
 #>
 
+
 #region Variables
 $NumberOfShownItems = 6
 $Font               = 'Microsoft Sans Serif,10'
