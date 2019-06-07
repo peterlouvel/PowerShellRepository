@@ -150,6 +150,7 @@ $LblePassword.Font              = $Font
 #region PasswordTxtBox
 $PasswordTxtBox                 = New-Object System.Windows.Forms.TextBox
 $PasswordTxtBox.text            = ""
+$PasswordTxtBox.PasswordChar = '*';
 $PasswordTxtBox.width           = 100
 $PasswordTxtBox.height          = 10
 $PasswordTxtBox.location        = '150,30'
