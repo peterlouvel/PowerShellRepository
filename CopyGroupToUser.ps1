@@ -72,7 +72,8 @@ function DoIt{
     $SecureStringPwdSG = $passwordSG | ConvertTo-SecureString -AsPlainText -Force
     $credSG = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdSG
     
-    $User = Get-ADUser -Identity test.user
+    $User = Get-ADUser -Identity $TxtNewUser.Text
+    $User
     $UserCopyFrom = Get-ADUser -Identity $LblShow.Text -Properties *
     $UserCopyFrom
     $counter = 0
@@ -248,10 +249,13 @@ $UserPick.Add_SelectedValueChanged({ PickStaff $this $_ })
 $TxtFilter.Add_TextChanged({ FilterUser $this $_ })
 $BtnCommand.Add_Click({ DoIt $this $_ })
 #endregion LinkFunctions
+
+FilterUser
+
 [void]$Form.ShowDialog()
 
 
-FilterUser
+
 
 #Leave at the end of the script
 
