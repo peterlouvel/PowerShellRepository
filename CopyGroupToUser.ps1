@@ -184,7 +184,7 @@ $LblTxtFilter.Font              = $Font
 #endregion LblePick
 #region UserType
 $TxtFilter                      = New-Object System.Windows.Forms.TextBox
-$TxtFilter.text                 = ""
+$TxtFilter.text                 = "x"
 $TxtFilter.width                = 314
 $TxtFilter.height               = 10
 $TxtFilter.location             = '25,130'
@@ -201,6 +201,7 @@ $LblPick.Font                   = $Font
 #endregion LblePick
 #region LblShow
 $LblShow                        = New-Object system.Windows.Forms.Label
+$LblShow.text                 = "xx"
 $LblShow.AutoSize               = $true
 $LblShow.width                  = 25
 $LblShow.height                 = 10
@@ -210,6 +211,7 @@ $LblShow.BorderStyle            = 1
 #endregion LblShow
 #region TboxStatus
 $TboxStatus                     = New-Object system.Windows.Forms.Label
+$TboxStatus.text                 = "xxx"
 $TboxStatus.width               = 314
 $TboxStatus.height              = 20
 $TboxStatus.location            = '27,336'
