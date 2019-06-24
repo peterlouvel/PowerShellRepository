@@ -8,7 +8,7 @@ $Font               = 'Microsoft Sans Serif,10'
 #endregion Variables
 # Functions are at the top so the script engine won't complain about not knowing a funciton.
 
-
+#region Functions
 function GeneratePasswordForUser{
     $TxtNewUserPassword.Text = [System.Web.Security.Membership]::GeneratePassword(10,3)
 }
@@ -48,7 +48,6 @@ function Enable_Button{
         }
     }
 }
-#region Functions
 function FilterUser{
     $LblGroupsCopy.Text = "Groups to add to new User"
     $LblShow.Text = ""    
@@ -158,30 +157,6 @@ $LblAdminUsernameEDMI.height     = 10
 $LblAdminUsernameEDMI.location   = New-Object System.Drawing.Point(20,120)
 $LblAdminUsernameEDMI.Font       = $Font
 
-$TxtAdminUsernameAU              = New-Object system.Windows.Forms.TextBox
-$TxtAdminUsernameAU.multiline  = $false
-$TxtAdminUsernameAU.text         = "peterl_"
-$TxtAdminUsernameAU.width        = 150
-$TxtAdminUsernameAU.height       = 20
-$TxtAdminUsernameAU.location     = New-Object System.Drawing.Point(20,40)
-$TxtAdminUsernameAU.Font         = $Font
-
-$TxtAdminUsernameNZ              = New-Object system.Windows.Forms.TextBox
-$TxtAdminUsernameNZ.multiline    = $false
-$TxtAdminUsernameNZ.text         = "peterl_"
-$TxtAdminUsernameNZ.width        = 150
-$TxtAdminUsernameNZ.height       = 20
-$TxtAdminUsernameNZ.location     = New-Object System.Drawing.Point(20,90)
-$TxtAdminUsernameNZ.Font         = $Font
-
-$TxtAdminUsernameEDMI            = New-Object system.Windows.Forms.TextBox
-$TxtAdminUsernameEDMI.multiline  = $false
-$TxtAdminUsernameEDMI.text       = "peterl_"
-$TxtAdminUsernameEDMI.width      = 150
-$TxtAdminUsernameEDMI.height     = 20
-$TxtAdminUsernameEDMI.location   = New-Object System.Drawing.Point(20,140)
-$TxtAdminUsernameEDMI.Font       = $Font
-
 $LblAdminPasswordAU              = New-Object system.Windows.Forms.Label
 $LblAdminPasswordAU.text         = "Admin Password AU"
 $LblAdminPasswordAU.AutoSize     = $true
@@ -213,6 +188,51 @@ $LblNewUser.width                = 25
 $LblNewUser.height               = 10
 $LblNewUser.location             = New-Object System.Drawing.Point(420,20)
 $LblNewUser.Font                 = $Font
+
+$TxtAdminUsernameAU              = New-Object system.Windows.Forms.TextBox
+$TxtAdminUsernameAU.multiline  = $false
+$TxtAdminUsernameAU.text         = "peterl_"
+$TxtAdminUsernameAU.width        = 150
+$TxtAdminUsernameAU.height       = 20
+$TxtAdminUsernameAU.location     = New-Object System.Drawing.Point(20,40)
+$TxtAdminUsernameAU.Font         = $Font
+
+$TxtAdminPasswordAU              = New-Object system.Windows.Forms.TextBox
+$TxtAdminPasswordAU.multiline    = $false
+$TxtAdminPasswordAU.width        = 150
+$TxtAdminPasswordAU.height       = 20
+$TxtAdminPasswordAU.location     = New-Object System.Drawing.Point(180,40)
+$TxtAdminPasswordAU.Font         = $Font
+
+$TxtAdminUsernameNZ              = New-Object system.Windows.Forms.TextBox
+$TxtAdminUsernameNZ.multiline    = $false
+$TxtAdminUsernameNZ.text         = "peterl_"
+$TxtAdminUsernameNZ.width        = 150
+$TxtAdminUsernameNZ.height       = 20
+$TxtAdminUsernameNZ.location     = New-Object System.Drawing.Point(20,90)
+$TxtAdminUsernameNZ.Font         = $Font
+
+$TxtAdminPasswordNZ              = New-Object system.Windows.Forms.TextBox
+$TxtAdminPasswordNZ.multiline    = $false
+$TxtAdminPasswordNZ.width        = 150
+$TxtAdminPasswordNZ.height       = 20
+$TxtAdminPasswordNZ.location     = New-Object System.Drawing.Point(180,90)
+$TxtAdminPasswordNZ.Font         = $Font
+
+$TxtAdminUsernameEDMI            = New-Object system.Windows.Forms.TextBox
+$TxtAdminUsernameEDMI.multiline  = $false
+$TxtAdminUsernameEDMI.text       = "peterl_"
+$TxtAdminUsernameEDMI.width      = 150
+$TxtAdminUsernameEDMI.height     = 20
+$TxtAdminUsernameEDMI.location   = New-Object System.Drawing.Point(20,140)
+$TxtAdminUsernameEDMI.Font       = $Font
+
+$TxtAdminPasswordEDMI            = New-Object system.Windows.Forms.TextBox
+$TxtAdminPasswordEDMI.multiline  = $false
+$TxtAdminPasswordEDMI.width      = 150
+$TxtAdminPasswordEDMI.height     = 20
+$TxtAdminPasswordEDMI.location   = New-Object System.Drawing.Point(180,140)
+$TxtAdminPasswordEDMI.Font       = $Font
 
 $TxtNewUser                      = New-Object system.Windows.Forms.TextBox
 $TxtNewUser.multiline            = $false
@@ -265,26 +285,6 @@ $TxtSearchUser.height            = 20
 $TxtSearchUser.location          = New-Object System.Drawing.Point(20,220)
 $TxtSearchUser.Font              = $Font
 
-$TxtAdminPasswordAU              = New-Object system.Windows.Forms.TextBox
-$TxtAdminPasswordAU.multiline    = $false
-$TxtAdminPasswordAU.width        = 150
-$TxtAdminPasswordAU.height       = 20
-$TxtAdminPasswordAU.location     = New-Object System.Drawing.Point(180,40)
-$TxtAdminPasswordAU.Font         = $Font
-
-$TxtAdminPasswordNZ              = New-Object system.Windows.Forms.TextBox
-$TxtAdminPasswordNZ.multiline    = $false
-$TxtAdminPasswordNZ.width        = 150
-$TxtAdminPasswordNZ.height       = 20
-$TxtAdminPasswordNZ.location     = New-Object System.Drawing.Point(180,90)
-$TxtAdminPasswordNZ.Font         = $Font
-
-$TxtAdminPasswordEDMI            = New-Object system.Windows.Forms.TextBox
-$TxtAdminPasswordEDMI.multiline  = $false
-$TxtAdminPasswordEDMI.width      = 150
-$TxtAdminPasswordEDMI.height     = 20
-$TxtAdminPasswordEDMI.location   = New-Object System.Drawing.Point(180,140)
-$TxtAdminPasswordEDMI.Font       = $Font
 
 $LblPickUser                     = New-Object system.Windows.Forms.Label
 $LblPickUser.text                = "Pick a User to copy from"
@@ -367,7 +367,42 @@ $TxtBoxDisplayError.height       = 100
 $TxtBoxDisplayError.location     = New-Object System.Drawing.Point(20,600)
 $TxtBoxDisplayError.Font         = 'Microsoft Sans Serif,10'
 
-$CreateUser.controls.AddRange(@($TxtBoxDisplayError,$TxtBoxDisplayOutput,$BtnGeneratePassword,$LblAdminUsernameAU,$LblAdminUsernameNZ,$LblAdminUsernameEDMI,$TxtAdminUsernameAU,$TxtAdminUsernameNZ,$TxtAdminUsernameEDMI,$LblAdminPasswordAU,$LblAdminPasswordNZ,$LblAdminPasswordEDMI,$LblNewUser,$TxtNewUser,$ChkUsernameSame,$ChkPasswordSame,$TxtNewUserPassword,$LblNewUserPassword,$LblSearchUser,$TxtSearchUser,$TxtAdminPasswordAU,$TxtAdminPasswordNZ,$TxtAdminPasswordEDMI,$LblPickUser,$ListViewGroupsCopy,$LblGroupsCopy,$ListViewPickUser,$LblShow,$BtnCopyGroup,$BtnCreateUser,$LblOU))
+$CreateUser.controls.AddRange(@(
+    $TxtAdminUsernameAU,
+    $TxtAdminPasswordAU,
+    $TxtAdminUsernameNZ,
+    $TxtAdminPasswordNZ,
+    $TxtAdminUsernameEDMI,
+    $TxtAdminPasswordEDMI,
+
+    $TxtSearchUser,
+
+    $TxtNewUser,
+    $TxtNewUserPassword,
+
+    $TxtBoxDisplayError,
+    $TxtBoxDisplayOutput,
+    $BtnGeneratePassword,
+
+    $ListViewGroupsCopy,
+    $LblGroupsCopy,
+    $ListViewPickUser,
+    $LblShow,
+    $BtnCopyGroup,
+    $BtnCreateUser,
+    $LblNewUserPassword,
+    $LblSearchUser,
+    $LblAdminUsernameAU,
+    $LblAdminUsernameNZ,
+    $LblAdminUsernameEDMI,
+    $LblAdminPasswordAU,    
+    $LblAdminPasswordNZ,
+    $LblAdminPasswordEDMI,
+    $LblPickUser,
+    $LblNewUser,
+    $LblOU,
+    $ChkUsernameSame,
+    $ChkPasswordSame))
 
 
 #endregion GUI
@@ -383,7 +418,15 @@ $TxtNewUser.Add_KeyDown({
     if ($_.KeyCode -eq "Enter") {
         Enable_Button $this $_
     }
+    if ($_.KeyCode -eq 9) {
+        Enable_Button $this $_
+    }
 })
+# $TxtAdminUsernameAU.Add_KeyDown({
+#     if ($_.KeyCode -eq "Tab") {
+#         Enable_Button $this $_
+#     }
+# })
 #endregion LinkFunctions
 
 $ListViewGroupsCopy.Font            = $Font
