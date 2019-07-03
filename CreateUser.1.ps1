@@ -8,58 +8,65 @@ $Font               = 'Microsoft Sans Serif,10'
 $AllUsers           = Get-ADUser -Filter {Name -like "*"}
 $User               = Get-ADUser -Identity "peter.louvel" -Properties *
 $NewUserExists      = $false
+$UserCaps = (Get-Culture).TextInfo.ToTitleCase("Name")
 #endregion Variables
 # Functions are at the top so the script engine won't complain about not knowing a funciton.
 
 #region Functions
-function f_MessageOut($message){
+function FuncMessageOut($message){
     $TxtBoxDisplayOutput.AppendText("$message`n")
 }
-function f_ErrorOut($message){
+function FuncErrorOut($message){
     $TxtBoxDisplayError.AppendText("$message`n")
 }
-function f_GeneratePasswordForUser{
-    f_MessageOut "GeneratePasswordForUser"   
+function FuncGeneratePasswordForUser{
+    # FuncMessageOut "GeneratePasswordForUser"   
     $TxtNewUserPassword.Text = [System.Web.Security.Membership]::GeneratePassword(10,3)
 }
-function f_CopyUsername{
-    f_MessageOut "CopyUsername"   
+function FuncCopyUsername{
+    # FuncMessageOut "CopyUsername"   
     if ($ChkUsernameSame.Checked -eq $true){
         $TxtAdminUsernameNZ.Text = $TxtAdminUsernameAU.Text
         $TxtAdminUsernameEDMI.Text = $TxtAdminUsernameAU.Text
     } 
 }
-function f_CopyPassword{
-    f_MessageOut "CopyPassword"   
+function FuncCopyPassword{
+    # FuncMessageOut "CopyPassword"   
     if ($ChkUsernameSame.Checked -eq $true){
         $TxtAdminPasswordNZ.Text = $TxtAdminPasswordAU.Text
         $TxtAdminPasswordEDMI.Text = $TxtAdminPasswordAU.Text
     } 
 }
-function f_Enable_ButtonCreate{
-    f_MessageOut "Enable_ButtonCreate"   
-
+function FuncEnable_ButtonCreate{
+    # FuncMessageOut "Enable_ButtonCreate"   
     if ($TxtNewUser.TextLength -gt 0 ) {
-        if ( ($LblOU.Text).Length  -gt 0) {
+        # FuncMessageOut "TxtNewUser.TextLength -gt 0"   
+        # FuncMessageOut "$LblOU.Length"
+        # FuncMessageOut "before length $LblOU.Text"
+
+        if ( $LblOU.Length  -gt 0) {
+            # FuncMessageOut "$LblOU.TextLength  -gt 0"   
             if ($TxtAdminPasswordEDMI.TextLength -gt 0) {
+                # FuncMessageOut "TxtAdminPasswordEDMI.TextLength -gt 0"   
                 if ($NewUserExists) {
+                    # FuncMessageOut "NewUserExists"   
                     $BtnCreateUser.Visible = $true 
                     $BtnCopyGroup.Visible = $false
                 } else {
+                    # FuncMessageOut "Not NewUserExists"   
                     $BtnCreateUser.Visible = $false 
                     $BtnCopyGroup.Visible = $true
                 }
             }
+        } else {
+            # FuncMessageOut "Fail length $LblOU.TextLength"
         }
     }
 }
-function f_CheckUserExists{
-    f_MessageOut "CheckUserExists"   
-
-    # (Get-Culture).User1Var.ToTitleCase
+function FuncCheckUserExists{
+    # FuncMessageOut "CheckUserExists"   
     $UserLowerCase = $TxtNewUser.Text.ToLower()
     $UserCaps = (Get-Culture).TextInfo.ToTitleCase($UserLowerCase) -replace '\.',' '
-    
     try {
         $User = Get-ADUser -Identity $UserLowerCase -Properties *
         $UserOU = ($user.DistinguishedName -split ",",2)[1]
@@ -69,9 +76,9 @@ function f_CheckUserExists{
         $UserOU = $LblOU.Text  
     }
 }
-function f_CreateUser{ 
-    f_MessageOut "CreateUser"   
-    f_CheckUserExists
+function FuncCreateUser{ 
+    # FuncMessageOut "CreateUser"   
+    FuncCheckUserExists
     
     If ($NewUserExists) {
         # was looking at trying to run the script from a normal account and
@@ -82,21 +89,21 @@ function f_CreateUser{
         # $SecureStringPwdAU = $passwordAU | ConvertTo-SecureString -AsPlainText -Force
         # $credAU = New-Object System.Management.Automation.PSCredential -ArgumentList $Username, $SecureStringPwdAU
 
-        f_MessageOut "Creating user $UserCaps in OU $UserOU "
+        FuncMessageOut "Creating user $UserCaps in OU $UserOU "
         $userInstance = Get-ADUser -Identity $LblShow.Text -Properties *
         # userInstatance doesn't seem to work
         New-ADUser -Name "$UserLowerCase" -path "$UserOU" -DisplayName "$UserCaps" -Instance "$userInstance"
     } else {
-        f_ErrorOut "User '$NewUser' already exists in OU '$UserOU' "
+        FuncErrorOut "User '$NewUser' already exists in OU '$UserOU' "
     }
     # clears the error so when Get-ADUser is run a second time it can test 
     # if the user is being added a second time
     $AllUsers = Get-ADUser -Filter {Name -like "*"}
     $Error.Clear()
 }
-function f_PickStaff{
-    f_MessageOut "PickStaff"
-    f_Enable_ButtonCreate
+function FuncPickStaff{
+    # FuncMessageOut "PickStaff"
+    FuncEnable_ButtonCreate
     
     $ListBoxGroupsCopy.Items.Clear()
     $UserFiltered = Get-ADUser -Filter {Name -like $ListBoxPickUser.Text}
@@ -111,9 +118,8 @@ function f_PickStaff{
     }
     
 }
-
-function f_FilterUser{
-    f_MessageOut "FilterUser"
+function FuncFilterUser{
+    # FuncMessageOut "FilterUser"
     
     $LblGroupsCopy.Text = "Groups to add to new User"
     $LblShow.Text = ""
@@ -141,8 +147,8 @@ function f_FilterUser{
         $ListBoxPickUser.Items.AddRange($UserFiltered.Name)
     }
 }
-function f_CopyGroup{
-    f_MessageOut "CopyGroup"
+function FuncCopyGroup{
+    # FuncMessageOut "CopyGroup"
     
     if ($TxtNewUser.text) {}
     
@@ -180,12 +186,11 @@ function f_CopyGroup{
             $Server = "edmi.local"
             $cred = $credEDMI
         }
-        $Server
+        FuncMessageOut "$server"
         try {
             Set-ADObject -Identity $UserGroup -Add @{"member"=$User.DistinguishedName} -Server $Server -Credential $cred
-            f_MessageOut "$server"
         } Catch {
-            f_ErrorOut "[ERROR] $server - $($_.distinguishedName) - $($Error[0])"
+            FuncErrorOut "[ERROR] $server - $($_.distinguishedName) - $($Error[0])"
         }
         $counter++
     }
@@ -474,20 +479,20 @@ $CreateUser.controls.AddRange(@(
 #endregion GUI
 
 #region LinkFunctions
-$TxtAdminUsernameAU.Add_TextChanged({ f_CopyUsername $this $_ })
-$TxtAdminPasswordAU.Add_TextChanged({ f_CopyPassword $this $_ })
-$ListBoxPickUser.Add_SelectedValueChanged({ f_PickStaff $this $_ })
-$TxtSearchUser.Add_TextChanged({ f_FilterUser $this $_ })
-$BtnCopyGroup.Add_Click({ f_CopyGroup $this $_ })
-$BtnCreateUser.Add_Click({ f_CreateUser $this $_ })
-$BtnGeneratePassword.Add_Click({ f_GeneratePasswordForUser $this $_ })
+$TxtAdminUsernameAU.Add_TextChanged({ FuncCopyUsername $this $_ })
+$TxtAdminPasswordAU.Add_TextChanged({ FuncCopyPassword $this $_ })
+$ListBoxPickUser.Add_SelectedValueChanged({ FuncPickStaff $this $_ })
+$TxtSearchUser.Add_TextChanged({ FuncFilterUser $this $_ })
+$BtnCopyGroup.Add_Click({ FuncCopyGroup $this $_ })
+$BtnCreateUser.Add_Click({ FuncCreateUser $this $_ })
+$BtnGeneratePassword.Add_Click({ FuncGeneratePasswordForUser $this $_ })
 $TxtNewUser.Add_KeyDown({
     if ($_.KeyCode -eq "Enter") {
-        f_Enable_ButtonCreate $this $_
+        FuncEnable_ButtonCreate $this $_
     }
     # not working - can't detect TAB key. tried also with     if ($_.KeyCode -eq 9 )
     if ($_.KeyCode -eq "Tab") {
-        f_Enable_ButtonCreate $this $_
+        FuncEnable_ButtonCreate $this $_
     }
 })
 
@@ -516,11 +521,11 @@ $TxtAdminPasswordEDMI.Text = "Nashua^edmi^01"
 
 switch ($env:USERname) {
     "scottw"          {$TxtAdminUsernameAU.text = "scottw_"
-                        f_ErrorOut "You need to run this with your admin account"}
+                        FuncErrorOut "You need to run this with your admin account"}
     "peter.louvel"    {$TxtAdminUsernameAU.text = "peterl_"
-                        f_ErrorOut "You need to run this with your admin account"}
+                        FuncErrorOut "You need to run this with your admin account"}
     "blair.townley"   {$TxtAdminUsernameAU.text = "blair.townley_"
-                        f_ErrorOut "You need to run this with your admin account"}
+                        FuncErrorOut "You need to run this with your admin account"}
     "scottw_"         {$TxtAdminUsernameAU.text = "scottw_"}
     "peterl_"         {$TxtAdminUsernameAU.text = "peterl_"}
     "blair.townley_"  {$TxtAdminUsernameAU.text = "blair.townley_"}
@@ -528,9 +533,8 @@ switch ($env:USERname) {
 
 # $AllUsers = Get-ADUser -Filter {Name -like "*"}
 
-FilterUser
-# $TxtNewUserPassword.Text = [System.Web.Security.Membership]::GeneratePassword(10,3)
-f_GeneratePasswordForUser
+FuncFilterUser
+FuncGeneratePasswordForUser
 
 
 [void]$CreateUser.ShowDialog()

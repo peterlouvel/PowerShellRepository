@@ -1,3 +1,16 @@
+$CreateUser_Load = {
+}
+$BtnCreateUser_Click = {
+}
+$TxtAdminUsernameEDMI_TextChanged = {
+}
+$TxtAdminUsernameNZ_TextChanged = {
+}
+$TxtAdminUsernameAU_TextChanged = {
+}
+Add-Type -AssemblyName System.Windows.Forms
+. (Join-Path $PSScriptRoot 'CreateUserScript.designer.ps1')
+
 
 
 #region Variables
@@ -253,5 +266,8 @@ switch ($env:USERname) {
 FuncFilterUser
 FuncGeneratePasswordForUser
 
-Add-Type -AssemblyName System.Windows.Forms.(Join-Path $PSScriptRoot '')
+# Add-Type -AssemblyName System.Windows.Forms.(Join-Path $PSScriptRoot '')
 # [void]$CreateUser.ShowDialog()
+
+
+$CreateUser.ShowDialog()
