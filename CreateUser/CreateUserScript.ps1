@@ -1,4 +1,42 @@
+Add-Type -AssemblyName System.Windows.Forms
+. (Join-Path $PSScriptRoot 'CreateUserScript.designer.ps1')
+
 $CreateUser_Load = {
+    $ListBoxGroupsCopy.Font            = $Font
+    # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
+    
+    $ChkUsernameSame.Checked            = $true
+    $ChkPasswordSame.Checked            = $true
+    
+    # $ListBoxPickUser.Font              = $Font
+    $TxtBoxDisplayOutput.ReadOnly       = $true
+    $TxtBoxDisplayOutput.ScrollBars     = "Vertical"
+    $TxtBoxDisplayOutput.ForeColor      = 'Green'
+    $TxtBoxDisplayError.ReadOnly        = $true
+    $TxtBoxDisplayError.ScrollBars      = "Vertical"
+    $TxtBoxDisplayError.ForeColor       = 'Red'
+    $BtnCreateUser.Visible              = $False         
+    $BtnCopyGroup.Visible               = $False    
+    
+    switch ($env:USERname) {
+        "scottw"          {$TxtAdminUsernameAU.text = "scottw_"
+                            FuncErrorOut "You need to run this with your admin account"}
+        "peter.louvel"    {$TxtAdminUsernameAU.text = "peterl_"
+                            FuncErrorOut "You need to run this with your admin account"}
+        "blair.townley"   {$TxtAdminUsernameAU.text = "blair.townley_"
+                            FuncErrorOut "You need to run this with your admin account"}
+        "scottw_"         {$TxtAdminUsernameAU.text = "scottw_"}
+        "peterl_"         {$TxtAdminUsernameAU.text = "peterl_"}
+        "blair.townley_"  {$TxtAdminUsernameAU.text = "blair.townley_"}
+    }
+    FuncCopyUsername
+
+    $TxtAdminPasswordAU.PasswordChar    = '*';
+    $TxtAdminPasswordNZ.PasswordChar    = '*';
+    $TxtAdminPasswordEDMI.PasswordChar  = '*';
+    $TxtAdminPasswordAU.Text = "Nashua^edmi^01"
+    FuncCopyPassword
+
 }
 $BtnCreateUser_Click = {
 }
@@ -8,8 +46,6 @@ $TxtAdminUsernameNZ_TextChanged = {
 }
 $TxtAdminUsernameAU_TextChanged = {
 }
-Add-Type -AssemblyName System.Windows.Forms
-. (Join-Path $PSScriptRoot 'CreateUserScript.designer.ps1')
 
 
 
@@ -226,40 +262,30 @@ function FuncCopyGroup{
 #     }
 # })
 
-$ListBoxGroupsCopy.Font            = $Font
-# $ListBoxGroupsCopy.ScrollBars      = "Vertical"
+# $ListBoxGroupsCopy.Font            = $Font
+# # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
 
-$ChkUsernameSame.Checked            = $true
-$ChkPasswordSame.Checked            = $true
+# $ChkUsernameSame.Checked            = $true
+# $ChkPasswordSame.Checked            = $true
 
-# $ListBoxPickUser.Font              = $Font
-$TxtBoxDisplayOutput.ReadOnly       = $true
-$TxtBoxDisplayOutput.ScrollBars     = "Vertical"
-$TxtBoxDisplayOutput.ForeColor      = 'Green'
-$TxtBoxDisplayError.ReadOnly        = $true
-$TxtBoxDisplayError.ScrollBars      = "Vertical"
-$TxtBoxDisplayError.ForeColor       = 'Red'
-$BtnCreateUser.Visible              = $False         
-$BtnCopyGroup.Visible               = $False    
+# # $ListBoxPickUser.Font              = $Font
+# $TxtBoxDisplayOutput.ReadOnly       = $true
+# $TxtBoxDisplayOutput.ScrollBars     = "Vertical"
+# $TxtBoxDisplayOutput.ForeColor      = 'Green'
+# $TxtBoxDisplayError.ReadOnly        = $true
+# $TxtBoxDisplayError.ScrollBars      = "Vertical"
+# $TxtBoxDisplayError.ForeColor       = 'Red'
+# $BtnCreateUser.Visible              = $False         
+# $BtnCopyGroup.Visible               = $False    
 
-$TxtAdminPasswordAU.PasswordChar    = '*';
-$TxtAdminPasswordNZ.PasswordChar    = '*';
-$TxtAdminPasswordEDMI.PasswordChar  = '*';
-$TxtAdminPasswordAU.Text = "Nashua^edmi^01"
-$TxtAdminPasswordNZ.Text = "Nashua^edmi^01"
-$TxtAdminPasswordEDMI.Text = "Nashua^edmi^01"
+# $TxtAdminPasswordAU.PasswordChar    = '*';
+# $TxtAdminPasswordNZ.PasswordChar    = '*';
+# $TxtAdminPasswordEDMI.PasswordChar  = '*';
+# $TxtAdminPasswordAU.Text = "Nashua^edmi^01"
+# $TxtAdminPasswordNZ.Text = "Nashua^edmi^01"
+# $TxtAdminPasswordEDMI.Text = "Nashua^edmi^01"
 
-switch ($env:USERname) {
-    "scottw"          {$TxtAdminUsernameAU.text = "scottw_"
-                        FuncErrorOut "You need to run this with your admin account"}
-    "peter.louvel"    {$TxtAdminUsernameAU.text = "peterl_"
-                        FuncErrorOut "You need to run this with your admin account"}
-    "blair.townley"   {$TxtAdminUsernameAU.text = "blair.townley_"
-                        FuncErrorOut "You need to run this with your admin account"}
-    "scottw_"         {$TxtAdminUsernameAU.text = "scottw_"}
-    "peterl_"         {$TxtAdminUsernameAU.text = "peterl_"}
-    "blair.townley_"  {$TxtAdminUsernameAU.text = "blair.townley_"}
-}
+
 
 # $AllUsers = Get-ADUser -Filter {Name -like "*"}
 

@@ -195,23 +195,23 @@ function FuncCopyGroup{
 }
 #endregion Functions
 
-# #region LinkFunctions
-# $TxtAdminUsernameAU.Add_TextChanged({ FuncCopyUsername $this $_ })
-# $TxtAdminPasswordAU.Add_TextChanged({ FuncCopyPassword $this $_ })
-# $ListBoxPickUser.Add_SelectedValueChanged({ FuncPickStaff $this $_ })
-# $TxtSearchUser.Add_TextChanged({ FuncFilterUser $this $_ })
-# $BtnCopyGroup.Add_Click({ FuncCopyGroup $this $_ })
-# $BtnCreateUser.Add_Click({ FuncCreateUser $this $_ })
-# $BtnGeneratePassword.Add_Click({ FuncGeneratePasswordForUser $this $_ })
-# $TxtNewUser.Add_KeyDown({
-#     if ($_.KeyCode -eq "Enter") {
-#         FuncEnable_ButtonCreate $this $_
-#     }
-#     # not working - can't detect TAB key. tried also with     if ($_.KeyCode -eq 9 )
-#     if ($_.KeyCode -eq "Tab") {
-#         FuncEnable_ButtonCreate $this $_
-#     }
-# })
+#region LinkFunctions
+$TxtAdminUsernameAU.Add_TextChanged({ FuncCopyUsername $this $_ })
+$TxtAdminPasswordAU.Add_TextChanged({ FuncCopyPassword $this $_ })
+$ListBoxPickUser.Add_SelectedValueChanged({ FuncPickStaff $this $_ })
+$TxtSearchUser.Add_TextChanged({ FuncFilterUser $this $_ })
+$BtnCopyGroup.Add_Click({ FuncCopyGroup $this $_ })
+$BtnCreateUser.Add_Click({ FuncCreateUser $this $_ })
+$BtnGeneratePassword.Add_Click({ FuncGeneratePasswordForUser $this $_ })
+$TxtNewUser.Add_KeyDown({
+    if ($_.KeyCode -eq "Enter") {
+        FuncEnable_ButtonCreate $this $_
+    }
+    # not working - can't detect TAB key. tried also with     if ($_.KeyCode -eq 9 )
+    if ($_.KeyCode -eq "Tab") {
+        FuncEnable_ButtonCreate $this $_
+    }
+})
 
 $ListBoxGroupsCopy.Font            = $Font
 # $ListBoxGroupsCopy.ScrollBars      = "Vertical"

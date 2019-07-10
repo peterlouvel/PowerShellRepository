@@ -28,6 +28,8 @@ $CreateUser = New-Object -TypeName System.Windows.Forms.Form
 [System.Windows.Forms.Button]$BtnCreateUser = $null
 [System.Windows.Forms.Label]$LblGroupsCopy = $null
 [System.Windows.Forms.ListBox]$ListBoxGroupsCopy = $null
+[System.Windows.Forms.CheckBox]$ChkUsernameSame = $null
+[System.Windows.Forms.CheckBox]$ChkPasswordSame = $null
 function InitializeComponent
 {
 $LblAdminUsernameAU = (New-Object -TypeName System.Windows.Forms.Label)
@@ -59,6 +61,8 @@ $BtnGeneratePassword = (New-Object -TypeName System.Windows.Forms.Button)
 $BtnCreateUser = (New-Object -TypeName System.Windows.Forms.Button)
 $LblGroupsCopy = (New-Object -TypeName System.Windows.Forms.Label)
 $ListBoxGroupsCopy = (New-Object -TypeName System.Windows.Forms.ListBox)
+$ChkUsernameSame = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$ChkPasswordSame = (New-Object -TypeName System.Windows.Forms.CheckBox)
 $CreateUser.SuspendLayout()
 #
 #LblAdminUsernameAU
@@ -333,9 +337,33 @@ $ListBoxGroupsCopy.Name = [System.String]'ListBoxGroupsCopy'
 $ListBoxGroupsCopy.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]310,[System.Int32]260))
 $ListBoxGroupsCopy.TabIndex = [System.Int32]20
 #
+#ChkUsernameSame
+#
+$ChkUsernameSame.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]20,[System.Int32]4))
+$ChkUsernameSame.Margin = (New-Object -TypeName System.Windows.Forms.Padding -ArgumentList @([System.Int32]0))
+$ChkUsernameSame.Name = [System.String]'ChkUsernameSame'
+$ChkUsernameSame.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]20,[System.Int32]20))
+$ChkUsernameSame.TabIndex = [System.Int32]21
+$ChkUsernameSame.Text = [System.String]'CheckBox1'
+$ChkUsernameSame.UseCompatibleTextRendering = $true
+$ChkUsernameSame.UseVisualStyleBackColor = $true
+#
+#ChkPasswordSame
+#
+$ChkPasswordSame.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]180,[System.Int32]4))
+$ChkPasswordSame.Margin = (New-Object -TypeName System.Windows.Forms.Padding -ArgumentList @([System.Int32]0))
+$ChkPasswordSame.Name = [System.String]'ChkPasswordSame'
+$ChkPasswordSame.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]20,[System.Int32]20))
+$ChkPasswordSame.TabIndex = [System.Int32]22
+$ChkPasswordSame.Text = [System.String]'CheckBox1'
+$ChkPasswordSame.UseCompatibleTextRendering = $true
+$ChkPasswordSame.UseVisualStyleBackColor = $true
+#
 #CreateUser
 #
 $CreateUser.ClientSize = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]1200,[System.Int32]800))
+$CreateUser.Controls.Add($ChkPasswordSame)
+$CreateUser.Controls.Add($ChkUsernameSame)
 $CreateUser.Controls.Add($ListBoxGroupsCopy)
 $CreateUser.Controls.Add($LblGroupsCopy)
 $CreateUser.Controls.Add($BtnCreateUser)
@@ -401,5 +429,7 @@ Add-Member -InputObject $CreateUser -Name BtnGeneratePassword -Value $BtnGenerat
 Add-Member -InputObject $CreateUser -Name BtnCreateUser -Value $BtnCreateUser -MemberType NoteProperty
 Add-Member -InputObject $CreateUser -Name LblGroupsCopy -Value $LblGroupsCopy -MemberType NoteProperty
 Add-Member -InputObject $CreateUser -Name ListBoxGroupsCopy -Value $ListBoxGroupsCopy -MemberType NoteProperty
+Add-Member -InputObject $CreateUser -Name ChkUsernameSame -Value $ChkUsernameSame -MemberType NoteProperty
+Add-Member -InputObject $CreateUser -Name ChkPasswordSame -Value $ChkPasswordSame -MemberType NoteProperty
 }
 . InitializeComponent
