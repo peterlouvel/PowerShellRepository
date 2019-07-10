@@ -132,7 +132,6 @@ $TxtAdminUsernameNZ.Name = [System.String]'TxtAdminUsernameNZ'
 $TxtAdminUsernameNZ.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
 $TxtAdminUsernameNZ.TabIndex = [System.Int32]2
 $TxtAdminUsernameNZ.WordWrap = $false
-$TxtAdminUsernameNZ.add_TextChanged($TxtAdminUsernameNZ_TextChanged)
 #
 #TxtAdminPasswordNZ
 #
@@ -170,7 +169,6 @@ $TxtAdminUsernameEDMI.Name = [System.String]'TxtAdminUsernameEDMI'
 $TxtAdminUsernameEDMI.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
 $TxtAdminUsernameEDMI.TabIndex = [System.Int32]2
 $TxtAdminUsernameEDMI.WordWrap = $false
-$TxtAdminUsernameEDMI.add_TextChanged($TxtAdminUsernameEDMI_TextChanged)
 #
 #TxtAdminPasswordEDMI
 #
@@ -195,6 +193,7 @@ $TxtSearchUser.Location = (New-Object -TypeName System.Drawing.Point -ArgumentLi
 $TxtSearchUser.Name = [System.String]'TxtSearchUser'
 $TxtSearchUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
 $TxtSearchUser.TabIndex = [System.Int32]5
+$TxtSearchUser.add_TextChanged($SearchUserTextBox)
 #
 #BtnCopyGroup
 #
@@ -344,7 +343,6 @@ $ChkUsernameSame.Margin = (New-Object -TypeName System.Windows.Forms.Padding -Ar
 $ChkUsernameSame.Name = [System.String]'ChkUsernameSame'
 $ChkUsernameSame.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]20,[System.Int32]20))
 $ChkUsernameSame.TabIndex = [System.Int32]21
-$ChkUsernameSame.Text = [System.String]'CheckBox1'
 $ChkUsernameSame.UseCompatibleTextRendering = $true
 $ChkUsernameSame.UseVisualStyleBackColor = $true
 #
@@ -355,9 +353,9 @@ $ChkPasswordSame.Margin = (New-Object -TypeName System.Windows.Forms.Padding -Ar
 $ChkPasswordSame.Name = [System.String]'ChkPasswordSame'
 $ChkPasswordSame.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]20,[System.Int32]20))
 $ChkPasswordSame.TabIndex = [System.Int32]22
-$ChkPasswordSame.Text = [System.String]'CheckBox1'
 $ChkPasswordSame.UseCompatibleTextRendering = $true
 $ChkPasswordSame.UseVisualStyleBackColor = $true
+$ChkPasswordSame.add_CheckedChanged($ChkPasswordSame_CheckedChanged)
 #
 #CreateUser
 #

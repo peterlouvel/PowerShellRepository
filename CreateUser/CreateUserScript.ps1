@@ -1,6 +1,7 @@
-Add-Type -AssemblyName System.Windows.Forms
-. (Join-Path $PSScriptRoot 'CreateUserScript.designer.ps1')
-
+$ChkPasswordSame_CheckedChanged = {
+}
+$SearchUserTextBox = {
+}
 $CreateUser_Load = {
     $ListBoxGroupsCopy.Font            = $Font
     # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
@@ -37,17 +38,34 @@ $CreateUser_Load = {
     $TxtAdminPasswordAU.Text = "Nashua^edmi^01"
     FuncCopyPassword
 
+    FuncFilterUser
+    FuncGeneratePasswordForUser
 }
 $BtnCreateUser_Click = {
 }
-$TxtAdminUsernameEDMI_TextChanged = {
-}
-$TxtAdminUsernameNZ_TextChanged = {
-}
 $TxtAdminUsernameAU_TextChanged = {
+    FuncCopyUsername
 }
 
-
+Add-Type -AssemblyName System.Windows.Forms
+. (Join-Path $PSScriptRoot 'CreateUserScript.designer.ps1')
+#
+# $TxtAdminUsernameAU.Add_TextChanged({ FuncCopyUsername $this $_ })
+# $TxtAdminPasswordAU.Add_TextChanged({ FuncCopyPassword $this $_ })
+# $ListBoxPickUser.Add_SelectedValueChanged({ FuncPickStaff $this $_ })
+# $TxtSearchUser.Add_TextChanged({ FuncFilterUser $this $_ })
+# $BtnCopyGroup.Add_Click({ FuncCopyGroup $this $_ })
+# $BtnCreateUser.Add_Click({ FuncCreateUser $this $_ })
+# $BtnGeneratePassword.Add_Click({ FuncGeneratePasswordForUser $this $_ })
+# $TxtNewUser.Add_KeyDown({
+#     if ($_.KeyCode -eq "Enter") {
+#         FuncEnable_ButtonCreate $this $_
+#     }
+#     # not working - can't detect TAB key. tried also with     if ($_.KeyCode -eq 9 )
+#     if ($_.KeyCode -eq "Tab") {
+#         FuncEnable_ButtonCreate $this $_
+#     }
+# })
 
 #region Variables
 $NumberOfShownItems = 6
@@ -57,7 +75,6 @@ $User               = Get-ADUser -Identity "peter.louvel" -Properties *
 $NewUserExists      = $false
 $UserCaps           = (Get-Culture).TextInfo.ToTitleCase("Name")
 #endregion Variables
-# Functions are at the top so the script engine won't complain about not knowing a funciton.
 
 #region Functions
 function FuncMessageOut($message){
@@ -244,56 +261,10 @@ function FuncCopyGroup{
 }
 #endregion Functions
 
-# #region LinkFunctions
-# $TxtAdminUsernameAU.Add_TextChanged({ FuncCopyUsername $this $_ })
-# $TxtAdminPasswordAU.Add_TextChanged({ FuncCopyPassword $this $_ })
-# $ListBoxPickUser.Add_SelectedValueChanged({ FuncPickStaff $this $_ })
-# $TxtSearchUser.Add_TextChanged({ FuncFilterUser $this $_ })
-# $BtnCopyGroup.Add_Click({ FuncCopyGroup $this $_ })
-# $BtnCreateUser.Add_Click({ FuncCreateUser $this $_ })
-# $BtnGeneratePassword.Add_Click({ FuncGeneratePasswordForUser $this $_ })
-# $TxtNewUser.Add_KeyDown({
-#     if ($_.KeyCode -eq "Enter") {
-#         FuncEnable_ButtonCreate $this $_
-#     }
-#     # not working - can't detect TAB key. tried also with     if ($_.KeyCode -eq 9 )
-#     if ($_.KeyCode -eq "Tab") {
-#         FuncEnable_ButtonCreate $this $_
-#     }
-# })
-
-# $ListBoxGroupsCopy.Font            = $Font
-# # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
-
-# $ChkUsernameSame.Checked            = $true
-# $ChkPasswordSame.Checked            = $true
-
-# # $ListBoxPickUser.Font              = $Font
-# $TxtBoxDisplayOutput.ReadOnly       = $true
-# $TxtBoxDisplayOutput.ScrollBars     = "Vertical"
-# $TxtBoxDisplayOutput.ForeColor      = 'Green'
-# $TxtBoxDisplayError.ReadOnly        = $true
-# $TxtBoxDisplayError.ScrollBars      = "Vertical"
-# $TxtBoxDisplayError.ForeColor       = 'Red'
-# $BtnCreateUser.Visible              = $False         
-# $BtnCopyGroup.Visible               = $False    
-
-# $TxtAdminPasswordAU.PasswordChar    = '*';
-# $TxtAdminPasswordNZ.PasswordChar    = '*';
-# $TxtAdminPasswordEDMI.PasswordChar  = '*';
-# $TxtAdminPasswordAU.Text = "Nashua^edmi^01"
-# $TxtAdminPasswordNZ.Text = "Nashua^edmi^01"
-# $TxtAdminPasswordEDMI.Text = "Nashua^edmi^01"
 
 
 
-# $AllUsers = Get-ADUser -Filter {Name -like "*"}
 
-FuncFilterUser
-FuncGeneratePasswordForUser
-
-# Add-Type -AssemblyName System.Windows.Forms.(Join-Path $PSScriptRoot '')
-# [void]$CreateUser.ShowDialog()
 
 
 $CreateUser.ShowDialog()
