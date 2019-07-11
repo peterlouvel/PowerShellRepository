@@ -47,7 +47,7 @@ $CreateUser_Load = {
     $TxtAdminPasswordAU.PasswordChar    = '*';
     $TxtAdminPasswordNZ.PasswordChar    = '*';
     $TxtAdminPasswordEDMI.PasswordChar  = '*';
-    $TxtAdminPasswordAU.Text = "Nashua^edmi^01"
+    $TxtAdminPasswordAU.Text = ""
     FuncCopyPassword
 
     FuncFilterUser

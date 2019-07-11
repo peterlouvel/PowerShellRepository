@@ -92,7 +92,7 @@ $LblAdminPasswordAU.UseCompatibleTextRendering = $true
 $TxtAdminUsernameAU.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]20,[System.Int32]40))
 $TxtAdminUsernameAU.Name = [System.String]'TxtAdminUsernameAU'
 $TxtAdminUsernameAU.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtAdminUsernameAU.TabIndex = [System.Int32]0
+$TxtAdminUsernameAU.TabIndex = [System.Int32]2
 $TxtAdminUsernameAU.WordWrap = $false
 $TxtAdminUsernameAU.add_TextChanged($TxtAdminUsernameAU_TextChanged)
 #
@@ -101,7 +101,7 @@ $TxtAdminUsernameAU.add_TextChanged($TxtAdminUsernameAU_TextChanged)
 $TxtAdminPasswordAU.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]180,[System.Int32]40))
 $TxtAdminPasswordAU.Name = [System.String]'TxtAdminPasswordAU'
 $TxtAdminPasswordAU.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtAdminPasswordAU.TabIndex = [System.Int32]1
+$TxtAdminPasswordAU.TabIndex = [System.Int32]3
 $TxtAdminPasswordAU.add_TextChanged($TxtAdminPasswordAU_TextChanged)
 #
 #LblAdminUsernameNZ
@@ -168,7 +168,7 @@ $LblAdminPasswordEDMI.UseCompatibleTextRendering = $true
 $TxtAdminUsernameEDMI.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]20,[System.Int32]140))
 $TxtAdminUsernameEDMI.Name = [System.String]'TxtAdminUsernameEDMI'
 $TxtAdminUsernameEDMI.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtAdminUsernameEDMI.TabIndex = [System.Int32]4
+$TxtAdminUsernameEDMI.TabIndex = [System.Int32]2
 $TxtAdminUsernameEDMI.WordWrap = $false
 #
 #TxtAdminPasswordEDMI
@@ -176,7 +176,7 @@ $TxtAdminUsernameEDMI.WordWrap = $false
 $TxtAdminPasswordEDMI.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]180,[System.Int32]140))
 $TxtAdminPasswordEDMI.Name = [System.String]'TxtAdminPasswordEDMI'
 $TxtAdminPasswordEDMI.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtAdminPasswordEDMI.TabIndex = [System.Int32]5
+$TxtAdminPasswordEDMI.TabIndex = [System.Int32]3
 #
 #LblSearchUser
 #
@@ -193,7 +193,7 @@ $LblSearchUser.UseCompatibleTextRendering = $true
 $TxtSearchUser.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]20,[System.Int32]220))
 $TxtSearchUser.Name = [System.String]'TxtSearchUser'
 $TxtSearchUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtSearchUser.TabIndex = [System.Int32]6
+$TxtSearchUser.TabIndex = [System.Int32]5
 $TxtSearchUser.add_TextChanged($TxtSearchUser_TextChanged)
 #
 #BtnCopyGroup
@@ -201,7 +201,7 @@ $TxtSearchUser.add_TextChanged($TxtSearchUser_TextChanged)
 $BtnCopyGroup.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]240,[System.Int32]220))
 $BtnCopyGroup.Name = [System.String]'BtnCopyGroup'
 $BtnCopyGroup.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]100,[System.Int32]30))
-$BtnCopyGroup.TabIndex = [System.Int32]10
+$BtnCopyGroup.TabIndex = [System.Int32]6
 $BtnCopyGroup.Text = [System.String]'Copy Groups'
 $BtnCopyGroup.UseCompatibleTextRendering = $true
 $BtnCopyGroup.UseVisualStyleBackColor = $true
@@ -225,7 +225,6 @@ $ListBoxPickUser.Location = (New-Object -TypeName System.Drawing.Point -Argument
 $ListBoxPickUser.Name = [System.String]'ListBoxPickUser'
 $ListBoxPickUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]320,[System.Int32]68))
 $ListBoxPickUser.TabIndex = [System.Int32]8
-$ListBoxPickUser.TabStop = $false
 $ListBoxPickUser.add_SelectedValueChanged($ListBoxPickUser_SelectedValueChanged)
 #
 #TxtBoxDisplayOutput
@@ -235,7 +234,6 @@ $TxtBoxDisplayOutput.Multiline = $true
 $TxtBoxDisplayOutput.Name = [System.String]'TxtBoxDisplayOutput'
 $TxtBoxDisplayOutput.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]800,[System.Int32]100))
 $TxtBoxDisplayOutput.TabIndex = [System.Int32]9
-$TxtBoxDisplayOutput.TabStop = $false
 #
 #TxtBoxDisplayError
 #
@@ -244,7 +242,6 @@ $TxtBoxDisplayError.Multiline = $true
 $TxtBoxDisplayError.Name = [System.String]'TxtBoxDisplayError'
 $TxtBoxDisplayError.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]800,[System.Int32]100))
 $TxtBoxDisplayError.TabIndex = [System.Int32]10
-$TxtBoxDisplayError.TabStop = $false
 #
 #LblNewUser
 #
@@ -261,7 +258,7 @@ $LblNewUser.UseCompatibleTextRendering = $true
 $TxtNewUser.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]420,[System.Int32]40))
 $TxtNewUser.Name = [System.String]'TxtNewUser'
 $TxtNewUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtNewUser.TabIndex = [System.Int32]7
+$TxtNewUser.TabIndex = [System.Int32]12
 $TxtNewUser.add_KeyDown($TxtNewUser_KeyDown)
 #
 #LblNewUserPassword
@@ -279,7 +276,7 @@ $LblNewUserPassword.UseCompatibleTextRendering = $true
 $TxtNewUserPassword.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]580,[System.Int32]40))
 $TxtNewUserPassword.Name = [System.String]'TxtNewUserPassword'
 $TxtNewUserPassword.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtNewUserPassword.TabIndex = [System.Int32]8
+$TxtNewUserPassword.TabIndex = [System.Int32]14
 #
 #LblShow
 #
@@ -306,7 +303,7 @@ $LblOU.UseCompatibleTextRendering = $true
 $BtnGeneratePassword.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]740,[System.Int32]30))
 $BtnGeneratePassword.Name = [System.String]'BtnGeneratePassword'
 $BtnGeneratePassword.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]140,[System.Int32]30))
-$BtnGeneratePassword.TabIndex = [System.Int32]9
+$BtnGeneratePassword.TabIndex = [System.Int32]17
 $BtnGeneratePassword.Text = [System.String]'Generate Password'
 $BtnGeneratePassword.UseCompatibleTextRendering = $true
 $BtnGeneratePassword.UseVisualStyleBackColor = $true
@@ -317,7 +314,7 @@ $BtnGeneratePassword.add_Click($BtnGeneratePassword_Click)
 $BtnCreateUser.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]420,[System.Int32]120))
 $BtnCreateUser.Name = [System.String]'BtnCreateUser'
 $BtnCreateUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]100,[System.Int32]30))
-$BtnCreateUser.TabIndex = [System.Int32]11
+$BtnCreateUser.TabIndex = [System.Int32]18
 $BtnCreateUser.Text = [System.String]'Create User'
 $BtnCreateUser.UseCompatibleTextRendering = $true
 $BtnCreateUser.UseVisualStyleBackColor = $true
@@ -341,7 +338,6 @@ $ListBoxGroupsCopy.Location = (New-Object -TypeName System.Drawing.Point -Argume
 $ListBoxGroupsCopy.Name = [System.String]'ListBoxGroupsCopy'
 $ListBoxGroupsCopy.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]310,[System.Int32]260))
 $ListBoxGroupsCopy.TabIndex = [System.Int32]20
-$ListBoxGroupsCopy.TabStop = $false
 #
 #ChkUsernameSame
 #
@@ -349,7 +345,7 @@ $ChkUsernameSame.Location = (New-Object -TypeName System.Drawing.Point -Argument
 $ChkUsernameSame.Margin = (New-Object -TypeName System.Windows.Forms.Padding -ArgumentList @([System.Int32]0))
 $ChkUsernameSame.Name = [System.String]'ChkUsernameSame'
 $ChkUsernameSame.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]20,[System.Int32]20))
-$ChkUsernameSame.TabIndex = [System.Int32]12
+$ChkUsernameSame.TabIndex = [System.Int32]21
 $ChkUsernameSame.UseCompatibleTextRendering = $true
 $ChkUsernameSame.UseVisualStyleBackColor = $true
 #
@@ -359,7 +355,7 @@ $ChkPasswordSame.Location = (New-Object -TypeName System.Drawing.Point -Argument
 $ChkPasswordSame.Margin = (New-Object -TypeName System.Windows.Forms.Padding -ArgumentList @([System.Int32]0))
 $ChkPasswordSame.Name = [System.String]'ChkPasswordSame'
 $ChkPasswordSame.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]20,[System.Int32]20))
-$ChkPasswordSame.TabIndex = [System.Int32]13
+$ChkPasswordSame.TabIndex = [System.Int32]22
 $ChkPasswordSame.UseCompatibleTextRendering = $true
 $ChkPasswordSame.UseVisualStyleBackColor = $true
 $ChkPasswordSame.add_CheckedChanged($ChkPasswordSame_CheckedChanged)
