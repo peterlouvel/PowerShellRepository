@@ -13,7 +13,7 @@ $SearchUserTextBox = {
 }
 $CreateUser_Load = {
     $ListBoxGroupsCopy.Font            = $Font
-    $ListBoxGroupsCopy.ScrollBars      = "Vertical"
+    # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
     
     $ChkUsernameSame.Checked            = $true
     $ChkPasswordSame.Checked            = $true
