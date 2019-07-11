@@ -4,7 +4,6 @@ exports.execute = async (args) => {
     // s. https://code.visualstudio.com/api/references/vscode-api
     const vscode = args.require('vscode');
 
-    vscode.window.showInformationMessage(
-        'Hey, you clicked me!'
-    );
+    
+    
 };

@@ -1,21 +1,35 @@
+$TxtNewUser_KeyDown = {
+    if ($_.KeyCode -eq "Enter") {
+        FuncEnable_ButtonCreate
+    }
+    # not working - can't detect TAB key. tried also with     if ($_.KeyCode -eq 9 )
+    if ($_.KeyCode -eq "Tab") {
+        FuncEnable_ButtonCreate
+    }
+}
+
+
 $ChkPasswordSame_CheckedChanged = {
 }
 $SearchUserTextBox = {
 }
 $CreateUser_Load = {
     $ListBoxGroupsCopy.Font            = $Font
-    # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
+    $ListBoxGroupsCopy.ScrollBars      = "Vertical"
     
     $ChkUsernameSame.Checked            = $true
     $ChkPasswordSame.Checked            = $true
     
-    # $ListBoxPickUser.Font              = $Font
-    $TxtBoxDisplayOutput.ReadOnly       = $true
+    $ListBoxPickUser.Font              = $Font
+
+    # $TxtBoxDisplayOutput.ReadOnly       = $true
     $TxtBoxDisplayOutput.ScrollBars     = "Vertical"
     $TxtBoxDisplayOutput.ForeColor      = 'Green'
-    $TxtBoxDisplayError.ReadOnly        = $true
+
+    # $TxtBoxDisplayError.ReadOnly        = $true
     $TxtBoxDisplayError.ScrollBars      = "Vertical"
     $TxtBoxDisplayError.ForeColor       = 'Red'
+
     $BtnCreateUser.Visible              = $False         
     $BtnCopyGroup.Visible               = $False    
     
@@ -41,23 +55,33 @@ $CreateUser_Load = {
     FuncFilterUser
     FuncGeneratePasswordForUser
 }
-$BtnCreateUser_Click = {
-}
 $TxtAdminUsernameAU_TextChanged = {
     FuncCopyUsername
 }
-
+$TxtAdminPasswordAU_TextChanged = {
+    FuncCopyPassword
+}
+$ListBoxPickUser_SelectedValueChanged = {
+    FuncPickStaff
+}
+$TxtSearchUser_TextChanged = {
+    FuncFilterUser
+}
+$BtnCopyGroup_Click = {
+    FuncCopyGroup
+}
+$BtnCreateUser_Click = {
+    FuncCreateUser
+}
+$BtnGeneratePassword_Click = {
+    FuncGeneratePasswordForUser
+}
 Add-Type -AssemblyName System.Windows.Forms
 . (Join-Path $PSScriptRoot 'CreateUserScript.designer.ps1')
 #
-# $TxtAdminUsernameAU.Add_TextChanged({ FuncCopyUsername $this $_ })
-# $TxtAdminPasswordAU.Add_TextChanged({ FuncCopyPassword $this $_ })
-# $ListBoxPickUser.Add_SelectedValueChanged({ FuncPickStaff $this $_ })
-# $TxtSearchUser.Add_TextChanged({ FuncFilterUser $this $_ })
-# $BtnCopyGroup.Add_Click({ FuncCopyGroup $this $_ })
-# $BtnCreateUser.Add_Click({ FuncCreateUser $this $_ })
-# $BtnGeneratePassword.Add_Click({ FuncGeneratePasswordForUser $this $_ })
-# $TxtNewUser.Add_KeyDown({
+
+
+# $TxtNewUser_KeyDown({
 #     if ($_.KeyCode -eq "Enter") {
 #         FuncEnable_ButtonCreate $this $_
 #     }
@@ -104,9 +128,9 @@ function FuncCopyPassword{
 function FuncEnable_ButtonCreate{
     # FuncMessageOut "Enable_ButtonCreate"   
     if ($TxtNewUser.TextLength -gt 0 ) {
-        # FuncMessageOut "TxtNewUser.TextLength -gt 0"   
-        # FuncMessageOut "$LblOU.Length"
-        # FuncMessageOut "before length $LblOU.Text"
+        FuncMessageOut "TxtNewUser.TextLength -gt 0"   
+        FuncMessageOut "$LblOU.Length"
+        FuncMessageOut "before length $LblOU.Text"
 
         if ( $LblOU.Length  -gt 0) {
             # FuncMessageOut "$LblOU.TextLength  -gt 0"   
