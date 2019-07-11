@@ -7,8 +7,6 @@ $TxtNewUser_KeyDown = {
         FuncEnable_ButtonCreate
     }
 }
-
-
 $ChkPasswordSame_CheckedChanged = {
 }
 $SearchUserTextBox = {
@@ -129,25 +127,25 @@ function FuncEnable_ButtonCreate{
     # FuncMessageOut "Enable_ButtonCreate"   
     if ($TxtNewUser.TextLength -gt 0 ) {
         FuncMessageOut "TxtNewUser.TextLength -gt 0"   
-        FuncMessageOut "$LblOU.Length"
+        FuncMessageOut "Text " + ($TxtNewUser.Text).Length + "   Label " + ($LblOU.Text).Length
         FuncMessageOut "before length $LblOU.Text"
 
         if ( $LblOU.Length  -gt 0) {
-            # FuncMessageOut "$LblOU.TextLength  -gt 0"   
+            FuncMessageOut "$LblOU.TextLength  -gt 0"   
             if ($TxtAdminPasswordEDMI.TextLength -gt 0) {
-                # FuncMessageOut "TxtAdminPasswordEDMI.TextLength -gt 0"   
+                FuncMessageOut "TxtAdminPasswordEDMI.TextLength -gt 0"   
                 if ($NewUserExists) {
-                    # FuncMessageOut "NewUserExists"   
+                    FuncMessageOut "NewUserExists"   
                     $BtnCreateUser.Visible = $true 
                     $BtnCopyGroup.Visible = $false
                 } else {
-                    # FuncMessageOut "Not NewUserExists"   
+                    FuncMessageOut "Not NewUserExists"   
                     $BtnCreateUser.Visible = $false 
                     $BtnCopyGroup.Visible = $true
                 }
             }
         } else {
-            # FuncMessageOut "Fail length $LblOU.TextLength"
+            FuncMessageOut "Fail length $LblOU.TextLength"
         }
     }
 }
@@ -285,10 +283,14 @@ function FuncCopyGroup{
 }
 #endregion Functions
 
+# $Icon = New-Object system.drawing.icon ("C:\Program Files\Microsoft Office\Office14\GRAPH.ICO")
+# $Form.Icon = $Icon
 
-
-
-
-
-
+# $ImageBackground = [system.drawing.image]::FromFile("$PSScriptRoot\milky-way.jpg")
+# $CreateUser.BackgroundImage = $ImageBackground
+$CreateUser.BackgroundImageLayout = 'Zoom'
+# None, Tile, Center, Stretch, Zoom
+$CreateUser.StartPosition = "CenterScreen"
+# $CreateUser.Opacity = 0.85
+$CreateUser.AutoSize = $false
 $CreateUser.ShowDialog()

@@ -229,7 +229,6 @@ $ListBoxPickUser.add_SelectedValueChanged($ListBoxPickUser_SelectedValueChanged)
 #
 #TxtBoxDisplayOutput
 #
-$TxtBoxDisplayOutput.Enabled = $false
 $TxtBoxDisplayOutput.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]20,[System.Int32]480))
 $TxtBoxDisplayOutput.Multiline = $true
 $TxtBoxDisplayOutput.Name = [System.String]'TxtBoxDisplayOutput'
