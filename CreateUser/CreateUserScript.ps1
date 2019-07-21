@@ -1,3 +1,6 @@
+$Exit_Click = {
+    $CreateUser.Close()
+}
 $TxtNewUser_KeyDown = {
     if ($_.KeyCode -eq "Enter") {
         FuncEnable_ButtonCreate
@@ -47,7 +50,7 @@ $CreateUser_Load = {
     $TxtAdminPasswordAU.PasswordChar    = '*';
     $TxtAdminPasswordNZ.PasswordChar    = '*';
     $TxtAdminPasswordEDMI.PasswordChar  = '*';
-    $TxtAdminPasswordAU.Text = ""
+ 
     FuncCopyPassword
 
     FuncFilterUser
@@ -77,7 +80,6 @@ $BtnGeneratePassword_Click = {
 Add-Type -AssemblyName System.Windows.Forms
 . (Join-Path $PSScriptRoot 'CreateUserScript.designer.ps1')
 #
-
 
 # $TxtNewUser_KeyDown({
 #     if ($_.KeyCode -eq "Enter") {
@@ -202,10 +204,9 @@ function FuncPickStaff{
         $GroupName = ($UserGroup -split ",",2)[0]
         $ListBoxGroupsCopy.Items.Add($GroupName.Substring(3))
     }
-    
 }
 function FuncFilterUser{
-    # FuncMessageOut "FilterUser"
+    FuncMessageOut "FilterUser"
     
     $LblGroupsCopy.Text = "Groups to add to new User"
     $LblShow.Text = ""

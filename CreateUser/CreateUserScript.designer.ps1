@@ -30,6 +30,7 @@ $CreateUser = New-Object -TypeName System.Windows.Forms.Form
 [System.Windows.Forms.ListBox]$ListBoxGroupsCopy = $null
 [System.Windows.Forms.CheckBox]$ChkUsernameSame = $null
 [System.Windows.Forms.CheckBox]$ChkPasswordSame = $null
+[System.Windows.Forms.Button]$Exit = $null
 function InitializeComponent
 {
 $LblAdminUsernameAU = (New-Object -TypeName System.Windows.Forms.Label)
@@ -63,6 +64,7 @@ $LblGroupsCopy = (New-Object -TypeName System.Windows.Forms.Label)
 $ListBoxGroupsCopy = (New-Object -TypeName System.Windows.Forms.ListBox)
 $ChkUsernameSame = (New-Object -TypeName System.Windows.Forms.CheckBox)
 $ChkPasswordSame = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Exit = (New-Object -TypeName System.Windows.Forms.Button)
 $CreateUser.SuspendLayout()
 #
 #LblAdminUsernameAU
@@ -364,9 +366,21 @@ $ChkPasswordSame.UseCompatibleTextRendering = $true
 $ChkPasswordSame.UseVisualStyleBackColor = $true
 $ChkPasswordSame.add_CheckedChanged($ChkPasswordSame_CheckedChanged)
 #
+#Exit
+#
+$Exit.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]740,[System.Int32]70))
+$Exit.Name = [System.String]'Exit'
+$Exit.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]140,[System.Int32]30))
+$Exit.TabIndex = [System.Int32]100
+$Exit.Text = [System.String]'Quit'
+$Exit.UseCompatibleTextRendering = $true
+$Exit.UseVisualStyleBackColor = $true
+$Exit.add_Click($Exit_Click)
+#
 #CreateUser
 #
-$CreateUser.ClientSize = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]1200,[System.Int32]800))
+$CreateUser.ClientSize = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]927,[System.Int32]800))
+$CreateUser.Controls.Add($Exit)
 $CreateUser.Controls.Add($ChkPasswordSame)
 $CreateUser.Controls.Add($ChkUsernameSame)
 $CreateUser.Controls.Add($ListBoxGroupsCopy)
@@ -400,7 +414,9 @@ $CreateUser.Controls.Add($LblAdminPasswordEDMI)
 $CreateUser.Controls.Add($LblAdminUsernameEDMI)
 $CreateUser.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Microsoft Sans Serif',[System.Single]9.75,[System.Drawing.FontStyle]::Regular,[System.Drawing.GraphicsUnit]::Point,([System.Byte][System.Byte]0)))
 $CreateUser.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
+$CreateUser.MaximizeBox = $false
 $CreateUser.Text = [System.String]'CreateUser'
+$CreateUser.TransparencyKey = [System.Drawing.Color]::Transparent
 $CreateUser.add_Load($CreateUser_Load)
 $CreateUser.ResumeLayout($false)
 $CreateUser.PerformLayout()
@@ -436,5 +452,6 @@ Add-Member -InputObject $CreateUser -Name LblGroupsCopy -Value $LblGroupsCopy -M
 Add-Member -InputObject $CreateUser -Name ListBoxGroupsCopy -Value $ListBoxGroupsCopy -MemberType NoteProperty
 Add-Member -InputObject $CreateUser -Name ChkUsernameSame -Value $ChkUsernameSame -MemberType NoteProperty
 Add-Member -InputObject $CreateUser -Name ChkPasswordSame -Value $ChkPasswordSame -MemberType NoteProperty
+Add-Member -InputObject $CreateUser -Name Exit -Value $Exit -MemberType NoteProperty
 }
 . InitializeComponent
