@@ -31,6 +31,7 @@ $CreateUser = New-Object -TypeName System.Windows.Forms.Form
 [System.Windows.Forms.CheckBox]$ChkUsernameSame = $null
 [System.Windows.Forms.CheckBox]$ChkPasswordSame = $null
 [System.Windows.Forms.Button]$Exit = $null
+[System.Windows.Forms.TextBox]$UserExistsYesNo = $null
 function InitializeComponent
 {
 $LblAdminUsernameAU = (New-Object -TypeName System.Windows.Forms.Label)
@@ -65,6 +66,7 @@ $ListBoxGroupsCopy = (New-Object -TypeName System.Windows.Forms.ListBox)
 $ChkUsernameSame = (New-Object -TypeName System.Windows.Forms.CheckBox)
 $ChkPasswordSame = (New-Object -TypeName System.Windows.Forms.CheckBox)
 $Exit = (New-Object -TypeName System.Windows.Forms.Button)
+$UserExistsYesNo = (New-Object -TypeName System.Windows.Forms.TextBox)
 $CreateUser.SuspendLayout()
 #
 #LblAdminUsernameAU
@@ -377,9 +379,17 @@ $Exit.UseCompatibleTextRendering = $true
 $Exit.UseVisualStyleBackColor = $true
 $Exit.add_Click($Exit_Click)
 #
+#UserExistsYesNo
+#
+$UserExistsYesNo.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]780,[System.Int32]128))
+$UserExistsYesNo.Name = [System.String]'UserExistsYesNo'
+$UserExistsYesNo.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]100,[System.Int32]22))
+$UserExistsYesNo.TabIndex = [System.Int32]101
+#
 #CreateUser
 #
 $CreateUser.ClientSize = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]927,[System.Int32]800))
+$CreateUser.Controls.Add($UserExistsYesNo)
 $CreateUser.Controls.Add($Exit)
 $CreateUser.Controls.Add($ChkPasswordSame)
 $CreateUser.Controls.Add($ChkUsernameSame)
@@ -453,5 +463,6 @@ Add-Member -InputObject $CreateUser -Name ListBoxGroupsCopy -Value $ListBoxGroup
 Add-Member -InputObject $CreateUser -Name ChkUsernameSame -Value $ChkUsernameSame -MemberType NoteProperty
 Add-Member -InputObject $CreateUser -Name ChkPasswordSame -Value $ChkPasswordSame -MemberType NoteProperty
 Add-Member -InputObject $CreateUser -Name Exit -Value $Exit -MemberType NoteProperty
+Add-Member -InputObject $CreateUser -Name UserExistsYesNo -Value $UserExistsYesNo -MemberType NoteProperty
 }
 . InitializeComponent

@@ -15,6 +15,7 @@ $ChkPasswordSame_CheckedChanged = {
 $SearchUserTextBox = {
 }
 $CreateUser_Load = {
+    $UserExistsYesNo.Text              = "False"
     $ListBoxGroupsCopy.Font            = $Font
     # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
     
@@ -50,7 +51,7 @@ $CreateUser_Load = {
     $TxtAdminPasswordAU.PasswordChar    = '*';
     $TxtAdminPasswordNZ.PasswordChar    = '*';
     $TxtAdminPasswordEDMI.PasswordChar  = '*';
- 
+    $TxtAdminPasswordAU.Text = ""
     FuncCopyPassword
 
     FuncFilterUser
@@ -96,7 +97,7 @@ $NumberOfShownItems = 6
 $Font               = 'Microsoft Sans Serif,10'
 $AllUsers           = Get-ADUser -Filter {Name -like "*"}
 $User               = Get-ADUser -Identity "peter.louvel" -Properties *
-$NewUserExists      = $false
+# $NewUserExists      = $false
 $UserCaps           = (Get-Culture).TextInfo.ToTitleCase("Name")
 #endregion Variables
 
@@ -126,49 +127,56 @@ function FuncCopyPassword{
     } 
 }
 function FuncEnable_ButtonCreate{
-    # FuncMessageOut "Enable_ButtonCreate"   
+    FuncMessageOut "------------ Enable_ButtonCreate"   
     if ($TxtNewUser.TextLength -gt 0 ) {
-        FuncMessageOut "TxtNewUser.TextLength -gt 0"   
-        FuncMessageOut "Text " + ($TxtNewUser.Text).Length + "   Label " + ($LblOU.Text).Length
-        FuncMessageOut "before length $LblOU.Text"
-
-        if ( $LblOU.Length  -gt 0) {
-            FuncMessageOut "$LblOU.TextLength  -gt 0"   
-            if ($TxtAdminPasswordEDMI.TextLength -gt 0) {
-                FuncMessageOut "TxtAdminPasswordEDMI.TextLength -gt 0"   
-                if ($NewUserExists) {
+        # FuncMessageOut "TxtNewUser.TextLength -gt 0"   
+        # FuncMessageOut "lenght: $TxtNewUser.TextLength"   
+        # FuncMessageOut "(LblOU.Text).Length: " +   ($LblOU.Text).Length
+        # FuncMessageOut "LblOU.Text $LblOU.Text"
+        # FuncMessageOut "LblOU.Length $LblOU.Length"
+        FuncCheckUserExists
+        FuncMessageOut "True/False: $UserExistsYesNo.Text"
+        if ($LblOU.Length -gt 0) {
+            FuncMessageOut "**********************"   
+                if ($UserExistsYesNo.Text -eq "True") {
                     FuncMessageOut "NewUserExists"   
-                    $BtnCreateUser.Visible = $true 
-                    $BtnCopyGroup.Visible = $false
-                } else {
-                    FuncMessageOut "Not NewUserExists"   
                     $BtnCreateUser.Visible = $false 
                     $BtnCopyGroup.Visible = $true
+                } else {
+                    FuncMessageOut "Not NewUserExists"   
+                    $BtnCreateUser.Visible = $true 
+                    $BtnCopyGroup.Visible = $false
                 }
-            }
         } else {
             FuncMessageOut "Fail length $LblOU.TextLength"
         }
     }
 }
 function FuncCheckUserExists{
-    # FuncMessageOut "CheckUserExists"   
+    # FuncMessageOut "---------- CheckUserExists"   
     $UserLowerCase = $TxtNewUser.Text.ToLower()
     $UserCaps = (Get-Culture).TextInfo.ToTitleCase($UserLowerCase) -replace '\.',' '
+    # FuncMessageOut "Full Name: $UserCaps"   
+    # FuncMessageOut "Username: $UserLowerCase"   
+    
     try {
         $User = Get-ADUser -Identity $UserLowerCase -Properties *
-        $UserOU = ($user.DistinguishedName -split ",",2)[1]
-        $NewUserExists = $false
+        $UserOU = ($User.DistinguishedName -split ",",2)[1]
+        # FuncMessageOut "$User.DistinguishedName"
+        # FuncMessageOut "$UserOU"
+        $UserExistsYesNo.Text  = "True"
     } Catch {
-        $NewUserExists = $true
+        $UserExistsYesNo.Text  = "False"
         $UserOU = $LblOU.Text  
     }
+    
+    
 }
 function FuncCreateUser{ 
-    # FuncMessageOut "CreateUser"   
+    FuncMessageOut "*** CreateUser"   
     FuncCheckUserExists
     
-    If ($NewUserExists) {
+    If ($UserExistsYesNo.Text -eq "True") {
         # was looking at trying to run the script from a normal account and
         # using the admin account to create the new user  
         # *can't get New-ADUser to work with the credentials
@@ -190,7 +198,7 @@ function FuncCreateUser{
     $Error.Clear()
 }
 function FuncPickStaff{
-    # FuncMessageOut "PickStaff"
+    # FuncMessageOut "*PickStaff"
     FuncEnable_ButtonCreate
     
     $ListBoxGroupsCopy.Items.Clear()
@@ -206,7 +214,7 @@ function FuncPickStaff{
     }
 }
 function FuncFilterUser{
-    FuncMessageOut "FilterUser"
+    # FuncMessageOut "*FilterUser"
     
     $LblGroupsCopy.Text = "Groups to add to new User"
     $LblShow.Text = ""
@@ -289,9 +297,9 @@ function FuncCopyGroup{
 
 # $ImageBackground = [system.drawing.image]::FromFile("$PSScriptRoot\milky-way.jpg")
 # $CreateUser.BackgroundImage = $ImageBackground
-$CreateUser.BackgroundImageLayout = 'Zoom'
+# $CreateUser.BackgroundImageLayout = 'Zoom'
 # None, Tile, Center, Stretch, Zoom
-$CreateUser.StartPosition = "CenterScreen"
+# $CreateUser.StartPosition = "CenterScreen"
 # $CreateUser.Opacity = 0.85
 $CreateUser.AutoSize = $false
 $CreateUser.ShowDialog()
