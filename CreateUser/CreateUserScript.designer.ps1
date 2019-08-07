@@ -205,7 +205,7 @@ $TxtSearchUser.add_TextChanged($TxtSearchUser_TextChanged)
 $BtnCopyGroup.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]240,[System.Int32]220))
 $BtnCopyGroup.Name = [System.String]'BtnCopyGroup'
 $BtnCopyGroup.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]100,[System.Int32]30))
-$BtnCopyGroup.TabIndex = [System.Int32]10
+$BtnCopyGroup.TabIndex = [System.Int32]11
 $BtnCopyGroup.Text = [System.String]'Copy Groups'
 $BtnCopyGroup.UseCompatibleTextRendering = $true
 $BtnCopyGroup.UseVisualStyleBackColor = $true
@@ -228,7 +228,7 @@ $ListBoxPickUser.ItemHeight = [System.Int32]16
 $ListBoxPickUser.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]20,[System.Int32]270))
 $ListBoxPickUser.Name = [System.String]'ListBoxPickUser'
 $ListBoxPickUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]320,[System.Int32]68))
-$ListBoxPickUser.TabIndex = [System.Int32]8
+$ListBoxPickUser.TabIndex = [System.Int32]7
 $ListBoxPickUser.TabStop = $false
 $ListBoxPickUser.add_SelectedValueChanged($ListBoxPickUser_SelectedValueChanged)
 #
@@ -265,7 +265,7 @@ $LblNewUser.UseCompatibleTextRendering = $true
 $TxtNewUser.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]420,[System.Int32]40))
 $TxtNewUser.Name = [System.String]'TxtNewUser'
 $TxtNewUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtNewUser.TabIndex = [System.Int32]7
+$TxtNewUser.TabIndex = [System.Int32]8
 $TxtNewUser.add_KeyDown($TxtNewUser_KeyDown)
 #
 #LblNewUserPassword
@@ -283,7 +283,7 @@ $LblNewUserPassword.UseCompatibleTextRendering = $true
 $TxtNewUserPassword.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]580,[System.Int32]40))
 $TxtNewUserPassword.Name = [System.String]'TxtNewUserPassword'
 $TxtNewUserPassword.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]150,[System.Int32]22))
-$TxtNewUserPassword.TabIndex = [System.Int32]8
+$TxtNewUserPassword.TabIndex = [System.Int32]9
 #
 #LblShow
 #
@@ -310,7 +310,7 @@ $LblOU.UseCompatibleTextRendering = $true
 $BtnGeneratePassword.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]740,[System.Int32]30))
 $BtnGeneratePassword.Name = [System.String]'BtnGeneratePassword'
 $BtnGeneratePassword.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]140,[System.Int32]30))
-$BtnGeneratePassword.TabIndex = [System.Int32]9
+$BtnGeneratePassword.TabIndex = [System.Int32]10
 $BtnGeneratePassword.Text = [System.String]'Generate Password'
 $BtnGeneratePassword.UseCompatibleTextRendering = $true
 $BtnGeneratePassword.UseVisualStyleBackColor = $true
@@ -321,7 +321,7 @@ $BtnGeneratePassword.add_Click($BtnGeneratePassword_Click)
 $BtnCreateUser.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]420,[System.Int32]120))
 $BtnCreateUser.Name = [System.String]'BtnCreateUser'
 $BtnCreateUser.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]100,[System.Int32]30))
-$BtnCreateUser.TabIndex = [System.Int32]11
+$BtnCreateUser.TabIndex = [System.Int32]12
 $BtnCreateUser.Text = [System.String]'Create User'
 $BtnCreateUser.UseCompatibleTextRendering = $true
 $BtnCreateUser.UseVisualStyleBackColor = $true

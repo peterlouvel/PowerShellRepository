@@ -15,25 +15,26 @@ $ChkPasswordSame_CheckedChanged = {
 $SearchUserTextBox = {
 }
 $CreateUser_Load = {
+    $User                              = Get-ADUser -Identity "peter.louvel" -Properties *
     $UserExistsYesNo.Text              = "False"
     $ListBoxGroupsCopy.Font            = $Font
     # $ListBoxGroupsCopy.ScrollBars      = "Vertical"
     
-    $ChkUsernameSame.Checked            = $true
-    $ChkPasswordSame.Checked            = $true
+    $ChkUsernameSame.Checked           = $true
+    $ChkPasswordSame.Checked           = $true
     
     $ListBoxPickUser.Font              = $Font
 
     # $TxtBoxDisplayOutput.ReadOnly       = $true
-    $TxtBoxDisplayOutput.ScrollBars     = "Vertical"
-    $TxtBoxDisplayOutput.ForeColor      = 'Green'
+    $TxtBoxDisplayOutput.ScrollBars    = "Vertical"
+    $TxtBoxDisplayOutput.ForeColor     = 'Green'
 
     # $TxtBoxDisplayError.ReadOnly        = $true
-    $TxtBoxDisplayError.ScrollBars      = "Vertical"
-    $TxtBoxDisplayError.ForeColor       = 'Red'
+    $TxtBoxDisplayError.ScrollBars     = "Vertical"
+    $TxtBoxDisplayError.ForeColor      = 'Red'
 
-    $BtnCreateUser.Visible              = $False         
-    $BtnCopyGroup.Visible               = $False    
+    $BtnCreateUser.Visible             = $False         
+    $BtnCopyGroup.Visible              = $False    
     
     switch ($env:USERname) {
         "scottw"          {$TxtAdminUsernameAU.text = "scottw_"
@@ -51,7 +52,7 @@ $CreateUser_Load = {
     $TxtAdminPasswordAU.PasswordChar    = '*';
     $TxtAdminPasswordNZ.PasswordChar    = '*';
     $TxtAdminPasswordEDMI.PasswordChar  = '*';
-    $TxtAdminPasswordAU.Text = ""
+    $TxtAdminPasswordAU.Text = "Nashau^edmi^01"
     FuncCopyPassword
 
     FuncFilterUser
@@ -127,7 +128,7 @@ function FuncCopyPassword{
     } 
 }
 function FuncEnable_ButtonCreate{
-    FuncMessageOut "------------ Enable_ButtonCreate"   
+    # FuncMessageOut "------------ Enable_ButtonCreate"   
     if ($TxtNewUser.TextLength -gt 0 ) {
         # FuncMessageOut "TxtNewUser.TextLength -gt 0"   
         # FuncMessageOut "lenght: $TxtNewUser.TextLength"   
@@ -135,7 +136,6 @@ function FuncEnable_ButtonCreate{
         # FuncMessageOut "LblOU.Text $LblOU.Text"
         # FuncMessageOut "LblOU.Length $LblOU.Length"
         FuncCheckUserExists
-        FuncMessageOut "True/False: $UserExistsYesNo.Text"
         if ($LblOU.Length -gt 0) {
             FuncMessageOut "**********************"   
                 if ($UserExistsYesNo.Text -eq "True") {
@@ -143,7 +143,7 @@ function FuncEnable_ButtonCreate{
                     $BtnCreateUser.Visible = $false 
                     $BtnCopyGroup.Visible = $true
                 } else {
-                    FuncMessageOut "Not NewUserExists"   
+                    FuncMessageOut "Create NewUser"   
                     $BtnCreateUser.Visible = $true 
                     $BtnCopyGroup.Visible = $false
                 }
@@ -274,17 +274,16 @@ function FuncCopyGroup{
         } elseif ($UserGroup.Contains("DC=nz")) {
             $Server = "nz.edmi.local"
             $cred = $credNZ
-        } elseif ($UserGroup.Contains("DC=sg")) {
-            $Server = "sg.edmi.local"
-            $cred = $credSG
         } else {
             $Server = "edmi.local"
             $cred = $credEDMI
         }
         FuncMessageOut "$server"
+        
         try {
             Set-ADObject -Identity $UserGroup -Add @{"member"=$User.DistinguishedName} -Server $Server -Credential $cred
         } Catch {
+            FuncErrorOut "Set-ADObject -Identity $UserGroup -Add @{"member"=$User.DistinguishedName} -Server $Server -Credential $cred"
             FuncErrorOut "[ERROR] $server - $($_.distinguishedName) - $($Error[0])"
         }
         $counter++
