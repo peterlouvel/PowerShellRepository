@@ -7,9 +7,14 @@ if ($null -eq $Cred){
     $Cred   = Get-Credential peterl_
 } 
 
-$NewUser    = "Test.uSer01"
+$NewAccount = "Test.uSer01"
 $CopyUser   = "BrendonV"
 $Title      = "Software Developer (Contractor)"
+
+
+$UserLowerCase      = $NewAccount.ToLower()
+$NewUser            = (Get-Culture).TextInfo.ToTitleCase($UserLowerCase) 
+
 $Params     = @("Department", 
                 "Office", 
                 "physicalDeliveryOfficeName", 
@@ -32,7 +37,9 @@ $CopyUserObject = Get-ADUser -Identity $CopyUser -Properties $Params
 function Set-HomeDirectory{
     param(
         [Parameter(Mandatory=$true)]
-        [Microsoft.ActiveDirectory.Management.ADObject]$AccountObject
+        [Microsoft.ActiveDirectory.Management.ADObject]$AccountObject,
+        [Parameter(Mandatory=$true)]
+        [PSCredential]$Credential
     )
     $AccountName = $AccountObject.SamAccountName
     $fullPath = "\\$FileServerLocation\Home\{0}" -f $AccountName
@@ -40,9 +47,9 @@ function Set-HomeDirectory{
     $User = Get-ADUser -Identity $AccountName
 
     if ($Null -ne $User){
-        Set-ADUser $User -HomeDrive $driveLetter -HomeDirectory $fullPath -ea Stop -Credential $Cred
+        Set-ADUser $User -HomeDrive $driveLetter -HomeDirectory $fullPath -ea Stop -Credential $Credential
         try{
-            New-PSDrive -Name NewPSDrive -PSProvider FileSystem -Root \\$FileServerLocation\c$ -Credential $cred
+            New-PSDrive -Name NewPSDrive -PSProvider FileSystem -Root \\$FileServerLocation\c$ -Credential $Credential
             $homeShare = New-Item -path $fullPath -ItemType Directory -force -ea Stop 
         }catch{
             Write-Host "-- [ERROR] - $($Error[0])" -ForegroundColor Green 
@@ -60,8 +67,8 @@ function Set-HomeDirectory{
         $PropagationFlags   = [System.Security.AccessControl.PropagationFlags]"InheritOnly"
         $AccessRule         = New-Object System.Security.AccessControl.FileSystemAccessRule ($User.SID, $FileSystemRights, $InheritanceFlags, $PropagationFlags, $AccessControlType)
         $acl.AddAccessRule($AccessRule)
+
         Set-Acl -Path $homeShare -AclObject $acl -ea Stop 
-        Write-Host "Set-Acl -Path $homeShare -AclObject $acl -ea Stop"
         Write-Host ("HomeDirectory created at {0}" -f $fullPath)
     }
 }
@@ -70,7 +77,9 @@ function Copy-Groups{
         [Parameter(Mandatory=$true)]
         [Microsoft.ActiveDirectory.Management.ADObject]$NewAccountObject,
         [Parameter(Mandatory=$true)]
-        [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject
+        [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject,
+        [Parameter(Mandatory=$true)]
+        [PSCredential]$Credential
     )
     $counter = 0
     foreach ($UserGroup in $CopyAccountObject.MemberOf){ 
@@ -87,10 +96,10 @@ function Copy-Groups{
         try{
             Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $cred
         }catch{
-            # Write-Host "----------------------------------------------------"
-            # Write-Host "-- Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $cred" -ForegroundColor Yellow 
-            # Write-Host "-- [ERROR] $server - $($_.distinguishedName) - $($Error[0])" -ForegroundColor Green 
-            # Write-Host "----------------------------------------------------"
+            Write-Host "----------------------------------------------------"
+            Write-Host "-- Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $cred" -ForegroundColor Yellow 
+            Write-Host "-- [ERROR] $server - $($_.distinguishedName) - $($Error[0])" -ForegroundColor Green 
+            Write-Host "----------------------------------------------------"
         }
         $counter++
     }
@@ -98,15 +107,15 @@ function Copy-Groups{
 function Copy-User{
     param(
         [Parameter(Mandatory=$true)]
-        [String]$NewAccount,
+        [String]$NewUserAccount,
         [Parameter(Mandatory=$true)]
-        [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject
+        [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject,
+        [Parameter(Mandatory=$true)]
+        [PSCredential]$Credential
     )
     $UserOU             = ($CopyAccountObject.DistinguishedName -split ",",2)[1]
-    $UserLowerCase      = $NewAccount.ToLower()
-    $NewUser            = (Get-Culture).TextInfo.ToTitleCase($UserLowerCase) 
-    $Email              = $UserLowerCase +"@edmi.com.au"
-    $FullNewUserName    = $NewUser -replace '\.',' '
+    $Email              = $NewUserAccount +"@edmi.com.au"
+    $FullNewUserName    = $NewUserAccount -replace '\.',' '
     $Pos                = $FullNewUserName.IndexOf(" ")
     $GivenName          = $FullNewUserName.Substring(0, $Pos)
     $Surname            = $FullNewUserName.Substring($Pos+1)
@@ -125,8 +134,8 @@ function Copy-User{
     $paramsCreate       = @{  
         Instance            = "$CopyAccountObject" 
         Path                = "$UserOU"
-        Name                = "$NewUser"
-        SamAccountName      = "$UserLowerCase"
+        Name                = "$NewUserAccount"
+        SamAccountName      = "$NewUserAccount"
         GivenName           = "$GivenName" 
         Surname             = "$Surname" 
         DisplayName         = "$FullNewUserName"
@@ -142,33 +151,33 @@ function Copy-User{
         State               = "$State"
         Country             = "$Country"
         Company             = "$Company"
-        }
+    }
     Write-Host "Creating new user " -NoNewline 
     Write-Host "$FullNewUserName " -ForegroundColor Cyan -NoNewline 
-    Write-Host "$NewUser" -ForegroundColor Green
+    Write-Host "$NewUserAccount" -ForegroundColor Green
     Try{
-        New-ADUser  @paramsCreate -Credential $Cred # -Server "AuBneDC11.au.edmi.local:3268"
+        New-ADUser  @paramsCreate -Credential $Credential # -Server "AuBneDC11.au.edmi.local:3268"
     }Catch{
         Write-Host ""
-        Write-Host "-- New-ADUser  @paramsCreate -Credential $Cred" -ForegroundColor Yellow 
-        Write-Host "-- [ERROR] $server - $($NewUser) - $($Error[0])" -ForegroundColor Green 
+        Write-Host "-- New-ADUser  @paramsCreate -Credential $Credential" -ForegroundColor Yellow 
+        Write-Host "-- [ERROR] $server - $($NewUserAccount) - $($Error[0])" -ForegroundColor Green 
         Write-Host "----------------------------------------------------"
     }
     Write-Host "Setting users manger to $Manager"
     Start-Sleep -s 3
-    Set-ADUser -Identity "$UserLowerCase" -Replace @{manager="$Manager"} -Credential $Cred 
+    Set-ADUser -Identity "$NewUserAccount" -Replace @{manager="$Manager"} -Credential $Credential 
     Write-Host "Setting users password to " -NoNewline  -ForegroundColor Cyan   
     Write-Host "$newPass" -ForegroundColor Green  
     Start-Sleep -s 10
-    Set-ADAccountPassword -Identity "$UserLowerCase" -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$newPass" -Force) -Credential $Cred 
-    Enable-ADAccount -Identity "$UserLowerCase" -Credential $Cred 
+    Set-ADAccountPassword -Identity "$NewUserAccount" -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$newPass" -Force) -Credential $Credential 
+    Enable-ADAccount -Identity "$NewUserAccount" -Credential $Credential 
 }
 
-Copy-User -NewAccount $NewUser -CopyAccountObject $CopyUserObject
-# Write-Host "Waiting 10 seconds for AD systems to update before copying user groups."
-# Write-Host "-----------------------------------------------------------------------"
-# Start-Sleep -s 10
+Copy-User -NewUserAccount $NewUser -CopyAccountObject $CopyUserObject -Credential $Cred
+Write-Host "Waiting 10 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  
+Write-Host "-----------------------------------------------------------------------"
+Start-Sleep -s 10
 
 $NewUserObject = Get-ADUser -Identity $NewUser -Properties $Params
-Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject
-Set-HomeDirectory -AccountObject $NewUserObject
+Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject -Credential $Cred
+Set-HomeDirectory -AccountObject $NewUserObject -Credential $Cred
