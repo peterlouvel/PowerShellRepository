@@ -1,5 +1,30 @@
+<#
+.SYNOPSIS
+    Short description
+.DESCRIPTION
+    Long description
+.EXAMPLE
+    PS C:\> <example usage>
+    Explanation of what the example does
+.INPUTS
+    Inputs (if any)
+.OUTPUTS
+    Output (if any)
+.NOTES
+    General notes
+#>
 
+param(
+    # [Parameter(Mandatory=$false)]
+    # [PSCredential]$Cred,
+    [Parameter(Mandatory=$true)]
+    [string]$NewAccount,
+    [Parameter(Mandatory=$true)]
+    [string]$CopyUser,
+    [Parameter(Mandatory=$true)]
+    [string]$Title
 
+)
 
 
 
@@ -7,9 +32,9 @@ if ($null -eq $Cred){
     $Cred   = Get-Credential peterl_
 } 
 
-$NewAccount = "Test.uSer01"
-$CopyUser   = "BrendonV"
-$Title      = "Software Developer (Contractor)"
+# $NewAccount = "adm-Chamindra.Rajakaruna"
+# $CopyUser   = "adm-Peter.Baire"
+# $Title      = "Admin Azure"
 
 
 $UserLowerCase      = $NewAccount.ToLower()
@@ -31,6 +56,7 @@ $Params     = @("Department",
                 "Manager"
                 "MemberOf"
 )
+
 $FileServerLocation = "fileserver.au.edmi.local"
 
 $CopyUserObject = Get-ADUser -Identity $CopyUser -Properties $Params
@@ -90,6 +116,10 @@ function Copy-Groups{
             $Server = "au.edmi.local"
         }elseif ($UserGroup.Contains("DC=nz")){
             $Server = "nz.edmi.local"
+        }elseif ($UserGroup.Contains("DC=sg")){
+            $Server = "sg.edmi.local"
+            Continue
+            # Don't have access to Singapore Domain
         }else{
             $Server = "edmi.local"
         }
@@ -173,6 +203,7 @@ function Copy-User{
     Enable-ADAccount -Identity "$NewUserAccount" -Credential $Credential 
 }
 
+
 Copy-User -NewUserAccount $NewUser -CopyAccountObject $CopyUserObject -Credential $Cred
 Write-Host "Waiting 10 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  
 Write-Host "-----------------------------------------------------------------------"
@@ -180,4 +211,4 @@ Start-Sleep -s 10
 
 $NewUserObject = Get-ADUser -Identity $NewUser -Properties $Params
 Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject -Credential $Cred
-Set-HomeDirectory -AccountObject $NewUserObject -Credential $Cred
+ Set-HomeDirectory -AccountObject $NewUserObject -Credential $Cred
