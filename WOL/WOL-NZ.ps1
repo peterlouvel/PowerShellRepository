@@ -2,7 +2,7 @@
 Add-Type -AssemblyName System.Web
 Import-Module ActiveDirectory
 
-$csvtempf = "c:\scripts\temp.txt" #[System.IO.Path]::GetTempFileName()
+$csvtempf = "c:\scripts\NZ.csv" #[System.IO.Path]::GetTempFileName()
 if ($csvtempf -eq $null) {
     Write-Error "Could not get a tempfile"
     Exit
@@ -17,7 +17,7 @@ if (Test-Path -Path $csvtempf){
 ## Active Directory exporter configuration
 ##
 ##############################################################
-$appkey = '3tgm5j2yA5YkbxGE'
+$appkey = 'GyvmiUjZOz0smar7'
 $adprops = 'ObjectGUID','CanonicalName','GivenName','Surname','DisplayName','Title','EmailAddress','Company','OfficePhone','MobilePhone','Office','Department','Country'
 $exportphotos = $false
 
@@ -25,7 +25,7 @@ $exportphotos = $false
 # If $searchbases is set the export runs at each supplied ActiveDirectory paths. $searchbases is a comma seperated list of AD paths, uncomment to enable.
 #
 #$searchbases = 'OU=North America,OU=Users,DC=company,DC=local', 'OU=Asia,OU=Users,DC=company,DC=local'
-$searchbases  = 'OU=Melbourne,OU=Employees,OU=EDMI Australia,DC=au,DC=edmi,DC=local', 'OU=Brendale,OU=Employees,OU=EDMI Australia,DC=au,DC=edmi,DC=local', 'OU=Brisbane HQ,OU=Employees,OU=EDMI Australia,DC=au,DC=edmi,DC=local'
+$searchbases  = 'OU=Employees,OU=EDMI New Zealand,DC=nz,DC=edmi,DC=local'
 
 #
 # If Photo export is enabled, export thumbnailPhoto image attribute in BASE64
@@ -40,11 +40,11 @@ if ($exportphotos) {
 Write-Host "Exporting users..."
 if ($searchbases) {
     # Run `Get-ADUser` for every path in $searchbases
-    $searchbases | %{ Get-ADUser -Filter * -SearchBase $_ -Property * } |
+    $searchbases | %{ Get-ADUser -Filter * -SearchBase $_ -Property * -Server nz.edmi.local} |
     Where {$_.enabled -eq $true} |
     Select $adprops | Export-Csv $csvtempf -Encoding UTF8 -NoTypeInformation
  } else {
-    Get-ADUser -Filter * -Property * | Where {$_.enabled -eq $true} |
+    Get-ADUser -Filter * -Property * -Server nz.edmi.local | Where {$_.enabled -eq $true} |
     Select $adprops | Export-Csv $csvtempf -Encoding UTF8 -NoTypeInformation
  }
 
