@@ -40,6 +40,7 @@ if ($Domain -eq "au"){
     $DomainController = "NzBneDC5.nz.edmi.local"
     $Server = "nz.edmi.local"
 } else {
+    Write-Host "Domain should be AU or NZ"
     exit
 }
 

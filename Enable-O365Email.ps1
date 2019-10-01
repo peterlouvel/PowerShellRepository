@@ -36,10 +36,14 @@ if ($null -eq $Cred){
 if ($Domain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
+    $Server = "au.edmi.local"
 } elseif ($Domain -eq "nz"){
     $End = "@edmi.co.nz"
-    $DomainController = "NZBneDC5.nz.edmi.local"
+    # $DomainController = "NZwlgDC3.nz.edmi.local"
+    $DomainController = "NzBneDC5.nz.edmi.local"
+    $Server = "nz.edmi.local"
 } else {
+    Write-Host "Domain should be AU or NZ"
     exit
 }
 
@@ -66,7 +70,7 @@ If (Get-MsolUser -UserPrincipalName $Email -erroraction 'silentlycontinue') {
 $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
 Import-PSSession $Session1 3>$null
 $UserO365email = $UserLowerCase + "@edmi.mail.onmicrosoft.com"
-Enable-RemoteMailbox -Identity $UserLowerCase  -DomainController $DomainController -RemoteRoutingAddress $UserO365email
+c
 Exit-PSSession
 Remove-PSSession $Session1
 
