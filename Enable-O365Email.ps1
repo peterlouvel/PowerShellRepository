@@ -17,8 +17,6 @@
 #>
 
 param(
-    # [Parameter(Mandatory=$false)]
-    # [PSCredential]$Cred,
     [Parameter(Mandatory=$true)]
     [string]$User
     ,
@@ -28,12 +26,19 @@ param(
 
 [String] ${stUserDomain},[String]  ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 
+$AdminAccount = $stUserAccount + "_"
+# Write-Host $AdminAccount
+
+if ($null -eq $Cred){
+    $Cred = Get-Credential $AdminAccount
+} 
+
 if ($Domain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
 } elseif ($Domain -eq "nz"){
     $End = "@edmi.co.nz"
-    $DomainController = "NZwlgDC3.nz.edmi.local"
+    $DomainController = "NZBneDC5.nz.edmi.local"
 } else {
     exit
 }
@@ -47,8 +52,10 @@ if ($null -eq $O365CREDS){
     $O365CREDS   = Get-Credential $Account
 } 
 
+Write-Host $Email
+
 Connect-MSOLService -Credential $O365CREDS
-If (Get-MsolUser -UserPrincipalName $Email) {
+If (Get-MsolUser -UserPrincipalName $Email -erroraction 'silentlycontinue') {
     Write-Host "User Exits. Creating Mailbox on O365"
 } else {
     Write-Host "User Doesn't Exist, wait till the user is on O365"
@@ -56,13 +63,13 @@ If (Get-MsolUser -UserPrincipalName $Email) {
 }
 
 
-# # Create user local AD, sync AD to O365 then when synced, run the following
-# $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
-# Import-PSSession $Session1 3>$null
-# $UserO365email = $UserLowerCase + "@edmi.mail.onmicrosoft.com"
-# Enable-RemoteMailbox -Identity "$UserLowerCase"  -DomainController "$DomainController" -RemoteRoutingAddress "$UserO365email"
-# Exit-PSSession
-# Remove-PSSession $Session1
+# Create user local AD, sync AD to O365 then when synced, run the following
+$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
+Import-PSSession $Session1 3>$null
+$UserO365email = $UserLowerCase + "@edmi.mail.onmicrosoft.com"
+Enable-RemoteMailbox -Identity $UserLowerCase  -DomainController $DomainController -RemoteRoutingAddress $UserO365email
+Exit-PSSession
+Remove-PSSession $Session1
 
 # Write-Host "------------------------------------------------------------------------------------------------"
 # Write-Host "Waiting a couple minutes for O365 email account to be created before enabling E3 licence." -ForegroundColor Cyan  
