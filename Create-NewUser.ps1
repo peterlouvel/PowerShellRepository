@@ -36,7 +36,8 @@ if ($Domain -eq "au"){
     $Server = "au.edmi.local"
 } elseif ($Domain -eq "nz"){
     $End = "@edmi.co.nz"
-    $DomainController = "NZwlgDC3.nz.edmi.local"
+    # $DomainController = "NZwlgDC3.nz.edmi.local"
+    $DomainController = "NzBneDC5.nz.edmi.local"
     $Server = "nz.edmi.local"
 } else {
     exit
@@ -130,7 +131,7 @@ function Copy-User{
     )
     
     $UserOU             = ($CopyAccountObject.DistinguishedName -split ",",2)[1]
-    $Email              = $NewUserAccount +"@edmi.com.au"
+    $Email              = $NewUserAccount + "" + $End
     $FullNewUserName    = $NewUserAccount -replace '\.',' '
     $Pos                = $FullNewUserName.IndexOf(" ")
     $GivenName          = $FullNewUserName.Substring(0, $Pos)
@@ -178,7 +179,7 @@ function Copy-User{
     }Catch{
         Write-Host ""
         Write-Host "-- New-ADUser  @paramsCreate -Credential $Credential" -ForegroundColor Yellow 
-        Write-Host "-- [ERROR] $server - $($NewUserAccount) - $($Error[0])" -ForegroundColor Green 
+        Write-Host "-- [ERROR] $DomainController - $($NewUserAccount) - $($Error[0])" -ForegroundColor Green 
         Write-Host "----------------------------------------------------"
     }
     Write-Host "Setting users manger to $Manager"
@@ -195,6 +196,7 @@ function Copy-User{
 Write-Host $Server
 Copy-User -NewUserAccount $NewUser -CopyAccountObject $CopyUserObject -Credential $Cred
 Write-Host "-----------------------------------------------------------------------"
+# can be qicker if staff is in your local comain, but longer when on the other domain
 Write-Host "Waiting 120 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  
 Write-Host "-----------------------------------------------------------------------"
 Start-Sleep -s 120

@@ -62,7 +62,6 @@ If (Get-MsolUser -UserPrincipalName $Email -erroraction 'silentlycontinue') {
     exit
 }
 
-
 # Create user local AD, sync AD to O365 then when synced, run the following
 $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
 Import-PSSession $Session1 3>$null
