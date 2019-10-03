@@ -30,27 +30,33 @@ param(
     [string]$Domain
 )
 
+[String] ${stUserDomain},[String]  ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+$AdminAccount = $stUserAccount + "_"
+
 if ($Domain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
     $Server = "au.edmi.local"
+    if ($null -eq $Cred){
+        $AdminAccount1 = "au\"+$AdminAccount
+        $Cred = Get-Credential $AdminAccount1
+    } 
 } elseif ($Domain -eq "nz"){
     $End = "@edmi.co.nz"
     # $DomainController = "NZwlgDC3.nz.edmi.local"
     $DomainController = "NzBneDC5.nz.edmi.local"
     $Server = "nz.edmi.local"
+    if ($null -eq $Cred){
+        $AdminAccount1 = "nz\"+$AdminAccount
+        $Cred = Get-Credential $AdminAccount1
+    }
 } else {
     Write-Host "Domain should be AU or NZ"
     exit
 }
 
-[String] ${stUserDomain},[String]  ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
-$AdminAccount = $stUserAccount + "_"
 
-if ($null -eq $Cred){
-    $Cred = Get-Credential $AdminAccount
-    # $Cred = Get-Credential "nz\peterl_"
-} 
+
 $UserLowerCase      = $NewAccount.ToLower()
 $NewUser            = (Get-Culture).TextInfo.ToTitleCase($UserLowerCase) 
 $Params             = @("Department", 

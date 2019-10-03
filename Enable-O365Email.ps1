@@ -25,55 +25,67 @@ param(
 )
 
 [String] ${stUserDomain},[String]  ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
-
 $AdminAccount = $stUserAccount + "_"
-# Write-Host $AdminAccount
 
 if ($Domain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
-    $Server = "au.edmi.local"
+    $AdminAccount1 = "au\"+$AdminAccount
     if ($null -eq $Cred){
-        $AdminAccount1 = "au\"+$AdminAccount
         $Cred = Get-Credential $AdminAccount1
     } 
 } elseif ($Domain -eq "nz"){
     $End = "@edmi.co.nz"
     # $DomainController = "NZwlgDC3.nz.edmi.local"
     $DomainController = "NzBneDC5.nz.edmi.local"
-    $Server = "nz.edmi.local"
+    $AdminAccount1 = "nz\"+$AdminAccount
     if ($null -eq $Cred){
-        $AdminAccount1 = "nz\"+$AdminAccount
         $Cred = Get-Credential $AdminAccount1
     }
 } else {
     Write-Host "Domain should be AU or NZ"
     exit
 }
+Write-Host
+Write-Host "Setup your Credentials for accessing the local exchange server" -ForegroundColor Cyan  
+Write-Host $AdminAccount1
+
+if ($stUserDomain -eq "au"){
+    $EndAdmin = "@edmi.com.au"
+} elseif ($stUserDomain -eq "nz"){
+    $EndAdmin = "@edmi.co.nz"
+} else {
+    Write-Host "Your local account needs to be either AU or NZ" -ForegroundColor Red  
+    exit
+}
 
 $UserLowerCase = $User.ToLower()
 $Email = $UserLowerCase + $End
 # Write-Host "User eMail:  $Email"
-
+Write-Host
+Write-Host "Setup your Credentials for accessing the Office 365 systems" -ForegroundColor Cyan  
+$Account = $stUserAccount + $EndAdmin
+Write-Host $Account
 if ($null -eq $O365CREDS){
-    $Account = $stUserAccount + $End
     $O365CREDS   = Get-Credential $Account
 } 
-
-Write-Host $Email
-
+Write-Host
+Write-Host "Connecting to Office 365" -ForegroundColor Green  
 Connect-MSOLService -Credential $O365CREDS
 If (Get-MsolUser -UserPrincipalName $Email -erroraction 'silentlycontinue') {
-    Write-Host "User Exits. Creating Mailbox on O365"
+    Write-Host "User $Email Exits. Creating Mailbox on O365" -ForegroundColor Cyan  
 } else {
-    Write-Host "User Doesn't Exist, wait till the user is on O365"
+    Write-Host "User $Email Doesn't Exist, wait till the user is on O365" -ForegroundColor Cyan  
     exit
 }
-
+Write-Host
+Write-Host "Connecting to the Local Exchange Server" -ForegroundColor Green  
 # Create user local AD, sync AD to O365 then when synced, run the following
 $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
 Import-PSSession $Session1 3>$null
 $UserO365email = $UserLowerCase + "@edmi.mail.onmicrosoft.com"
+Write-Host 
+Write-Host "Setting up $UserLowerCase remote mailbox" -ForegroundColor Green  
 Enable-RemoteMailbox -Identity $UserLowerCase  -DomainController $DomainController -RemoteRoutingAddress $UserO365email
 Exit-PSSession
 Remove-PSSession $Session1
