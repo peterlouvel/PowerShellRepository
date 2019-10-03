@@ -47,7 +47,7 @@ if ($null -eq $O365CREDS){
     $O365CREDS   = Get-Credential $Account
 } 
 
-Install-Module -Name AzureAD
+Install-Module -Name AzureAD -Scope CurrentUser
 Connect-AzureAD -Credential $O365CREDS
 Connect-MsolService -Credential $O365CREDS
 
