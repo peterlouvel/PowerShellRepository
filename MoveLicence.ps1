@@ -110,14 +110,15 @@ Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesTo
         Set-AuthenticodeSignature -Certificate $Mycert -FilePath $currentFile
     
     ##  
-        powershell Set-AuthenticodeSignature ${activeFile} @(Get-ChildItem cert:\\CurrentUser\\My -codesign)[0]
+        Set-AuthenticodeSignature -FilePath ${activeFile} -Certificate @(Get-ChildItem cert:\\CurrentUser\\My -codesign)[0]
+        Set-AuthenticodeSignature -FilePath $psEditor.GetEditorContext().CurrentFile.Path -Certificate @(Get-ChildItem cert:\\CurrentUser\\My -codesign)[0]
 #>
 
 # SIG # Begin signature block
 # MIITzAYJKoZIhvcNAQcCoIITvTCCE7kCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUY7EyjKRt4tF6932OEaK+JzkK
-# HumgghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUPEUyj+XnBEYJ8lOO+0rpyNtd
+# mJmgghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
 # MRwwGgYDVQQDExNFRE1JIEdsb2JhbCBSb290IENBMB4XDTE2MTAyMDAzMDMwOVoX
 # DTI2MTAyMDAzMTIwMlowRjEVMBMGCgmSJomT8ixkARkWBWxvY2FsMRQwEgYKCZIm
 # iZPyLGQBGRYEZWRtaTEXMBUGA1UEAxMORURNSSBHbG9iYWwgQ0EwggEiMA0GCSqG
@@ -213,11 +214,11 @@ Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesTo
 # BgoJkiaJk/IsZAEZFgJhdTEaMBgGA1UEAxMRRURNSSBBdXN0cmFsaWEgQ0ECCkj1
 # kl8ABwAAU38wCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAw
 # GQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisG
-# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFPzZbw/FlgenzIk28SYVdmwo7iGlMA0G
-# CSqGSIb3DQEBAQUABIIBAFyEiL9FLbXN/pHPX8Kcm5vUZvFKv3bNZC0QXe88siwt
-# 44EYitz6fCSTPubySvO8crXTz/Du3LzCBZWWmVUGAqq0ozEaNd4jB+OWg4Fu5P7m
-# 6bGr8Swj9aVXKp1xeMwF3C/SsV1L/SFKoksGTlRvuzEm7c8Fdd+TbYZJrP9B1u66
-# mMqVRimtvssipjB5uvV+sMPuhMZowgnDNFZbYIEA7u6x6qkzWhT2AiyBxHQVzK6h
-# T8XIx/mlOd1KzyC8LkWIuNetnzVBDDXD3KruIB3PeKN7lqTnoK7Go5gTjznZwn/r
-# lf3vgGCQM/hV7zFmcZd5aOzJRoIw6d7wkuHo1ZGLT60=
+# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFLSbabkJ5CJBDXPc79Nrz8nOiXUfMA0G
+# CSqGSIb3DQEBAQUABIIBAIeKYGFusDWuQWlg0Wo3QHgWzIeDBYeQDnWA3APASabF
+# a0nwv77DuIUOrM2zD8SVIj8vZMcCfn6eUB6yv07beEaGKP4T2RkW/Ly94acBF5GW
+# RPOu/myerphTi29yw9oMTiipGDsyVldscP+Lc5MyHDc3R3hH9fUNi8FsLM1ccdQG
+# q93lF6KqC0/c7qIzl2WOAoYKPxn68e1+RoKl/aYmOxw9dFNVvpyu3h7dbImCWOdD
+# fni+fKUxT8wuj6RaxXUVjS/Hp9IpSNy9/XhLHJZNkSb0UDZ3rJt/Ig7F6KKWxxvo
+# BvqgATmTTOSaEIdnEUbxGCokyXSyayd9djwd8FzITX4=
 # SIG # End signature block
