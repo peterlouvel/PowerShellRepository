@@ -1,123 +1,103 @@
-<#
-.SYNOPSIS
-    
-.DESCRIPTION
-    
-.EXAMPLE
-    PS C:\> MoveLicence
-   
-.INPUTS
-    .
-.OUTPUTS
-    .
-.NOTES
-    Domain can be
-        au
-        nz
+<###########################################################################################################
+ Get-ConsoleAsHtml.ps1
 
-        EDMI Pty Ltd, Scott Walker , 74430ce8-49b7-4f72-8b54-1c334958bf25
- 
-        Subscription Id	                                                                Product Name	            Start Date	End Date
-        4D4ECDEA-4CD4-4C10-9BF1-198C855B80C4	f8a1db68-be16-40ed-86d5-cb42ce701560    Power BI Pro	            30/09/2019	26/10/2020
-        C1EBFD10-C1D0-4299-BB17-DFCCB4ED3176    c5928f49-12ba-48f7-ada3-0d743a3601d5    Visio Online Plan 2	        30/09/2019	26/10/2020
-        1EC5CFAD-301F-4E1D-BE20-2C866C620368	18181a46-0d4e-45cd-891e-60aabd171b4e    Office 365 E1	            30/09/2019	26/10/2020
-        0509C8EA-3871-4B6F-8DF8-5D5F8C79850B	6fd2c87f-b296-42f0-b197-1e91e994b900    Office 365 E3	            30/09/2019	26/10/2020
-        59B7E94D-3C77-41A2-8E6C-6CAF894C83FD	4b9405b0-7788-4568-add1-99614e613b69    Exchange Online (Plan 1)	30/09/2019	26/10/2020
-#>
+ The script captures console screen buffer up to the current cursor position and returns it in HTML format.
 
+ Returns: UTF8-encoded string.
 
-[String] ${stUserDomain}, [String] ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+ Example:
 
-# Write-Host $stUserDomain
-# Write-Host $stUserAccount
+ $htmlFileName = "$env:temp\ConsoleBuffer.html"
+ .\Get-ConsoleAsHtml | out-file $htmlFileName -encoding UTF8
+ $null = [System.Diagnostics.Process]::Start("$htmlFileName")
 
-# Setup correct ending for UPN
-if ($stUserDomain -eq "au"){
-    $End = "@edmi.com.au"
-} elseif ($stUserDomain -eq "nz"){
-    $End = "@edmi.co.nz"
-} else {
-    Write-Host "Run this command with your AU or NZ Domain credentials that can access Office 365"
-    exit
+##########################################################################################################>
+
+# Check the host name and exit if the host is not the Windows PowerShell console host.
+if ($host.Name -ne 'ConsoleHost'){
+  write-host -ForegroundColor Red "This script runs only in the console host. You cannot run this script in $($host.Name)."
+  exit -1
+}
+# The Windows PowerShell console host redefines DarkYellow and DarkMagenta colors and uses them as defaults.
+# The redefined colors do not correspond to the color names used in HTML, so they need to be mapped to digital color codes.
+#
+$htmlFileName = "$env:temp\ConsoleBuffer.html"
+function Normalize-HtmlColor ($color){
+  if ($color -eq "DarkYellow") { $color = "#eeedf0" }
+  if ($color -eq "DarkMagenta") { $color = "#012456" }
+  return $color
+}
+# Create an HTML span from text using the named console colors.
+#
+function Make-HtmlSpan ($text, $forecolor = "DarkYellow", $backcolor = "DarkMagenta"){
+  $forecolor = Normalize-HtmlColor $forecolor
+  $backcolor = Normalize-HtmlColor $backcolor
+  # You can also add font-weight:bold tag here if you want a bold font in output.
+  return "<span style='font-family:Courier New;color:$forecolor;background:$backcolor'>$text</span>"
+}
+# Generate an HTML span and append it to HTML string builder
+#
+function Append-HtmlSpan{
+  $spanText = $spanBuilder.ToString()
+  $spanHtml = Make-HtmlSpan $spanText $currentForegroundColor $currentBackgroundColor
+  $null = $htmlBuilder.Append($spanHtml)
+}
+# Append line break to HTML builder
+#
+function Append-HtmlBreak{
+  $null = $htmlBuilder.Append("<br>")
 }
 
-#if $O365CREDS not setup before script run, setup now
-if ($null -eq $O365CREDS){
-    $Account = $stUserAccount + $End
-    # Write-Host $Account
-    $O365CREDS   = Get-Credential $Account
-} 
-
-Install-Module -Name AzureAD -Scope CurrentUser
-Connect-AzureAD -Credential $O365CREDS
-Connect-MsolService -Credential $O365CREDS
-
-
-
-$licensePlanList = Get-AzureADSubscribedSku
-# Write-Host $licensePlanList
-
-$subscriptionFrom="ENTERPRISEPACK"
-$subscriptionTo=  "ENTERPRISEPACK"
-
-$Users = Get-MsolUser -All | Where-Object -Property isLicensed
-foreach ($User in $Users){
-    Write-Host "------------------------------"
-    $userUPN=$User.UserprincipalName
-    Write-Host $userUPN
-
-    $userList = Get-AzureADUser -ObjectID $userUPN | Select -ExpandProperty AssignedLicenses | Select SkuID 
-    Write-host $userList
-    $userList | ForEach { 
-        $sku=$_.SkuId ; $licensePlanList | ForEach { 
-            If ( $sku -eq $_.ObjectId.substring($_.ObjectId.length - 36, 36) ) { 
-                Write-Host $_.SkuPartNumber 
-            } 
-        } 
+# Initialize the HTML string builder.
+$htmlBuilder = new-object system.text.stringbuilder
+$null = $htmlBuilder.Append("<pre style='MARGIN: 0in 10pt 0in;line-height:normal';font-size:10pt>")
+# Grab the console screen buffer contents using the Host console API.
+$bufferWidth = $host.ui.rawui.BufferSize.Width
+$bufferHeight = $host.ui.rawui.CursorPosition.Y
+$rec = new-object System.Management.Automation.Host.Rectangle 0,0,($bufferWidth - 1),$bufferHeight
+$buffer = $host.ui.rawui.GetBufferContents($rec)
+# Iterate through the lines in the console buffer.
+for($i = 0; $i -lt $bufferHeight; $i++){
+  $spanBuilder = new-object system.text.stringbuilder
+  # Track the colors to identify spans of text with the same formatting.
+  $currentForegroundColor = $buffer[$i, 0].Foregroundcolor
+  $currentBackgroundColor = $buffer[$i, 0].Backgroundcolor
+  for($j = 0; $j -lt $bufferWidth; $j++){
+    $cell = $buffer[$i,$j]
+    # If the colors change, generate an HTML span and append it to the HTML string builder.
+    if (($cell.ForegroundColor -ne $currentForegroundColor) -or ($cell.BackgroundColor -ne $currentBackgroundColor)){
+      Append-HtmlSpan
+      # Reset the span builder and colors.
+      $spanBuilder = new-object system.text.stringbuilder
+      $currentForegroundColor = $cell.Foregroundcolor
+      $currentBackgroundColor = $cell.Backgroundcolor
     }
-
+    # Substitute characters which have special meaning in HTML.
+    switch ($cell.Character){
+      '>' { $htmlChar = '&gt;' }
+      '<' { $htmlChar = '&lt;' }
+      '&' { $htmlChar = '&amp;' }
+      default{
+        $htmlChar = $cell.Character
+      }
+    }
+    $null = $spanBuilder.Append($htmlChar)
+  }
+  Append-HtmlSpan
+  Append-HtmlBreak
 }
+# Append HTML ending tag.
+$null = $htmlBuilder.Append("</pre>")
+return $htmlBuilder.ToString()  | out-file $htmlFileName -encoding UTF8
+# start chrome $htmlFileName
 
-<#
-$userUPN = "peter.louvel@edmi.com.au"
 
-$licenseFrom = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-$licensesFrom = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-$licenseTo = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-$licensesTo = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-
-#Adds Current licence
-$licenseFrom.SkuId = "6fd2c87f-b296-42f0-b197-1e91e994b900"
-$licensesFrom.AddLicenses = $licenseFrom
-Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesFrom
-
-#Removes that licence
-$licensesFrom.AddLicenses = @()
-$licensesFrom.RemoveLicenses =  $licenseFrom.SkuId
-Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesFrom
-
-# Assign new licence
-$licenseTo.SkuId = "796b6b5f-613c-4e24-a17c-eba730d49c02"
-$licensesTo.AddLicenses = $LicenseTo
-Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesTo
-
-#>
-
-<#      in vscode 
-    ##    
-        $Mycert = (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)[0]
-        $currentFile = $psEditor.GetEditorContext().CurrentFile.Path
-        Set-AuthenticodeSignature -Certificate $Mycert -FilePath $currentFile
-    
-    ##  
-        powershell Set-AuthenticodeSignature ${activeFile} @(Get-ChildItem cert:\\CurrentUser\\My -codesign)[0]
-#>
 
 # SIG # Begin signature block
 # MIITzAYJKoZIhvcNAQcCoIITvTCCE7kCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUY7EyjKRt4tF6932OEaK+JzkK
-# HumgghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUdUPujupVTcMji/W0c8z8MCr5
+# UF2gghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
 # MRwwGgYDVQQDExNFRE1JIEdsb2JhbCBSb290IENBMB4XDTE2MTAyMDAzMDMwOVoX
 # DTI2MTAyMDAzMTIwMlowRjEVMBMGCgmSJomT8ixkARkWBWxvY2FsMRQwEgYKCZIm
 # iZPyLGQBGRYEZWRtaTEXMBUGA1UEAxMORURNSSBHbG9iYWwgQ0EwggEiMA0GCSqG
@@ -213,11 +193,11 @@ Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesTo
 # BgoJkiaJk/IsZAEZFgJhdTEaMBgGA1UEAxMRRURNSSBBdXN0cmFsaWEgQ0ECCkj1
 # kl8ABwAAU38wCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAw
 # GQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisG
-# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFPzZbw/FlgenzIk28SYVdmwo7iGlMA0G
-# CSqGSIb3DQEBAQUABIIBAFyEiL9FLbXN/pHPX8Kcm5vUZvFKv3bNZC0QXe88siwt
-# 44EYitz6fCSTPubySvO8crXTz/Du3LzCBZWWmVUGAqq0ozEaNd4jB+OWg4Fu5P7m
-# 6bGr8Swj9aVXKp1xeMwF3C/SsV1L/SFKoksGTlRvuzEm7c8Fdd+TbYZJrP9B1u66
-# mMqVRimtvssipjB5uvV+sMPuhMZowgnDNFZbYIEA7u6x6qkzWhT2AiyBxHQVzK6h
-# T8XIx/mlOd1KzyC8LkWIuNetnzVBDDXD3KruIB3PeKN7lqTnoK7Go5gTjznZwn/r
-# lf3vgGCQM/hV7zFmcZd5aOzJRoIw6d7wkuHo1ZGLT60=
+# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFOeTvTFVIHwoaAHuKWxplqfdlAYJMA0G
+# CSqGSIb3DQEBAQUABIIBAJw+xzdgwXys7jhy3yFf77DYlWEGoGUF5vdCEpFCZDe4
+# YEf+0/oCPwjck9FMyPBrDd/hXlbSfiMU6HV3EE+5nL4H3Mu/rwW2qaCh67zGVR90
+# 91X8B7hdfnmxzYPp+5KEoyOF/bHUX2kM/FpWCwfcMfDSWthPna6K9FXnk+JLm9SR
+# HkhqyI85G6ratbUK/1tGE4dboGv73S7sk+2BKjoF6esfgN1c9Zq4CxTiQJBrM3mL
+# MAwgcEpmWSpRSPBkSdToYbMuDdf7mu+KzFMVK8qp/l14Pxi43wtt9IAc+Xu04os5
+# tqEZ28hgef/2dqYdVcvGY7Tt35VKrwev7xvs7+sSsJQ=
 # SIG # End signature block
