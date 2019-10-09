@@ -13,91 +13,93 @@
 
 ##########################################################################################################>
 
-# Check the host name and exit if the host is not the Windows PowerShell console host.
-if ($host.Name -ne 'ConsoleHost'){
-  write-host -ForegroundColor Red "This script runs only in the console host. You cannot run this script in $($host.Name)."
-  exit -1
-}
-# The Windows PowerShell console host redefines DarkYellow and DarkMagenta colors and uses them as defaults.
-# The redefined colors do not correspond to the color names used in HTML, so they need to be mapped to digital color codes.
-#
-$htmlFileName = "$env:temp\ConsoleBuffer.html"
-function Normalize-HtmlColor ($color){
-  if ($color -eq "DarkYellow") { $color = "#eeedf0" }
-  if ($color -eq "DarkMagenta") { $color = "#012456" }
-  return $color
-}
-# Create an HTML span from text using the named console colors.
-#
-function Make-HtmlSpan ($text, $forecolor = "DarkYellow", $backcolor = "DarkMagenta"){
-  $forecolor = Normalize-HtmlColor $forecolor
-  $backcolor = Normalize-HtmlColor $backcolor
-  # You can also add font-weight:bold tag here if you want a bold font in output.
-  return "<span style='font-family:Courier New;color:$forecolor;background:$backcolor'>$text</span>"
-}
-# Generate an HTML span and append it to HTML string builder
-#
-function Append-HtmlSpan{
-  $spanText = $spanBuilder.ToString()
-  $spanHtml = Make-HtmlSpan $spanText $currentForegroundColor $currentBackgroundColor
-  $null = $htmlBuilder.Append($spanHtml)
-}
-# Append line break to HTML builder
-#
-function Append-HtmlBreak{
-  $null = $htmlBuilder.Append("<br>")
-}
-
-# Initialize the HTML string builder.
-$htmlBuilder = new-object system.text.stringbuilder
-$null = $htmlBuilder.Append("<pre style='MARGIN: 0in 10pt 0in;line-height:normal';font-size:10pt>")
-# Grab the console screen buffer contents using the Host console API.
-$bufferWidth = $host.ui.rawui.BufferSize.Width
-$bufferHeight = $host.ui.rawui.CursorPosition.Y
-$rec = new-object System.Management.Automation.Host.Rectangle 0,0,($bufferWidth - 1),$bufferHeight
-$buffer = $host.ui.rawui.GetBufferContents($rec)
-# Iterate through the lines in the console buffer.
-for($i = 0; $i -lt $bufferHeight; $i++){
-  $spanBuilder = new-object system.text.stringbuilder
-  # Track the colors to identify spans of text with the same formatting.
-  $currentForegroundColor = $buffer[$i, 0].Foregroundcolor
-  $currentBackgroundColor = $buffer[$i, 0].Backgroundcolor
-  for($j = 0; $j -lt $bufferWidth; $j++){
-    $cell = $buffer[$i,$j]
-    # If the colors change, generate an HTML span and append it to the HTML string builder.
-    if (($cell.ForegroundColor -ne $currentForegroundColor) -or ($cell.BackgroundColor -ne $currentBackgroundColor)){
-      Append-HtmlSpan
-      # Reset the span builder and colors.
-      $spanBuilder = new-object system.text.stringbuilder
-      $currentForegroundColor = $cell.Foregroundcolor
-      $currentBackgroundColor = $cell.Backgroundcolor
-    }
-    # Substitute characters which have special meaning in HTML.
-    switch ($cell.Character){
-      '>' { $htmlChar = '&gt;' }
-      '<' { $htmlChar = '&lt;' }
-      '&' { $htmlChar = '&amp;' }
-      default{
-        $htmlChar = $cell.Character
-      }
-    }
-    $null = $spanBuilder.Append($htmlChar)
+function Get-ConsoleAsHtml {
+  # Check the host name and exit if the host is not the Windows PowerShell console host.
+  if ($host.Name -ne 'ConsoleHost'){
+    write-host -ForegroundColor Red "This script runs only in the console host. You cannot run this script in $($host.Name)."
+    exit -1
   }
-  Append-HtmlSpan
-  Append-HtmlBreak
+  # The Windows PowerShell console host redefines DarkYellow and DarkMagenta colors and uses them as defaults.
+  # The redefined colors do not correspond to the color names used in HTML, so they need to be mapped to digital color codes.
+  #
+  $htmlFileName = "$env:temp\ConsoleBuffer.html"
+  function Normalize-HtmlColor ($color){
+    if ($color -eq "DarkYellow") { $color = "#eeedf0" }
+    if ($color -eq "DarkMagenta") { $color = "#012456" }
+    return $color
+  }
+  # Create an HTML span from text using the named console colors.
+  #
+  function Make-HtmlSpan ($text, $forecolor = "DarkYellow", $backcolor = "DarkMagenta"){
+    $forecolor = Normalize-HtmlColor $forecolor
+    $backcolor = Normalize-HtmlColor $backcolor
+    # You can also add font-weight:bold tag here if you want a bold font in output.
+    return "<span style='font-family:Courier New;color:$forecolor;background:$backcolor'>$text</span>"
+  }
+  # Generate an HTML span and append it to HTML string builder
+  #
+  function Append-HtmlSpan{
+    $spanText = $spanBuilder.ToString()
+    $spanHtml = Make-HtmlSpan $spanText $currentForegroundColor $currentBackgroundColor
+    $null = $htmlBuilder.Append($spanHtml)
+  }
+  # Append line break to HTML builder
+  #
+  function Append-HtmlBreak{
+    $null = $htmlBuilder.Append("<br>")
+  }
+
+  # Initialize the HTML string builder.
+  $htmlBuilder = new-object system.text.stringbuilder
+  $null = $htmlBuilder.Append("<pre style='MARGIN: 0in 10pt 0in;line-height:normal';font-size:10pt>")
+  # Grab the console screen buffer contents using the Host console API.
+  $bufferWidth = $host.ui.rawui.BufferSize.Width
+  $bufferHeight = $host.ui.rawui.CursorPosition.Y
+  $rec = new-object System.Management.Automation.Host.Rectangle 0,0,($bufferWidth - 1),$bufferHeight
+  $buffer = $host.ui.rawui.GetBufferContents($rec)
+  # Iterate through the lines in the console buffer.
+  for($i = 0; $i -lt $bufferHeight; $i++){
+    $spanBuilder = new-object system.text.stringbuilder
+    # Track the colors to identify spans of text with the same formatting.
+    $currentForegroundColor = $buffer[$i, 0].Foregroundcolor
+    $currentBackgroundColor = $buffer[$i, 0].Backgroundcolor
+    for($j = 0; $j -lt $bufferWidth; $j++){
+      $cell = $buffer[$i,$j]
+      # If the colors change, generate an HTML span and append it to the HTML string builder.
+      if (($cell.ForegroundColor -ne $currentForegroundColor) -or ($cell.BackgroundColor -ne $currentBackgroundColor)){
+        Append-HtmlSpan
+        # Reset the span builder and colors.
+        $spanBuilder = new-object system.text.stringbuilder
+        $currentForegroundColor = $cell.Foregroundcolor
+        $currentBackgroundColor = $cell.Backgroundcolor
+      }
+      # Substitute characters which have special meaning in HTML.
+      switch ($cell.Character){
+        '>' { $htmlChar = '&gt;' }
+        '<' { $htmlChar = '&lt;' }
+        '&' { $htmlChar = '&amp;' }
+        default{
+          $htmlChar = $cell.Character
+        }
+      }
+      $null = $spanBuilder.Append($htmlChar)
+    }
+    Append-HtmlSpan
+    Append-HtmlBreak
+  }
+  # Append HTML ending tag.
+  $null = $htmlBuilder.Append("</pre>")
+  return $htmlBuilder.ToString()  | out-file $htmlFileName -encoding UTF8
+  # start chrome $htmlFileName
+
 }
-# Append HTML ending tag.
-$null = $htmlBuilder.Append("</pre>")
-return $htmlBuilder.ToString()  | out-file $htmlFileName -encoding UTF8
-# start chrome $htmlFileName
 
-
-
+Export-ModuleMember -Function Get-ConsoleAsHtml
 # SIG # Begin signature block
 # MIITzAYJKoZIhvcNAQcCoIITvTCCE7kCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUdUPujupVTcMji/W0c8z8MCr5
-# UF2gghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUdYUzGMb0HHwkQgK4PuFV/uYz
+# KC6gghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
 # MRwwGgYDVQQDExNFRE1JIEdsb2JhbCBSb290IENBMB4XDTE2MTAyMDAzMDMwOVoX
 # DTI2MTAyMDAzMTIwMlowRjEVMBMGCgmSJomT8ixkARkWBWxvY2FsMRQwEgYKCZIm
 # iZPyLGQBGRYEZWRtaTEXMBUGA1UEAxMORURNSSBHbG9iYWwgQ0EwggEiMA0GCSqG
@@ -193,11 +195,11 @@ return $htmlBuilder.ToString()  | out-file $htmlFileName -encoding UTF8
 # BgoJkiaJk/IsZAEZFgJhdTEaMBgGA1UEAxMRRURNSSBBdXN0cmFsaWEgQ0ECCkj1
 # kl8ABwAAU38wCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAw
 # GQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisG
-# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFOeTvTFVIHwoaAHuKWxplqfdlAYJMA0G
-# CSqGSIb3DQEBAQUABIIBAJw+xzdgwXys7jhy3yFf77DYlWEGoGUF5vdCEpFCZDe4
-# YEf+0/oCPwjck9FMyPBrDd/hXlbSfiMU6HV3EE+5nL4H3Mu/rwW2qaCh67zGVR90
-# 91X8B7hdfnmxzYPp+5KEoyOF/bHUX2kM/FpWCwfcMfDSWthPna6K9FXnk+JLm9SR
-# HkhqyI85G6ratbUK/1tGE4dboGv73S7sk+2BKjoF6esfgN1c9Zq4CxTiQJBrM3mL
-# MAwgcEpmWSpRSPBkSdToYbMuDdf7mu+KzFMVK8qp/l14Pxi43wtt9IAc+Xu04os5
-# tqEZ28hgef/2dqYdVcvGY7Tt35VKrwev7xvs7+sSsJQ=
+# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFBo9nWTjrJA8GKYXeK0MMoWc8wuUMA0G
+# CSqGSIb3DQEBAQUABIIBAHdbS521jNNng9RvOpBcRAiZJw5AjttlTppmBlOiYVSX
+# iIw5Wtbi61f+7lINpno+4S0HgTlVGrJeBwdknpO3ygCHbT1RYcYEdErhyYIzp2QC
+# d6dKxqV7SEJYM+ZhKFetBl6UzWMdpnVHGxpeFwPwAHxHIfHOK8KbkX0d3fbnWvBj
+# A0LX6tnqhF7tkXXtW4GkUxEmllT6vwgRUJd+36gNKCXE509Z/Pzvx/W3GqNpOMN/
+# 1MgIhVPUDmjFPXufJ8tCVcyBh7lIkjvgrqlv1t036zFV/6fZbmxXgPVidGb4nv2b
+# KgA4xL/XLwA1SPCeL7n3J7tRXRdqxbUyGxZAk5AbFfc=
 # SIG # End signature block
