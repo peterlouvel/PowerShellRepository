@@ -75,7 +75,7 @@ Connect-MSOLService -Credential $O365CREDS
 If (Get-MsolUser -UserPrincipalName $Email -erroraction 'silentlycontinue') {
     Write-Host "User $Email Exits. Creating Mailbox on O365" -ForegroundColor Cyan  
 } else {
-    Write-Host "User $Email Doesn't Exist, wait till the user is on O365" -ForegroundColor Cyan  
+    Write-Host "User $Email doesn't exist, wait till the user is on O365" -ForegroundColor White  
     exit
 }
 Write-Host
@@ -92,8 +92,8 @@ Remove-PSSession $Session1
 
 # Write-Host "------------------------------------------------------------------------------------------------"
 # Write-Host "Waiting a couple minutes for O365 email account to be created before enabling E3 licence." -ForegroundColor Cyan  
-# Write-Host "Not sure if this is needed, or if we have to wait for the mailbox to sync back down to local AD." -ForegroundColor Cyan  
-# Write-Host "This just seems to work" -ForegroundColor Cyan  
+# Write-Host "Not sure if the timeout is needed, or if we have to wait for the mailbox to sync back down to local AD." -ForegroundColor Cyan  
+# Write-Host "This just seems to work" -ForegroundColor Green  
 # Write-Host "------------------------------------------------------------------------------------------------"
 # Start-Sleep -s 15
 # Write-Host "----- 0:15"
@@ -111,33 +111,19 @@ Remove-PSSession $Session1
 # Write-Host "----- 1:45"
 # Start-Sleep -s 15
 # Write-Host "----- 2:00"
-# Start-Sleep -s 15
-# Write-Host "----- 2:15"
-# Start-Sleep -s 15
-# Write-Host "----- 2:30"
-# Start-Sleep -s 15
-# Write-Host "----- 2:45"
-# Start-Sleep -s 15
-# Write-Host "----- 3:00"
-# Start-Sleep -s 15
-# Write-Host "----- 3:15"
-# Start-Sleep -s 15
-# Write-Host "----- 3:30"
-# Start-Sleep -s 15
-# Write-Host "----- 3:45"
-# Start-Sleep -s 15
-# Write-Host "----- 4:00"
 
-# # Give E3 licence to user
-# Connect-MSOLService -Credential $O365CREDS
-# Get-ADUser $UserLowerCase | Set-MsolUser  -UsageLocation $Domain                   # Sets the location (Country) of the user
-# Set-MsolUserLicense -UserPrincipalName $Email -AddLicenses "EDMI:ENTERPRISEPACK"   # Gives E3 licence
+
+# Give E3 licence to user
+Connect-MSOLService -Credential $O365CREDS
+Get-ADUser $UserLowerCase | Set-MsolUser  -UsageLocation $Domain                   # Sets the location (Country) of the user
+Set-MsolUserLicense -UserPrincipalName $Email -AddLicenses "EDMI:ENTERPRISEPACK"   # Gives E3 licence
+
 
 # SIG # Begin signature block
 # MIITzAYJKoZIhvcNAQcCoIITvTCCE7kCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUFmlROkdjSTUFiAGPjQqOBci5
-# q4mgghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZUDbZtfzeMlfi3QZDb+tJ0Lz
+# JgWgghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
 # MRwwGgYDVQQDExNFRE1JIEdsb2JhbCBSb290IENBMB4XDTE2MTAyMDAzMDMwOVoX
 # DTI2MTAyMDAzMTIwMlowRjEVMBMGCgmSJomT8ixkARkWBWxvY2FsMRQwEgYKCZIm
 # iZPyLGQBGRYEZWRtaTEXMBUGA1UEAxMORURNSSBHbG9iYWwgQ0EwggEiMA0GCSqG
@@ -233,11 +219,11 @@ Remove-PSSession $Session1
 # BgoJkiaJk/IsZAEZFgJhdTEaMBgGA1UEAxMRRURNSSBBdXN0cmFsaWEgQ0ECCkj1
 # kl8ABwAAU38wCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAw
 # GQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisG
-# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFOlo3PBPJeW5LBNoFItLN27QJcuUMA0G
-# CSqGSIb3DQEBAQUABIIBABqsZtoPrIS6vHZNHvQBk+5lVBSCsxd9qCBlF6urauYM
-# qHPnTeNyVbh6uKmIExjDWPQS3pqIO+gmRLdPNDB+JpPDxGteRn0U6r8gOSoEq1aW
-# EKIjsvPsHLKt4P+oJHO/yId5MhpUddt4DvQX8ItF8oDXyA4qr1qPC3L7dwVsrcHH
-# O6BcXCqgOFUBrG4Uxn75kjjaNC2ORNoUbzu7DSwXoVBvxm1UzsaAprDn9jQTzTzu
-# iN9aqlDk8XpqLYMg9/bc5qIk72Y0WrYzcxlyyzG/O0e2iOzlXVajR8qKqNmEYBCh
-# KqNBRrZlm6m8gJceDxlmWWtc5yTHHc5iuTldMIK+gv8=
+# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFOq2fQ6GNlY2QfS605UM7SfG0l42MA0G
+# CSqGSIb3DQEBAQUABIIBAGiOS9v7vAxGR5V2bqr5Pv05HAXfjN8TvOCjsIGAoLc/
+# xAohjbP7V399U/ufAtfEmHrDPy4D0gj9U6Cg4U0GY6+pSBeQgi9KHkRT6Z/R2/je
+# D0blcTtTXlqK1rcTIAxybF50jfZQuScPJJpAfnDeWfg1ssPTn5hyZMqFr7ajKLfh
+# Ed35swrhxnQTiau5LS4KVHFF2+dcK/EnYGFLdFzI9vOh1AQg7DdhGYU6yYaTJKkI
+# eBwFEuBfuNtDwJYBSUMXtg1+wtAiM7vTPFRQ/lNnZbpbT19xgp0APUScU2pR4v19
+# WGNcHEr4uDOvo025VbKkld3Vm/N2QjTW4bbnIkJDRhU=
 # SIG # End signature block

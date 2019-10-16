@@ -1,0 +1,3 @@
+#TYPE Microsoft.Open.Azure.AD.CommonLibrary.PSAzureContext
+"Account","Environment","Tenant","TenantId","TenantDomain"
+"peter.louvel@edmi.com.au","AzureCloud","74430ce8-49b7-4f72-8b54-1c334958bf25","74430ce8-49b7-4f72-8b54-1c334958bf25","edmi.onmicrosoft.com"

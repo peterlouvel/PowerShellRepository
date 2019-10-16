@@ -37,8 +37,8 @@ if ($Domain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
     $Server = "au.edmi.local"
+    $AdminAccount1 = "au\"+$AdminAccount
     if ($null -eq $Cred){
-        $AdminAccount1 = "au\"+$AdminAccount
         $Cred = Get-Credential $AdminAccount1
     } 
 } elseif ($Domain -eq "nz"){
@@ -46,16 +46,14 @@ if ($Domain -eq "au"){
     # $DomainController = "NZwlgDC3.nz.edmi.local"
     $DomainController = "NzBneDC5.nz.edmi.local"
     $Server = "nz.edmi.local"
+    $AdminAccount1 = "nz\"+$AdminAccount
     if ($null -eq $Cred){
-        $AdminAccount1 = "nz\"+$AdminAccount
         $Cred = Get-Credential $AdminAccount1
     }
 } else {
     Write-Host "Domain should be AU or NZ"
     exit
 }
-
-
 
 $UserLowerCase      = $NewAccount.ToLower()
 $NewUser            = (Get-Culture).TextInfo.ToTitleCase($UserLowerCase) 
@@ -98,19 +96,16 @@ function Copy-Groups{
 
         if ($UserGroup.Contains("DC=au")){
             Write-Host "AU  -- "$GroupName.Substring(3)
-            $DomainController = "AuBneDC11.au.edmi.local"
             $Server = "au.edmi.local"
         }elseif ($UserGroup.Contains("DC=nz")){
             Write-Host "NZ  -- "$GroupName.Substring(3)
-            $DomainController = "NZwlgDC3.nz.edmi.local"
             $Server = "nz.edmi.local"
         }elseif ($UserGroup.Contains("DC=sg")){
-            Write-Host "SG  -- "$GroupName.Substring(3)
+            Write-Host "SG  -- "$GroupName.Substring(3) -ForegroundColor Red 
             Continue
             # Don't have access to Singapore Domain
         }else{
             Write-Host "ROOT  -- "$GroupName.Substring(3)
-            $DomainController = "EdmiBneDC1.edmi.local"
             $Server = "edmi.local"
         }
         
@@ -215,8 +210,8 @@ Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject 
 # SIG # Begin signature block
 # MIITzAYJKoZIhvcNAQcCoIITvTCCE7kCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUGtx+LYd/2ABq7jlhNn5v+Dld
-# SsGgghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxVD/cwjlDgQb+2zmVI0kTrCW
+# zK+gghEqMIIEVjCCAz6gAwIBAgIKJjdc9gABAAAACTANBgkqhkiG9w0BAQsFADAe
 # MRwwGgYDVQQDExNFRE1JIEdsb2JhbCBSb290IENBMB4XDTE2MTAyMDAzMDMwOVoX
 # DTI2MTAyMDAzMTIwMlowRjEVMBMGCgmSJomT8ixkARkWBWxvY2FsMRQwEgYKCZIm
 # iZPyLGQBGRYEZWRtaTEXMBUGA1UEAxMORURNSSBHbG9iYWwgQ0EwggEiMA0GCSqG
@@ -270,10 +265,10 @@ Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject 
 # k+SCQxAXzEXo+5n9Pmh5mWxFEkN/uBE13ZqSTWq+YgzouRMDgQ+GXvWT4+eljS3P
 # LU2gxnHGZcT3T33S1gJ+/nKYdBrp0S56/S4NRT3mWQYL5OZ6MRM+yYe9a4cXZOm3
 # BcMYWLExUyJz8MxinX39Y22drvtu5XXL7vZANFnDD/jihLd9koqDS8e24om5OFIJ
-# R5matxGYZbRMUDQmQTCCBv8wggXnoAMCAQICCkghaVMABwAAU34wDQYJKoZIhvcN
+# R5matxGYZbRMUDQmQTCCBv8wggXnoAMCAQICCkj1kl8ABwAAU38wDQYJKoZIhvcN
 # AQELBQAwXTEVMBMGCgmSJomT8ixkARkWBWxvY2FsMRQwEgYKCZImiZPyLGQBGRYE
 # ZWRtaTESMBAGCgmSJomT8ixkARkWAmF1MRowGAYDVQQDExFFRE1JIEF1c3RyYWxp
-# YSBDQTAeFw0xOTEwMDIyMzIzMzNaFw0yMDEwMDEyMzIzMzNaMIHFMRUwEwYKCZIm
+# YSBDQTAeFw0xOTEwMDMwMzE1MThaFw0yMDEwMDIwMzE1MThaMIHFMRUwEwYKCZIm
 # iZPyLGQBGRYFbG9jYWwxFDASBgoJkiaJk/IsZAEZFgRlZG1pMRIwEAYKCZImiZPy
 # LGQBGRYCYXUxFzAVBgNVBAsTDkVETUkgQXVzdHJhbGlhMRIwEAYDVQQLEwlFbXBs
 # b3llZXMxFDASBgNVBAsTC0JyaXNiYW5lIEhRMRkwFwYDVQQLExBCdXNpbmVzcyBT
@@ -286,37 +281,37 @@ Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject 
 # xli4sU0O0FP68p0fRqsIwzq3Z4R/7mxrbpnREpLiEmyanB4z97VfHnyo+WvpAgMB
 # AAGjggNWMIIDUjA9BgkrBgEEAYI3FQcEMDAuBiYrBgEEAYI3FQiHt4wonIQfhaGb
 # F4SRo3yGzulvgTyG9bBAhoyySwIBZQIBBjATBgNVHSUEDDAKBggrBgEFBQcDAzAO
-# BgNVHQ8BAf8EBAMCB4AwGwYJKwYBBAGCNxUKBA4wDDAKBggrBgEFBQcDAzAdBgNV
-# HQ4EFgQUcrUE/2ghuBryckw0aZJNzIDhSVswHwYDVR0jBBgwFoAUDRKuj+H+IyCg
-# PcC6NnEnHBVTZCEwggEiBgNVHR8EggEZMIIBFTCCARGgggENoIIBCYaBv2xkYXA6
-# Ly8vQ049RURNSSUyMEF1c3RyYWxpYSUyMENBKDcpLENOPUF1Qm5lQ2ExLENOPUNE
-# UCxDTj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25m
-# aWd1cmF0aW9uLERDPWVkbWksREM9bG9jYWw/Y2VydGlmaWNhdGVSZXZvY2F0aW9u
-# TGlzdD9iYXNlP29iamVjdENsYXNzPWNSTERpc3RyaWJ1dGlvblBvaW50hkVodHRw
-# Oi8vYXVibmVjYTEuYXUuZWRtaS5sb2NhbC9DZXJ0RW5yb2xsL0VETUklMjBBdXN0
-# cmFsaWElMjBDQSg3KS5jcmwwggEyBggrBgEFBQcBAQSCASQwggEgMIGzBggrBgEF
-# BQcwAoaBpmxkYXA6Ly8vQ049RURNSSUyMEF1c3RyYWxpYSUyMENBLENOPUFJQSxD
-# Tj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maWd1
-# cmF0aW9uLERDPWVkbWksREM9bG9jYWw/Y0FDZXJ0aWZpY2F0ZT9iYXNlP29iamVj
-# dENsYXNzPWNlcnRpZmljYXRpb25BdXRob3JpdHkwaAYIKwYBBQUHMAKGXGh0dHA6
-# Ly9hdWJuZWNhMS5hdS5lZG1pLmxvY2FsL0NlcnRFbnJvbGwvQXVCbmVDYTEuYXUu
-# ZWRtaS5sb2NhbF9FRE1JJTIwQXVzdHJhbGlhJTIwQ0EoNykuY3J0MDMGA1UdEQQs
-# MCqgKAYKKwYBBAGCNxQCA6AaDBhwZXRlci5sb3V2ZWxAZWRtaS5jb20uYXUwDQYJ
-# KoZIhvcNAQELBQADggEBAIBdtirg3mAy2d2D8O+zms5WNgxGaeS844w/qFF12feK
-# ZuO1pf0NDQhvBZhXP8wo8OYEEGQEWFBGPfZKvWfpr67C6Vc0wzT1bM6yOI/ddcft
-# iDAo9EcUz54bkjXH9Ko+ptiKPk+vrBXAZnd4I+AcaY8Z00t1lVRMqSU+BFAU98t7
-# j/ZeqHyIAU5PC7DAFejbbpIJmYT8OIZiDYdC80s33x8kWqaFQI1PgGgV4V645it3
-# MZPq7s+3uo6aaZvBk7J3yJjQZfNuElejmtfwfw5YOG2XvxouiKi24pYW4xiff+hr
-# v09FFmqBpP1iaayIsIXyKytOwYzFTb4yfk2TFKz+ZCoxggIMMIICCAIBATBrMF0x
+# BgNVHQ8BAf8EBAMCB4AwGwYJKwYBBAGCNxUKBA4wDDAKBggrBgEFBQcDAzAzBgNV
+# HREELDAqoCgGCisGAQQBgjcUAgOgGgwYcGV0ZXIubG91dmVsQGVkbWkuY29tLmF1
+# MB0GA1UdDgQWBBRytQT/aCG4GvJyTDRpkk3MgOFJWzAfBgNVHSMEGDAWgBQNEq6P
+# 4f4jIKA9wLo2cSccFVNkITCCASIGA1UdHwSCARkwggEVMIIBEaCCAQ2gggEJhoG/
+# bGRhcDovLy9DTj1FRE1JJTIwQXVzdHJhbGlhJTIwQ0EoNyksQ049QXVCbmVDYTEs
+# Q049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENO
+# PUNvbmZpZ3VyYXRpb24sREM9ZWRtaSxEQz1sb2NhbD9jZXJ0aWZpY2F0ZVJldm9j
+# YXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9uUG9pbnSG
+# RWh0dHA6Ly9hdWJuZWNhMS5hdS5lZG1pLmxvY2FsL0NlcnRFbnJvbGwvRURNSSUy
+# MEF1c3RyYWxpYSUyMENBKDcpLmNybDCCATIGCCsGAQUFBwEBBIIBJDCCASAwgbMG
+# CCsGAQUFBzAChoGmbGRhcDovLy9DTj1FRE1JJTIwQXVzdHJhbGlhJTIwQ0EsQ049
+# QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNv
+# bmZpZ3VyYXRpb24sREM9ZWRtaSxEQz1sb2NhbD9jQUNlcnRpZmljYXRlP2Jhc2U/
+# b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1dGhvcml0eTBoBggrBgEFBQcwAoZc
+# aHR0cDovL2F1Ym5lY2ExLmF1LmVkbWkubG9jYWwvQ2VydEVucm9sbC9BdUJuZUNh
+# MS5hdS5lZG1pLmxvY2FsX0VETUklMjBBdXN0cmFsaWElMjBDQSg3KS5jcnQwDQYJ
+# KoZIhvcNAQELBQADggEBAJDfa8rvsUPxNj2EokwSuS9Lq9Qm4u65BzatRNbbi3Wl
+# IPgbTp0xfQAVYteM4ke/9r+rStd3clIF+PPn/R7QyzB4kKQGMQ5MM5i+QU/0gA/7
+# sUds1+4KJSqrr6v9qv/cyjZMjzbQJ0TxMGND1G2TyqS1No/Y8yg/UsndbwHbbFa7
+# V+IV50Z8luJP4FdiVT3QifuZ2Oub/WP6ELyglHk0jhPUOgJviP0q9TmCzgb58gs/
+# OSZ4UYzM4SnSQ2NwBSvyc/aT735VC8nmBZSe63ZkiVImpg3XBSQ9Aj0qiYolkFdL
+# 427a2NwriZIZa8YzV09zMFqhkBMW6Wea2BZqzm0Zt/8xggIMMIICCAIBATBrMF0x
 # FTATBgoJkiaJk/IsZAEZFgVsb2NhbDEUMBIGCgmSJomT8ixkARkWBGVkbWkxEjAQ
-# BgoJkiaJk/IsZAEZFgJhdTEaMBgGA1UEAxMRRURNSSBBdXN0cmFsaWEgQ0ECCkgh
-# aVMABwAAU34wCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAw
+# BgoJkiaJk/IsZAEZFgJhdTEaMBgGA1UEAxMRRURNSSBBdXN0cmFsaWEgQ0ECCkj1
+# kl8ABwAAU38wCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAw
 # GQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisG
-# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFDbT5swH94Ewd1vzTLFx2+wQl47aMA0G
-# CSqGSIb3DQEBAQUABIIBAKTxlLBij8DnuoSUbHwjWofFIDlJQubFzVTl/tN9GUWQ
-# xyq57WH0QKYL/7WuSzN48HaEG2rhtwCz2TX0JBLQcP45rk6Rl79GFyfqhoMCuRH0
-# 1U9WjRFG2+LLMqSmrW/ThdaBs8NvT1iwphAw3lGa2DIy73kaxwdwLhZ/pREFGImH
-# JyEZGKbh+vi5FvLimE4Tvu9VzA5KMZumeJK2oRgFHsHTYCxyFaBFvgyIdGsftz1V
-# eqocnKJ1353zaJYPU1hh6UHVVkZQx3MoT9WSaUIHNh4XEc5ho9F+1+lERWlElYrN
-# fqjmqiS9cuoDzmwSTE6svNfU4n1UK+Ml/o/3w8Q/nN4=
+# AQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFHyAAvp7FAXqBAUYT6ZsrKusSNrlMA0G
+# CSqGSIb3DQEBAQUABIIBAHDybPEzC7ee0NYJQ3l4XytpiFysNRNNIgctE3awEM4+
+# DT6vvkP4NWczAwT1YyuJbT7kyJpwpclRZgN3+tI8haeT0keizjzKDAlG1mZRWVOO
+# 1WO1q/nvSZuK43hCel0+cqdj/TIgN7fIGsa2faE3DQ57+g+z/a7Wbv42RZ+YAZ7h
+# TTQEc6hTU9RG/mwyAodaeJjjhUSzHP/L7ILoiHAUvXFikKR7ra8rJCG94+NX8MjK
+# elBgtnCQ+75MuMjVAe/KvG+JITemoAa17410jTEOBgPZG0lddo5Kz5RcgcJ1iwq4
+# MaL28KaTudEXYy9qyTSp4+UNz+NnxkMy5Mh4QInlfmw=
 # SIG # End signature block
