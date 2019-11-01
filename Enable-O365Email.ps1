@@ -112,12 +112,10 @@ Remove-PSSession $Session1
 # Start-Sleep -s 15
 # Write-Host "----- 2:00"
 
-
 # Give E3 licence to user
 Connect-MSOLService -Credential $O365CREDS
 Get-ADUser $UserLowerCase | Set-MsolUser  -UsageLocation $Domain                   # Sets the location (Country) of the user
 Set-MsolUserLicense -UserPrincipalName $Email -AddLicenses "EDMI:ENTERPRISEPACK"   # Gives E3 licence
-
 
 # SIG # Begin signature block
 # MIITzAYJKoZIhvcNAQcCoIITvTCCE7kCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
