@@ -4,8 +4,9 @@
 .DESCRIPTION
     Run this when the users account is synced to O365
 .EXAMPLE
-    PS C:\> Create-MailContact -User "user.name" -Domain "au"
-    Creates the users mailbox on O365 and enables E3 licence 
+    PS C:\> Create-MailContact -FirstName "AMS Bob" -LastName "Anderson" -ExternalEmail "emailaddress@somewhere.com" -Domain "au" 
+    Creates a contact in 
+       OU=Storm Production Clients,OU=Mail Contacts,OU=Mail,OU=EDMI Australia,DC=au,DC=edmi,DC=local
 .INPUTS
     .
 .OUTPUTS
@@ -75,6 +76,9 @@ $params = @{ 'ExternalEmailAddress' = "SMTP:$ExternalEmail";
 
 Write-Host "--New Mail Contact--"
 New-MailContact @params
+# Write-Host "- $ExternalEmail - $FullName -"
+Write-Host " - Waiting 30 Seconds for AD to sync before makeing changes to the contacts description"
+Start-Sleep -s 30
 Get-ADObject -LDAPFilter "objectClass=Contact" -Properties * | where-object {$_.Name -like "$FullName"} | Set-ADObject -Description "$ExternalEmail" -Credential $Cred
 Exit-PSSession
 Remove-PSSession $Session1
