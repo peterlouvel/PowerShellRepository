@@ -127,7 +127,7 @@ function Copy-Groups{
 function Copy-User{
     param(
         [Parameter(Mandatory=$true)]
-        [String]$NewUserAccount,
+        [String]$SamAccount,
         [Parameter(Mandatory=$true)]
         [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject,
         [Parameter(Mandatory=$true)]
@@ -135,8 +135,8 @@ function Copy-User{
     )
     
     $UserOU             = ($CopyAccountObject.DistinguishedName -split ",",2)[1]
-    $Email              = $NewUserAccount + "" + $End
-    $FullNewUserName    = $NewUserAccount -replace '\.',' '
+    $Email              = $SamAccount + "" + $End
+    $FullNewUserName    = $SamAccount -replace '\.',' '
     $Pos                = $FullNewUserName.IndexOf(" ")
     $GivenName          = $FullNewUserName.Substring(0, $Pos)
     $Surname            = $FullNewUserName.Substring($Pos+1)
@@ -155,7 +155,7 @@ function Copy-User{
     $paramsCreate       = @{  
         Instance            = "$CopyAccountObject" 
         Path                = "$UserOU"
-        Name                = "$NewUserAccount"
+        Name                = "$FullNewUserName"
         SamAccountName      = "$SamAccount"
         GivenName           = "$GivenName" 
         Surname             = "$Surname" 
@@ -176,14 +176,14 @@ function Copy-User{
     Write-Host $paramsCreate.Path
     Write-Host "Creating new user " -NoNewline 
     Write-Host "$FullNewUserName " -ForegroundColor Cyan -NoNewline 
-    Write-Host "$NewUserAccount" -ForegroundColor Green
+    Write-Host "$SamAccount" -ForegroundColor Green
 
     Try{
         New-ADUser  @paramsCreate -Credential $Credential -Server $DomainController  
     }Catch{
         Write-Host ""
         Write-Host "-- New-ADUser  @paramsCreate -Credential $Credential" -ForegroundColor Yellow 
-        Write-Host "-- [ERROR] $DomainController - $($NewUserAccount) - $($Error[0])" -ForegroundColor Green 
+        Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Green 
         Write-Host "----------------------------------------------------"
     }
     Write-Host "Setting users manger to $Manager"
@@ -196,7 +196,7 @@ function Copy-User{
     Enable-ADAccount -Identity "$SamAccount" -Credential $Credential -Server $DomainController
 }
 
-Copy-User -NewUserAccount $NewUser -CopyAccountObject $CopyUserObject -Credential $Cred
+Copy-User -SamAccount $SamAccount -CopyAccountObject $CopyUserObject -Credential $Cred
 Write-Host "-----------------------------------------------------------------------"
 # can be qicker if staff is in your local comain, but longer when on the other domain
 Write-Host "Waiting 120 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  
