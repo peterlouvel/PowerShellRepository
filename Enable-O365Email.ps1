@@ -92,7 +92,6 @@ Remove-PSSession $Session1
 
 Write-Host "------------------------------------------------------------------------------------------------"
 Write-Host "Waiting a couple minutes for O365 email account to be created before enabling E3 licence." -ForegroundColor Cyan  
-Write-Host "Not sure if the timeout is needed, or if we have to wait for the mailbox to sync back down to local AD." -ForegroundColor Cyan  
 Write-Host "This just seems to work" -ForegroundColor Green  
 Write-Host "------------------------------------------------------------------------------------------------"
 Start-Sleep -s 15
