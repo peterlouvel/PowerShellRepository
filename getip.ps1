@@ -9,9 +9,8 @@ Function DigitToStrIPAddress($Digit9IPAddress) {
    }
    
    $all = @()
-   $time = 0
-   
-   $users = get-aduser -filter * -Properties 'msRADIUSFramedIPAddress' | ? { $_.msRADIUSFramedIPAddress -ne $null }
+      
+   $users = get-aduser -filter * -Properties 'msRADIUSFramedIPAddress' | Where-Object { $_.msRADIUSFramedIPAddress -ne $null }
    foreach( $user in $users)
    {
        $IP = DigitToStrIPAddress($user.msRADIUSFramedIPAddress)
