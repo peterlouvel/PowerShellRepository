@@ -74,6 +74,7 @@ $Params             = @("Department",
                 "Company"
                 "Manager"
                 "MemberOf"
+                "co"
                     )
 $CopyUserObject     = Get-ADUser -Identity $CopyUser -Properties $Params -Server $DomainController
 
@@ -151,6 +152,7 @@ function Copy-User{
     $Country            = $CopyAccountObject.Country
     $Company            = $CopyAccountObject.Company
     $Manager            = $CopyAccountObject.Manager
+    $co                 = $CopyAccountObject.co
     $newPass            = [System.Web.Security.Membership]::GeneratePassword(10,3)
     $paramsCreate       = @{  
         Instance            = "$CopyAccountObject" 
@@ -172,6 +174,7 @@ function Copy-User{
         State               = "$State"
         Country             = "$Country"
         Company             = "$Company"
+        co                  = "$co"
     }
     Write-Host $paramsCreate.Path
     Write-Host "Creating new user " -NoNewline 

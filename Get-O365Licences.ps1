@@ -112,10 +112,12 @@ $subscription.add("MS_TEAMS_IW"               ,"74fbf1bb-47c6-4796-9623-77dc7371
 $subscription.add("MICROSOFT_BUSINESS_CENTER" ,"726a0894-2c77-4d65-99da-9775ef05aad1")
 $subscription.add("WINDOWS_STORE"             ,"6470687e-a428-4b7a-bef2-8a291ad947c9")
 
+Write-Host $licenceName " = " $subscription[$licenceName]
+$Users1 = Get-MsolUser -All | Where-Object -Property isLicensed | Select-Object -Property *
+$Users = $Users1 | Sort-Object Country, City, DisplayName
+# $Users | Select-Object -Property Country, DisplayName
 
-$Users = Get-MsolUser -All | Where-Object -Property isLicensed | select -Property *
-Write-Host $licenceName " = " $subscription[$licenceName] 
-
+# Set-ADUser -Replace @{co="New Zealand"} -Server "NzBneDC5.nz.edmi.local" -Credential $Cred
 foreach ($User in $Users) {
     # Write-Host "------------------------------"
     $userUPN = $User.UserprincipalName
@@ -129,6 +131,8 @@ foreach ($User in $Users) {
         }
     }
 }
+
+
 
 <#
 
