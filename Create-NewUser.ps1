@@ -38,6 +38,7 @@ if ($Domain -eq "au"){
     $DomainController = "AuBneDC11.au.edmi.local"
     $Server = "au.edmi.local"
     $AdminAccount1 = "au\"+$AdminAccount
+    $Location = "Australia"
     if ($null -eq $Cred){
         $Cred = Get-Credential $AdminAccount1
     } 
@@ -47,6 +48,7 @@ if ($Domain -eq "au"){
     $DomainController = "NzBneDC5.nz.edmi.local"
     $Server = "nz.edmi.local"
     $AdminAccount1 = "nz\"+$AdminAccount
+    $Location = "New Zealand"
     if ($null -eq $Cred){
         $Cred = Get-Credential $AdminAccount1
     }
@@ -67,14 +69,14 @@ $Params             = @("Department",
                 "PostalCode", 
                 "POBox", 
                 "postOfficeBox", 
-                "DistinguishedName"
-                "StreetAddress"
-                "State"
-                "Country"
-                "Company"
-                "Manager"
+                "DistinguishedName",
+                "StreetAddress",
+                "State",
+                "Country",
+                "Company",
+                "Manager",
                 "MemberOf"
-                "co"
+                # ,"co"
                     )
 $CopyUserObject     = Get-ADUser -Identity $CopyUser -Properties $Params -Server $DomainController
 
@@ -152,7 +154,7 @@ function Copy-User{
     $Country            = $CopyAccountObject.Country
     $Company            = $CopyAccountObject.Company
     $Manager            = $CopyAccountObject.Manager
-    $co                 = $CopyAccountObject.co
+    # $co                 = $CopyAccountObject.co
     $newPass            = [System.Web.Security.Membership]::GeneratePassword(10,3)
     $paramsCreate       = @{  
         Instance            = "$CopyAccountObject" 
@@ -174,7 +176,7 @@ function Copy-User{
         State               = "$State"
         Country             = "$Country"
         Company             = "$Company"
-        co                  = "$co"
+        # co                  = "$co"
     }
     Write-Host $paramsCreate.Path
     Write-Host "Creating new user " -NoNewline 
@@ -200,6 +202,8 @@ function Copy-User{
 }
 
 Copy-User -SamAccount $SamAccount -CopyAccountObject $CopyUserObject -Credential $Cred
+Start-Sleep -s 5
+Get-ADUser -Identity $SamAccount | Set-ADObject -Replace @{co="$Location"} -Credential $Cred
 Write-Host "-----------------------------------------------------------------------"
 # can be qicker if staff is in your local comain, but longer when on the other domain
 Write-Host "Waiting 120 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  
