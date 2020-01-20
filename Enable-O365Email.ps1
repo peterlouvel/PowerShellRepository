@@ -4,7 +4,7 @@
 .DESCRIPTION
     Run this when the users account is synced to O365
 .EXAMPLE
-    PS C:\> Enable-O365Email -User "user.name" -Domain "au"
+    PS C:\> Enable-O365Email -User "user.name" -Domain "au" -LicenceCode "E1"
     Creates the users mailbox on O365 and enables E3 licence 
 .INPUTS
     .
@@ -14,6 +14,49 @@
     Domain can be
         au
         nz
+
+        AccountSkuID	            Description
+        BI_AZURE_P1	                Power BI (Business Intelligence) Reporting and Analytics
+        CRMIUR	                    Customer Relationship Management Internal Use Rights
+        DESKLESSPACK	            Office 365 (Plan K1)
+        DESKLESSWOFFPACK	        Office 365 (Plan K2)
+        DEVELOPERPACK	            Office 365 For Developers
+        ECAL_SERVICES	            Enterprise Client Access Services
+        EMS	                        Enterprise Mobility Suite
+        ENTERPRISEPACK	            Enterprise Plan E3
+        ENTERPRISEPACK_B_PILOT	    Office 365 (Enterprise Preview)
+        ENTERPRISEPACK_FACULTY	    Office 365 (Plan A3) for Faculty
+        ENTERPRISEPACK_STUDENT	    Office 365 (Plan A3) for Students
+        ENTERPRISEPACKLRG	        Enterprise Plan E3
+        ENTERPRISEWITHSCAL	        Enterprise Plan E4
+        ENTERPRISEWITHSCAL_FACULTY	Office 365 (Plan A4) for Faculty
+        ENTERPRISEWITHSCAL_STUDENT	Office 365 (Plan A4) for Students
+        EXCHANGESTANDARD	        Office 365 Exchange Online Only
+        INTUNE_A	                Windows Intune Plan A
+        LITEPACK	                Office 365 (Plan P1)
+        MCOMEETADV	                Public switched telephone network (PSTN) conferencing
+        PLANNERSTANDALONE	        Planner Standalone
+        POWER_BI_ADDON	            Office 365 Power BI Add-on
+        POWER_BI_INDIVIDUAL_USE	    Power BI Individual User
+        POWER_BI_PRO	            Power-BI Professional
+        POWER_BI_STANDALONE	        Power BI Standalone
+        POWER_BI_STANDARD	        Power-BI Standard
+        PROJECTCLIENT	            Project Professional
+        PROJECTESSENTIALS	        Project Lite
+        PROJECTONLINE_PLAN_1	    Project Online
+        PROJECTONLINE_PLAN_2	    Project Online (and Professional Version)
+        RIGHTSMANAGEMENT_ADHOC	    Windows Azure Rights Management
+        SHAREPOINTSTORAGE	        SharePoint storage
+        STANDARD_B_PILOT	        Office 365 (Small Business Preview)
+        STANDARDPACK	            Enterprise Plan E1
+        STANDARDPACK_FACULTY	    Office 365 (Plan A1) for Faculty
+        STANDARDPACK_STUDENT	    Office 365 (Plan A1) for Students
+        STANDARDWOFFPACK	        Office 365 (Plan E2)
+        STANDARDWOFFPACKPACK_FACULTY	Office 365 (Plan A2) for Faculty
+        STANDARDWOFFPACKPACK_STUDENT	Office 365 (Plan A2) for Students
+        VISIOCLIENT	                Visio Pro Online
+
+        Get-MsolSubscription | Where-Object {($_.Status -ne "Suspended")}
 #>
 
 param(
@@ -22,6 +65,9 @@ param(
     ,
     [Parameter(Mandatory=$true)]
     [string]$Domain
+    ,
+    [Parameter(Mandatory=$false)]
+    [string]$LicenceCode
 )
 
 [String] ${stUserDomain},[String]  ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
@@ -67,7 +113,7 @@ Write-Host "Setup your Credentials for accessing the Office 365 systems" -Foregr
 $Account = $stUserAccount + $EndAdmin
 Write-Host $Account
 if ($null -eq $O365CREDS){
-    $O365CREDS   = Get-Credential $Account
+    $O365CREDS = Get-Credential $Account
 } 
 Write-Host
 Write-Host "Connecting to Office 365" -ForegroundColor Green  
@@ -114,4 +160,9 @@ Write-Host "----- 2:00"
 # Give E3 licence to user
 Connect-MSOLService -Credential $O365CREDS
 Get-ADUser $UserLowerCase | Set-MsolUser  -UsageLocation $Domain                   # Sets the location (Country) of the user
-Set-MsolUserLicense -UserPrincipalName $Email -AddLicenses "EDMI:ENTERPRISEPACK"   # Gives E3 licence
+If ($LicenceCode -eq "E3") {
+    Set-MsolUserLicense -UserPrincipalName $Email -AddLicenses "EDMI:ENTERPRISEPACK"   # Gives E3 licence
+}
+If ($LicenceCode -eq "E1") {
+    Set-MsolUserLicense -UserPrincipalName $Email -AddLicenses "EDMI:STANDARDPACK"   # Gives E3 licence
+}
