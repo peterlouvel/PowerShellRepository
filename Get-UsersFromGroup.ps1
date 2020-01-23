@@ -20,4 +20,5 @@ param(
 )
 
 
-Get-ADGroupMember -Identity $GroupName -Recursive | Get-ADUser -Property DisplayName | Select Name,ObjectClass,DisplayName
+Get-ADGroupMember -Identity $GroupName -Recursive | Get-ADUser -Property DisplayName | Select DisplayName
+# Get-ADGroupMember -Identity $GroupName -Recursive | Get-ADUser -Property DisplayName | Select Name,ObjectClass,DisplayName
