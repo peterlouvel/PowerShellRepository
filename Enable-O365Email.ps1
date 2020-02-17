@@ -137,7 +137,7 @@ Exit-PSSession
 Remove-PSSession $Session1
 
 Write-Host "------------------------------------------------------------------------------------------------"
-Write-Host "Waiting a couple minutes for O365 email account to be created before enabling E3 licence." -ForegroundColor Cyan  
+Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
 Write-Host "This just seems to work" -ForegroundColor Green  
 Write-Host "------------------------------------------------------------------------------------------------"
 Start-Sleep -s 15
