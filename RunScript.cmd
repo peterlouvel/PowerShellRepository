@@ -1,4 +1,4 @@
-timeout 5 > nul
+timeout 15 > nul
 mkdir c:\temp
 
 SET SOFTWARE=\\fileserver.au.edmi.local\Software
@@ -10,12 +10,6 @@ FOR /F "tokens=1,2*" %%a IN ('REG QUERY %DESKTOP_REG_ENTRY% /v %DESKTOP_REG_KEY%
     set DESKTOP_DIR="%%c"
 )
 
-@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1909"
-@IF ERRORLEVEL 1 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\%computername%_%username%.txt
-) else (
-	del \\fileserver.au.edmi.local\logininfo$\Computers\Ver\%computername%*.txt /q
-)
 
 if not exist c:\windows\searchgroup.cmd (
 	if exist %scripts%\searchgroup.cmd (
@@ -28,25 +22,20 @@ for /f %%A in ('wmic csproduct get Vendor') do (
     if %%A==Dell goto Dell
     if %%A==LENOVO goto Lenovo
 )
-
-:notExist
-    goto Continue
+goto ContinueVendor
 rem -----------------------------------------
 
 :Dell
-    goto Continue
+goto ContinueVendor
 rem -----------------------------------------
 
 :Lenovo
-    if not exist c:\drivers\apps\lenovo\setup_vantage.bat (
-        xcopy /herky %SOFTWARE%\Lenovo c:\DRIVERS\APPS\Lenovo /i
-        cmd /c call c:\drivers\apps\Lenovo\setup_vantage.bat
-    )
-	
-    goto Continue
-rem -----------------------------------------
+if not exist c:\drivers\apps\lenovo\setup_vantage.bat (
+    xcopy /herky %SOFTWARE%\Lenovo c:\DRIVERS\APPS\Lenovo /i
+    cmd /c call c:\drivers\apps\Lenovo\setup_vantage.bat
+)
 
-:Continue
+:ContinueVendor
 rem --------------------------------------------------------------------------------------
 
 
@@ -109,6 +98,53 @@ if not exist %USERPROFILE%\SearchTopOff.txt (
 	regedit /s c:\temp\SearchTop.reg
 	xcopy %scripts%\Files\fileExt.txt %USERPROFILE%\SearchTopOff.txt* /y
 )
+
+REG ADD "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /V SilentAccountConfig /T REG_DWORD /D 1 /F
+REG ADD "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /V KFMSilentOptIn /T REG_SZ /D "74430ce8-49b7-4f72-8b54-1c334958bf25" /F
+REG ADD "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /V KFMSilentOptInWithNotification /T REG_DWORD /D 0 /F
+
+net time /domain /set /y
+
+del \\fileserver.au.edmi.local\logininfo$\Computers\Ver\%computername%*.txt /q /s
+@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1703"
+@IF %ERRORLEVEL% EQU 0 (
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1703\%computername%_%username%.txt
+    goto Continue
+) 
+@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1709"
+@IF %ERRORLEVEL% EQU 0 (
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1709\%computername%_%username%.txt
+    goto Continue
+)
+@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1803"
+@IF %ERRORLEVEL% EQU 0 (
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1803\%computername%_%username%.txt
+    goto Continue
+)
+@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1809"
+@IF %ERRORLEVEL% EQU 0 (
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1809\%computername%_%username%.txt
+    goto Continue
+)
+@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1903"
+@IF %ERRORLEVEL% EQU 0 (
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1903\%computername%_%username%.txt
+    goto Continue
+) 
+@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1909"
+@IF %ERRORLEVEL% EQU 0 (
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1909\%computername%_%username%.txt
+    goto Continue
+)
+@Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"2004"
+@IF %ERRORLEVEL% EQU 0 (
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\2004\%computername%_%username%.txt
+    goto Continue
+)
+@echo "other"
+Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\other\%computername%_%username%.txt
+
+:Continue
 
 rem 
 REM if exist "%USERPROFILE%\dpi.txt" (
