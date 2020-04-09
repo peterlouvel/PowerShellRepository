@@ -22,7 +22,7 @@
         FLOW_FREE
         VISIO
         
-        EDMI Pty Ltd, Scott Walker , 74430ce8-49b7-4f72-8b54-1c334958bf25
+        EDMI Pty Ltd, Scott Walker , TenantID 74430ce8-49b7-4f72-8b54-1c334958bf25
  
         New Subscription Id	                                                                Product Name	            Start Date	End Date
         4D4ECDEA-4CD4-4C10-9BF1-198C855B80C4	f8a1db68-be16-40ed-86d5-cb42ce701560    Power BI Pro	            30/09/2019	26/10/2020
@@ -94,16 +94,17 @@ if ($stUserDomain -eq "au"){
     exit
 }
 
-#if $O365CREDS not setup before script run, setup now
-if ($null -eq $O365CREDS){
+#if $AppCREDS not setup before script run, setup now
+if ($null -eq $AppCREDS){
     $Account = $stUserAccount + $End
-    # Write-Host $Account
-    $O365CREDS   = Get-Credential $Account
+    Write-Host "Type in the Application Credential you created https://docs.microsoft.com/en-us/azure/active-directory/user-help/multi-factor-authentication-end-user-app-passwords#create-and-delete-app-passwords-using-the-office-365-portal"
+    $AppCREDS   = Get-Credential $Account
 } 
 
 Install-Module -Name AzureAD -Scope CurrentUser
-Connect-AzureAD -Credential $O365CREDS
-Connect-MsolService -Credential $O365CREDS
+Connect-AzureAD -AccountId $stUserEmail
+# Connect-AzureAD -Credential $AppCREDS
+Connect-MsolService 
 
 # $licensePlanList = Get-AzureADSubscribedSku
 # # Write-Host $licensePlanList
@@ -150,35 +151,3 @@ foreach ($User in $Users) {
     }
 }
 
-
-
-<#
-$userUPN = "peter.louvel@edmi.com.au"
-$licenseFrom = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-$licensesFrom = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-$licenseTo = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-$licensesTo = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-#Adds Current licence
-$licenseFrom.SkuId = "6fd2c87f-b296-42f0-b197-1e91e994b900"
-$licensesFrom.AddLicenses = $licenseFrom
-Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesFrom
-#Removes that licence
-$licensesFrom.AddLicenses = @()
-$licensesFrom.RemoveLicenses =  $licenseFrom.SkuId
-Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesFrom
-# Assign new licence
-$licenseTo.SkuId = "796b6b5f-613c-4e24-a17c-eba730d49c02"
-$licensesTo.AddLicenses = $LicenseTo
-Set-AzureADUserLicense -ObjectId $userUPN -AssignedLicenses $licensesTo
-#>
-
-<#      in vscode 
-    ##    
-        $Mycert = (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)[0]
-        $currentFile = $psEditor.GetEditorContext().CurrentFile.Path
-        Set-AuthenticodeSignature -Certificate $Mycert -FilePath $currentFile
-    
-    ##  
-        Set-AuthenticodeSignature -FilePath ${activeFile} -Certificate @(Get-ChildItem cert:\\CurrentUser\\My -codesign)[0]
-        Set-AuthenticodeSignature -FilePath $psEditor.GetEditorContext().CurrentFile.Path -Certificate @(Get-ChildItem cert:\\CurrentUser\\My -codesign)[0]
-#>

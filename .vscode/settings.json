@@ -1,0 +1,4 @@
+{
+    "editor.suggest.insertHighlight": false,
+    "files.autoSave": "onFocusChange"
+}

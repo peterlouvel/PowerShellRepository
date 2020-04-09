@@ -191,19 +191,21 @@ function Copy-User{
         Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Green 
         Write-Host "----------------------------------------------------"
     }
-    Write-Host "Setting users manger to $Manager"
-    Start-Sleep -s 3
+    Write-Host "Setting users manager to " -ForegroundColor Green -NoNewline
+    Write-Host "$Manager" -ForegroundColor Cyan
+    Write-Host " --- give it 20 seconds to sync the AD Changes through"
+    Start-Sleep -s 20
     Set-ADUser -Identity "$SamAccount" -Replace @{manager="$Manager"} -Credential $Credential -Server $DomainController 
     Write-Host "Setting users password to " -NoNewline  -ForegroundColor Cyan   
     Write-Host "$newPass" -ForegroundColor Green  
-    Start-Sleep -s 10
+    Start-Sleep -s 5
     Set-ADAccountPassword -Identity "$SamAccount" -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$newPass" -Force) -Credential $Credential -Server $DomainController
     Enable-ADAccount -Identity "$SamAccount" -Credential $Credential -Server $DomainController
 }
 
 Copy-User -SamAccount $SamAccount -CopyAccountObject $CopyUserObject -Credential $Cred
 Start-Sleep -s 5
-Get-ADUser -Identity $SamAccount | Set-ADObject -Replace @{co="$Location"} -Credential $Cred
+Get-ADUser -Identity $SamAccount -Server $DomainController | Set-ADObject -Replace @{co="$Location"} -Credential $Cred -Server $DomainController
 Write-Host "-----------------------------------------------------------------------"
 # can be qicker if staff is in your local comain, but longer when on the other domain
 Write-Host "Waiting 120 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  

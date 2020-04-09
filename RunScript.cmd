@@ -75,17 +75,6 @@ if not exist %USERPROFILE%\FileExt1.txt (
 	c:\temp\SetUserFTA %USERPROFILE%\FileExt1.txt
 )
 del c:\temp\fileExt.txt /q
-if not exist %USERPROFILE%\taskbar.txt (
-	if not exist c:\temp\SysPIN.exe (
-		xcopy %scripts%\Files\SysPIN.exe c:\temp /y
-	)
-	c:\temp\SysPIN "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" "Pin to taskbar"
-	c:\temp\SysPIN "C:\Program Files\Mozilla Firefox\firefox.exe" "Pin to taskbar"
-	c:\temp\SysPIN "C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE" "Pin to taskbar"
-	c:\temp\SysPIN "C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE" "Pin to taskbar"
-	c:\temp\SysPIN "C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE" "Pin to taskbar"
-	xcopy %scripts%\Files\fileExt.txt %USERPROFILE%\taskbar.txt* /y
-)
 
 if not exist %USERPROFILE%\OfficeUpgrade.txt (
 	xcopy %scripts%\Files\OfficeUpgradeCDN.reg c:\temp\OfficeUpgradeCDN.reg* /y
@@ -146,6 +135,7 @@ Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\f
 
 :Continue
 
+
 rem 
 REM if exist "%USERPROFILE%\dpi.txt" (
 REM 	powershell -ExecutionPolicy Bypass -noprofile -file %scripts%\DPI.ps1
@@ -161,3 +151,18 @@ if exist c:\temp\install.cmd     ( del c:\temp\install.cmd /q )
 if exist c:\temp\startup.cmd     ( del c:\temp\startup.cmd /q )
 if exist "c:\users\public\desktop\TeamViewer EDMI.exe"  ( del "c:\users\public\desktop\TeamViewer EDMI.exe" /q )
 if exist "c:\users\public\desktop\IT Systems Information.url"  ( del "c:\users\public\desktop\IT Systems Information.url" /q )
+
+timeout 60 > nul
+
+if not exist %USERPROFILE%\taskbar.txt (
+	if not exist c:\temp\SysPIN.exe (
+		xcopy %scripts%\Files\SysPIN.exe c:\temp /y
+	)
+	c:\temp\SysPIN "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" "Pin to taskbar"
+	c:\temp\SysPIN "C:\Program Files\Mozilla Firefox\firefox.exe" "Pin to taskbar"
+	c:\temp\SysPIN "C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE" "Pin to taskbar"
+	c:\temp\SysPIN "C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE" "Pin to taskbar"
+	c:\temp\SysPIN "C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE" "Pin to taskbar"
+	xcopy %scripts%\Files\fileExt.txt %USERPROFILE%\taskbar.txt* /y
+)
+
