@@ -94,6 +94,7 @@ if ($Domain -eq "au"){
     Write-Host "Domain should be AU or NZ"
     exit
 }
+
 Write-Host
 Write-Host "Setup your Credentials for accessing the local exchange server" -ForegroundColor Cyan  
 Write-Host $AdminAccount1
