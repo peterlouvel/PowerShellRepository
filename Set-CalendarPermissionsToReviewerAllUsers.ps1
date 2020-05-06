@@ -25,7 +25,7 @@ if ($null -eq $AppCREDS){
     $AppCREDS   = Get-Credential $UPNAccount
 } 
 
-$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -AllowRedirection -Credential $AppCred -Authentication Basic
+$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -AllowRedirection -Credential $AppCREDS -Authentication Basic
 Import-PSSession $Session
 $users = Get-Mailbox -Resultsize Unlimited
 foreach ($user in $users) {

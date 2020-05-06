@@ -130,9 +130,13 @@ Write-Host " $User " -ForegroundColor Cyan -NoNewline
 Write-Host " exits. Creating Mailbox on O365" -ForegroundColor Green 
 Write-Host
 Write-Host "Connecting to the Local Exchange Server" -ForegroundColor Green  
+
 # Create user local AD, sync AD to O365 then when synced, run the following
-$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
-$temp = Import-PSSession $Session1 3>$null
+# $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
+# $temp = Import-PSSession $Session1 3>$null
+
+Connect-ExchangeOnline  -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -UserPrincipalName $stUserAccount$end -ShowProgress $true
+
 $UserO365email = $UserLowerCase + "@edmi.mail.onmicrosoft.com"
 Write-Host "Setting up remote mailbox for user " -ForegroundColor Green -NoNewline
 Write-Host " $UserLowerCase " -ForegroundColor Cyan  

@@ -77,8 +77,23 @@ if ( -not $licenceName){
     [String] $licenceName=$(Read-Host -prompt "Enter the Licence")
 }
 
+# Get users domain and username
+[String] ${stUserDomain}, [String] ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+
+# Setup correct ending for UPN
+if ($stUserDomain -eq "au"){
+    $End = "@edmi.com.au"
+} elseif ($stUserDomain -eq "nz"){
+    $End = "@edmi.co.nz"
+} else {
+    Write-Host "Run this command with your AU or NZ Domain credentials that can access Office 365"
+    exit
+}
+
+$UPNAccount = "$stUserAccount"+"$End"
+
 # Install-Module -Name AzureAD -Scope CurrentUser
-Connect-AzureAD #-Credential $O365CREDS
+Connect-AzureAD -AccountId $UPNAccount 
 Connect-MsolService #-Credential $O365CREDS
 
 $subscription = @{}
@@ -102,6 +117,7 @@ $subscription.add("MICROSOFT_BUSINESS_CENTER" ,"726a0894-2c77-4d65-99da-9775ef05
 $subscription.add("WINDOWS_STORE"             ,"6470687e-a428-4b7a-bef2-8a291ad947c9")
 
 Write-Host $licenceName " = " $subscription[$licenceName]
+$Users1 = Get-AzureADUser -All $true 
 $Users1 = Get-MsolUser -All | Where-Object -Property isLicensed | Select-Object -Property *
 $Users = $Users1 | Sort-Object Country, City, DisplayName
 

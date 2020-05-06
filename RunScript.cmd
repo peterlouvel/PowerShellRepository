@@ -94,44 +94,47 @@ REG ADD "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /V KFMSilentOptInWithNotific
 
 net time /domain /set /y
 
-del \\fileserver.au.edmi.local\logininfo$\Computers\Ver\%computername%*.txt /q /s
+rem change to your own server and fileshare that has authenticated users write access
+set Server=\\fileserver.au.edmi.local\logininfo$
+
+del %Server%\Computers\Ver\%computername%*.txt /q /s
 @Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1703"
 @IF %ERRORLEVEL% EQU 0 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1703\%computername%_%username%.txt
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\1703\%computername%_%username%.txt
     goto Continue
 ) 
 @Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1709"
 @IF %ERRORLEVEL% EQU 0 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1709\%computername%_%username%.txt
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\1709\%computername%_%username%.txt
     goto Continue
 )
 @Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1803"
 @IF %ERRORLEVEL% EQU 0 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1803\%computername%_%username%.txt
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\1803\%computername%_%username%.txt
     goto Continue
 )
 @Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1809"
 @IF %ERRORLEVEL% EQU 0 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1809\%computername%_%username%.txt
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\1809\%computername%_%username%.txt
     goto Continue
 )
 @Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1903"
 @IF %ERRORLEVEL% EQU 0 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1903\%computername%_%username%.txt
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\1903\%computername%_%username%.txt
     goto Continue
 ) 
 @Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"1909"
 @IF %ERRORLEVEL% EQU 0 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\1909\%computername%_%username%.txt
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\1909\%computername%_%username%.txt
     goto Continue
 )
 @Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId | findstr /e /c:"2004"
 @IF %ERRORLEVEL% EQU 0 (
-    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\2004\%computername%_%username%.txt
+    Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\2004\%computername%_%username%.txt
     goto Continue
 )
 @echo "other"
-Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > \\fileserver.au.edmi.local\logininfo$\Computers\Ver\other\%computername%_%username%.txt
+Reg Query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ReleaseId > %Server%\Computers\Ver\other\%computername%_%username%.txt
 
 :Continue
 
