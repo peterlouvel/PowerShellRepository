@@ -58,11 +58,11 @@ if ($Domain -eq "au"){
     exit
 }
 Write-Host
-Write-Host "Setup your Credentials for accessing the local exchange server" -ForegroundColor Cyan  
+Write-Host "Setting up your Credentials for accessing the local exchange server " -ForegroundColor Cyan -NoNewLine
 Write-Host $AdminAccount1
 
-$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
-Import-PSSession $Session1 3>$null -AllowClobber
+$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $Cred
+$temp = Import-PSSession $Session1 3>$null -AllowClobber
 
 $params = @{ 'ExternalEmailAddress' = "SMTP:$ExternalEmail";
              'DisplayName'          = "$FullName";
@@ -75,11 +75,13 @@ $params = @{ 'ExternalEmailAddress' = "SMTP:$ExternalEmail";
             }
 
 Write-Host "--New Mail Contact--"
-New-MailContact @params
-# Write-Host "- $ExternalEmail - $FullName -"
-Write-Host " - Waiting 30 Seconds for AD to sync before makeing changes to the contacts description"
+$temp = New-MailContact @params 
+Write-Host "$FullName " -ForegroundColor Cyan -NoNewLine
+Write-host "<$ExternalEmail> " -ForegroundColor Green -NoNewLine
+Write-Host "created in "
+Write-Host "*** au.edmi.local/EDMI Australia/Mail/Mail Contacts/Storm Production Clients" -ForegroundColor Cyan 
+Write-Host "--- Waiting 30 Seconds for AD to sync before making changes to the contacts description"
 Start-Sleep -s 30
 Get-ADObject -LDAPFilter "objectClass=Contact" -Properties * | where-object {$_.Name -like "$FullName"} | Set-ADObject -Description "$ExternalEmail" -Credential $Cred
 Exit-PSSession
 Remove-PSSession $Session1
-

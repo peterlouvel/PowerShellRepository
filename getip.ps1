@@ -21,8 +21,7 @@ Function DigitToStrIPAddress($Digit9IPAddress) {
        $all += $result
    }
    
-   
-   $all | export-csv c:\temp\results.csv -encoding UTF8
+      $all | export-csv c:\temp\results.csv -encoding UTF8
    
    
    
