@@ -22,7 +22,7 @@
         FLOW_FREE
         VISIO
         
-        EDMI Pty Ltd, Scott Walker , TenantID 74430ce8-49b7-4f72-8b54-1c334958bf25
+        EDMI Pty Ltd, Scott Walker , 74430ce8-49b7-4f72-8b54-1c334958bf25
  
         New Subscription Id	                                                                Product Name	            Start Date	End Date
         4D4ECDEA-4CD4-4C10-9BF1-198C855B80C4	f8a1db68-be16-40ed-86d5-cb42ce701560    Power BI Pro	            30/09/2019	26/10/2020
@@ -51,7 +51,6 @@
         6470687e-a428-4b7a-bef2-8a291ad947c9    WINDOWS_STORE
 #>
 
-
 param(
     [Parameter(Mandatory=$false)]
     [string]$licenceName
@@ -78,11 +77,8 @@ if ( -not $licenceName){
     [String] $licenceName=$(Read-Host -prompt "Enter the Licence")
 }
 
-Install-Module AzureAD -Force -Scope CurrentUser
-
+# Get users domain and username
 [String] ${stUserDomain}, [String] ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
-# Write-Host $stUserDomain
-# Write-Host $stUserAccount
 
 # Setup correct ending for UPN
 if ($stUserDomain -eq "au"){
@@ -94,22 +90,11 @@ if ($stUserDomain -eq "au"){
     exit
 }
 
-#if $AppCREDS not setup before script run, setup now
-if ($null -eq $AppCREDS){
-    $Account = $stUserAccount + $End
-    Write-Host "Type in the Application Credential you created https://docs.microsoft.com/en-us/azure/active-directory/user-help/multi-factor-authentication-end-user-app-passwords#create-and-delete-app-passwords-using-the-office-365-portal"
-    $AppCREDS   = Get-Credential $Account
-} 
-
-Install-Module -Name AzureAD -Scope CurrentUser
-Connect-AzureAD -AccountId $stUserEmail
-# Connect-AzureAD -Credential $AppCREDS
-Connect-MsolService 
-
-# $licensePlanList = Get-AzureADSubscribedSku
-# # Write-Host $licensePlanList
-# $AccountSkuIdNumbers = Get-MsolAccountSku
-# # Write-Host AccountSkuIdNumbers
+$UPNAccount = "$stUserAccount"+"$End"
+# Write-Host $UPNAccount
+# Install-Module -Name AzureAD -Scope CurrentUser
+$temp = Connect-AzureAD -AccountId $UPNAccount 
+# Connect-MsolService #-Credential $O365CREDS
 
 $subscription = @{}
 $subscription.add("E3"                        ,"6fd2c87f-b296-42f0-b197-1e91e994b900")
@@ -132,22 +117,9 @@ $subscription.add("MICROSOFT_BUSINESS_CENTER" ,"726a0894-2c77-4d65-99da-9775ef05
 $subscription.add("WINDOWS_STORE"             ,"6470687e-a428-4b7a-bef2-8a291ad947c9")
 
 Write-Host $licenceName " = " $subscription[$licenceName]
-$Users1 = Get-MsolUser -All | Where-Object -Property isLicensed | Select-Object -Property *
-$Users = $Users1 | Sort-Object Country, City, DisplayName
-# $Users | Select-Object -Property Country, DisplayName
+Write-Host "----------------------------------------------"
+$Users = Get-AzureADUser -All $true | Where-Object {($_.AssignedLicenses).SkuID -eq $subscription[$licenceName]} | Sort-Object Country, City, DisplayName
 
-# Set-ADUser -Replace @{co="New Zealand"} -Server "NzBneDC5.nz.edmi.local" -Credential $Cred
 foreach ($User in $Users) {
-    # Write-Host "------------------------------"
-    $userUPN = $User.UserprincipalName
-    $userList = Get-AzureADUser -ObjectID $userUPN | Select -ExpandProperty AssignedLicenses | Select SkuID 
-    # Write-host "UserList " $userList
-    $userList | ForEach { 
-        $sku = $_.SkuId 
-        if ( $sku -eq $subscription[$licenceName]) {
-            Write-Host $User.Country "`t" $User.City "`t" $userUPN 
-            # Write-Host "++ " $_.SkuPartNumber 
-        }
-    }
+    Write-Host $User.City "`t" $User.DisplayName 
 }
-
