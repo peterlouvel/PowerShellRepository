@@ -4,8 +4,8 @@
 .DESCRIPTION
     Run this when the users account is synced to O365
 .EXAMPLE
-    PS C:\> Enable-O365Email -User "user.name" -Domain "au" -LicenceCode "E1"
-    Creates the users mailbox on O365 and enables E3 licence 
+    PS C:\> Create-O365Email -User "user.name" -Domain "au" -LicenceCode "E1"
+    Creates the users mailbox on O365 and enables Office 365 licence 
 .INPUTS
     .
 .OUTPUTS
