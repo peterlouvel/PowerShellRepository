@@ -143,6 +143,7 @@ $temp = Enable-RemoteMailbox -Identity $UserLowerCase  -DomainController $Domain
 Exit-PSSession
 Remove-PSSession $Session1
 
+
 Write-Host "------------------------------------------------------------------------------------------------"
 Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
 Write-Host "------------------------------------------------------------------------------------------------"
