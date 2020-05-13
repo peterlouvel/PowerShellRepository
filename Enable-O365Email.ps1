@@ -68,7 +68,7 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Domain
     ,
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$true)]
     [string]$LicenceCode
 )
 
@@ -143,7 +143,6 @@ $temp = Enable-RemoteMailbox -Identity $UserLowerCase  -DomainController $Domain
 Exit-PSSession
 Remove-PSSession $Session1
 
-
 Write-Host "------------------------------------------------------------------------------------------------"
 Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
 Write-Host "------------------------------------------------------------------------------------------------"
@@ -165,10 +164,8 @@ Start-Sleep -s 15
 Write-Host "----- 2:00"
 
 # Give licence to user
-
 Set-AzureADUser -ObjectId $Email -UsageLocation $Domain
-#Get-ADUser $UserLowerCase -Credential $Cred -Server $DomainController | Set-MsolUser  -UsageLocation $Domain                   # Sets the location (Country) of the user
-# Set-AzureADUser -ObjectId $UserLowerCase.UserPrincipleName -City " "
+
 If ($LicenceCode -eq "E3") {
     $planName="ENTERPRISEPACK"
 }

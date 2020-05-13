@@ -78,7 +78,31 @@ $Params             = @("Department",
                 "MemberOf"
                 # ,"co"
                     )
+
 $CopyUserObject     = Get-ADUser -Identity $CopyUser -Properties $Params -Server $DomainController
+
+function Get-RandomCharacters($length, $characters) {
+    $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length }
+    $private:ofs=""
+    return [String]$characters[$random]
+}
+ 
+function Scramble-String([string]$inputString){     
+    $characterArray = $inputString.ToCharArray()   
+    $scrambledStringArray = $characterArray | Get-Random -Count $characterArray.Length     
+    $outputString = -join $scrambledStringArray
+    return $outputString 
+}
+
+function Create-Password{
+    $password = ""
+    $password = Get-RandomCharacters -length 5 -characters 'abcdefghiklmnoprstuvwxyz'
+    $password += Get-RandomCharacters -length 3 -characters 'ABCDEFGHKLMNOPRSTUVWXYZ'
+    $password += Get-RandomCharacters -length 2 -characters '1234567890'
+    $password += Get-RandomCharacters -length 1 -characters '!"§$%&/()=?}][{@#*+'
+    $password = Scramble-String $password   
+    return $password 
+}
 
 function Copy-Groups{
     param(
@@ -155,7 +179,7 @@ function Copy-User{
     $Company            = $CopyAccountObject.Company
     $Manager            = $CopyAccountObject.Manager
     # $co                 = $CopyAccountObject.co
-    $newPass            = [System.Web.Security.Membership]::GeneratePassword(10,3)
+    $newPass            = Create-Password
     $paramsCreate       = @{  
         Instance            = "$CopyAccountObject" 
         Path                = "$UserOU"
@@ -178,7 +202,8 @@ function Copy-User{
         Company             = "$Company"
         # co                  = "$co"
     }
-    Write-Host $paramsCreate.Path
+    # Write-Host $paramsCreate.Path
+    Write-Host
     Write-Host "Creating new user " -NoNewline 
     Write-Host "$FullNewUserName " -ForegroundColor Cyan -NoNewline 
     Write-Host "$SamAccount" -ForegroundColor Green
@@ -191,8 +216,9 @@ function Copy-User{
         Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Green 
         Write-Host "----------------------------------------------------"
     }
+    $managerName = $manager.Split(",").substring(3)[0]
     Write-Host "Setting users manager to " -ForegroundColor Green -NoNewline
-    Write-Host "$Manager" -ForegroundColor Cyan
+    Write-Host "$managerName" -ForegroundColor Cyan
     Write-Host " --- give it 20 seconds to sync the AD Changes through"
     Start-Sleep -s 20
     Set-ADUser -Identity "$SamAccount" -Replace @{manager="$Manager"} -Credential $Credential -Server $DomainController 

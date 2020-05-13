@@ -59,7 +59,7 @@ Write-Host
 Write-Host "Setup your Credentials for accessing the local exchange server" -ForegroundColor Cyan  
 Write-Host $AdminAccount1
 
-$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch1.edmi.local/powershell -Credential $Cred
+$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $Cred
 Import-PSSession $Session1 3>$null -AllowClobber
 $SamName = "Dist " + $Name 
 Write-Host "--New Distribution List--"
