@@ -19,19 +19,23 @@
 
 param(
     [Parameter(Mandatory=$False)]
-    [string]$User
+    [string]$UsersAccount
 )
 
-if ($User) {
+if ($UsersAccount) {
     try {
-        Get-ADUser "$User" -Properties "Name", "msDS-UserPasswordExpiryTimeComputed" | Select-Object -Property "Name",@{Name="ExpiryDate";Expression={[datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed")}} | sort -Property Name
+        Get-ADUser "$UsersAccount" -Properties "Name", "LastLogonDate", "msDS-UserPasswordExpiryTimeComputed" | 
+        Select-Object -Property "Name", "LastLogonDate", @{Name="ExpiryDate";Expression={[datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed")}} | 
+        sort -Property Name
     } catch {
         Write-Host "User " -ForegroundColor  Green -NoNewline
-        Write-Host "$user " -ForegroundColor  Red -NoNewline
+        Write-Host "$UsersAccount " -ForegroundColor  Red -NoNewline
         write-host "does not exist" -ForegroundColor  Green
     }
 } else {
-    Get-ADUser  -filter {(Enabled -eq $True) -and (PasswordNeverExpires -eq $False)} -Properties "Name", "msDS-UserPasswordExpiryTimeComputed" | Select-Object -Property "Name",@{Name="ExpiryDate";Expression={[datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed")}} | sort -Property Name
+    Get-ADUser  -filter {(Enabled -eq $True) -and (PasswordNeverExpires -eq $False)} -Properties "Name", "LastLogonDate",  "msDS-UserPasswordExpiryTimeComputed" | 
+    Select-Object -Property "Name", "LastLogonDate", @{Name="ExpiryDate";Expression={[datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed")}} | 
+    sort -Property Name
 }
 
 

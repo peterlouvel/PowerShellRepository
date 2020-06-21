@@ -56,20 +56,21 @@ param(
     [string]$licenceName
 )
 
+
 $ShowText = "
-E3
-E1
-STREAM
-FLOW_FREE
-VISIO
-EXCHANGE_ONLINE
-POWER_BI_PRO
-POWER_BI_STANDARD
-POWERAPPS_VIRAL
-MCOSTANDARD
-MS_TEAMS_IW
-MICROSOFT_BUSINESS_CENTER
-WINDOWS_STORE
+ E3
+ E1
+ STREAM
+ FLOW_FREE
+ VISIO
+ EXCHANGE_ONLINE
+ POWER_BI_PRO
+ POWER_BI_STANDARD
+ POWERAPPS_VIRAL
+ MCOSTANDARD
+ MS_TEAMS_IW
+ MICROSOFT_BUSINESS_CENTER
+ WINDOWS_STORE
 "
 
 if ( -not $licenceName){
@@ -77,24 +78,10 @@ if ( -not $licenceName){
     [String] $licenceName=$(Read-Host -prompt "Enter the Licence")
 }
 
-# Get users domain and username
-[String] ${stUserDomain}, [String] ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+$UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
 
-# Setup correct ending for UPN
-if ($stUserDomain -eq "au"){
-    $End = "@edmi.com.au"
-} elseif ($stUserDomain -eq "nz"){
-    $End = "@edmi.co.nz"
-} else {
-    Write-Host "Run this command with your AU or NZ Domain credentials that can access Office 365"
-    exit
-}
-
-$UPNAccount = "$stUserAccount"+"$End"
-# Write-Host $UPNAccount
 # Install-Module -Name AzureAD -Scope CurrentUser
 $temp = Connect-AzureAD -AccountId $UPNAccount 
-# Connect-MsolService #-Credential $O365CREDS
 
 $subscription = @{}
 $subscription.add("E3"                        ,"6fd2c87f-b296-42f0-b197-1e91e994b900")

@@ -63,108 +63,71 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$User
-    ,
-    [Parameter(Mandatory=$true)]
-    [string]$Domain
-    ,
-    [Parameter(Mandatory=$true)]
+    [string]$UserName
+    ,[Parameter(Mandatory=$false)]
+    [string]$UsersDomain = "z"
+    ,[Parameter(Mandatory=$true)]
     [string]$LicenceCode
 )
 
-[String] ${stUserDomain},[String]  ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
-
-if ($stUserDomain -eq "au"){
-    $EndAdmin = "@edmi.com.au"
-} elseif ($stUserDomain -eq "nz"){
-    $EndAdmin = "@edmi.co.nz"
-} else {
-    Write-Host "Your local account needs to be either AU or NZ" -ForegroundColor Red  
-    exit
-}
-
-if ($Domain -eq "au"){
-    $End = "@edmi.com.au"
-    $DomainController = "AuBneDC11.au.edmi.local"
-    if ($null -eq $Cred){
-        $AdminAccount = $stUserAccount + "_"
-        $AdminAccount1 = "au\"+$AdminAccount
-        $Cred = Get-Credential $AdminAccount1
-    } 
-} elseif ($Domain -eq "nz"){
-    $End = "@edmi.co.nz"
-    # $DomainController = "NZwlgDC3.nz.edmi.local"
-    $DomainController = "NzBneDC5.nz.edmi.local"
-    if ($null -eq $Cred){
-        $AdminAccount = $stUserAccount + "_"
-        $AdminAccount1 = "nz\"+$AdminAccount
-        $Cred = Get-Credential $AdminAccount1
-    }
-} else {
-    Write-Host "Domain should be AU or NZ" -ForegroundColor Red  
-    exit
-}
-
-$UserLowerCase = $User.ToLower()
-$Email = $UserLowerCase + $End
-# Write-Host "User eMail:  $Email"
+.".\IncludePWL.ps1"
 Write-Host
 Write-Host "Setup your Credentials for accessing the Office 365 systems - " -ForegroundColor Green  -NoNewline
-$Account = $stUserAccount + $EndAdmin
-Write-Host $Account 
+Write-Host $UPNAccount 
+
 $temp = Install-Module -Name AzureAD
-$temp = Connect-AzureAD -AccountId $Account
+$temp = Connect-AzureAD -AccountId $UPNAccount
 
 try {
-    $temp = Get-AzureADUser -ObjectId $Email #-erroraction 'silentlycontinue'
+    $temp = Get-AzureADUser -ObjectId $UserEmail #-erroraction 'silentlycontinue'
 }
 catch {
     Write-Host "User" -ForegroundColor Red  -NoNewline
-    Write-Host " $User " -ForegroundColor Cyan  -NoNewline
+    Write-Host " $UserName " -ForegroundColor Cyan  -NoNewline
     Write-Host "doesn't exist on Office 365 yet - wait till the user is on O365" -ForegroundColor Red  
     exit
 }
 
 Write-Host "User " -ForegroundColor Green  -NoNewline
-Write-Host " $User " -ForegroundColor Cyan -NoNewline 
+Write-Host " $UserName " -ForegroundColor Cyan -NoNewline 
 Write-Host " exits. Creating Mailbox on O365" -ForegroundColor Green 
 Write-Host
 Write-Host "Connecting to the Local Exchange Server" -ForegroundColor Green  
 # Create user local AD, sync AD to O365 then when synced, run the following
 $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $Cred
 $temp = Import-PSSession $Session1 3>$null
-$UserO365email = $UserLowerCase + "@edmi.mail.onmicrosoft.com"
+$UserO365email = $UserAccount + "@edmi.mail.onmicrosoft.com"
 Write-Host "Setting up remote mailbox for user " -ForegroundColor Green -NoNewline
-Write-Host " $UserLowerCase " -ForegroundColor Cyan  
+Write-Host " $UserName " -ForegroundColor Cyan  
 Write-Host
 
 $temp = Enable-RemoteMailbox -Identity $UserLowerCase  -DomainController $DomainController -RemoteRoutingAddress $UserO365email -erroraction 'silentlycontinue'
 
 Exit-PSSession
 Remove-PSSession $Session1
-
-Write-Host "------------------------------------------------------------------------------------------------"
-Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
-Write-Host "------------------------------------------------------------------------------------------------"
-Start-Sleep -s 15
-Write-Host "----- 0:15"
-Start-Sleep -s 15
-Write-Host "----- 0:30"
-Start-Sleep -s 15
-Write-Host "----- 0:45"
-Start-Sleep -s 15
-Write-Host "----- 1:00"
-Start-Sleep -s 15
-Write-Host "----- 1:15"
-Start-Sleep -s 15
-Write-Host "----- 1:30"
-Start-Sleep -s 15
-Write-Host "----- 1:45"
-Start-Sleep -s 15
-Write-Host "----- 2:00"
+ 
+ Write-Host "------------------------------------------------------------------------------------------------"
+ Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
+ Write-Host "------------------------------------------------------------------------------------------------"
+ Start-Sleep -s 15
+ Write-Host "----- 0:15"
+ Start-Sleep -s 15
+ Write-Host "----- 0:30"
+ Start-Sleep -s 15
+ Write-Host "----- 0:45"
+ Start-Sleep -s 15
+ Write-Host "----- 1:00"
+ Start-Sleep -s 15
+ Write-Host "----- 1:15"
+ Start-Sleep -s 15
+ Write-Host "----- 1:30"
+ Start-Sleep -s 15
+ Write-Host "----- 1:45"
+ Start-Sleep -s 15
+ Write-Host "----- 2:00"
 
 # Give licence to user
-Set-AzureADUser -ObjectId $Email -UsageLocation $Domain
+Set-AzureADUser -ObjectId $UserEmail -UsageLocation $Domain
 
 If ($LicenceCode -eq "E3") {
     $planName="ENTERPRISEPACK"
@@ -181,5 +144,5 @@ $License = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
 $License.SkuId = (Get-AzureADSubscribedSku | Where-Object -Property SkuPartNumber -Value $planName -EQ).SkuID
 $LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
 $LicensesToAssign.AddLicenses = $License
-Set-AzureADUserLicense -ObjectId $Email -AssignedLicenses $LicensesToAssign
+Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
 Write-Host

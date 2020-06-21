@@ -17,8 +17,9 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$GroupName
+    ,[Parameter(Mandatory=$true)]
+    [string]$Domain
 )
 
-
-Get-ADGroupMember -Identity $GroupName -Recursive | Get-ADUser -Property DisplayName | Select DisplayName
+Get-ADGroupMember -Identity $GroupName -Recursive -Server $Domain | Get-ADUser -Property DisplayName | Select DisplayName
 # Get-ADGroupMember -Identity $GroupName -Recursive | Get-ADUser -Property DisplayName | Select Name,ObjectClass,DisplayName

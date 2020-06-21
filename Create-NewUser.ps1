@@ -4,7 +4,7 @@
 .DESCRIPTION
     Long description
 .EXAMPLE
-    PS C:\> Create-NewUser -NewAccount "FirstName LastName" -CopyUser "existing.user" -Title "New Users Job Title" -Domain "au"
+    PS C:\> Create-NewUser -UserName "FirstName LastName" -FromUser "existing.user" -Title "New Users Job Title" -UsersDomain "au"
     Creates user "new.user and copies some info from "existing.user" 
 .INPUTS
     .
@@ -18,48 +18,18 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$NewAccount
-    ,
-    [Parameter(Mandatory=$true)]
-    [string]$CopyUser
-    ,
-    [Parameter(Mandatory=$true)]
+    [string]$UserName
+    ,[Parameter(Mandatory=$true)]
+    [string]$FromUser
+    ,[Parameter(Mandatory=$true)]
     [string]$Title
-    ,
-    [Parameter(Mandatory=$true)]
-    [string]$Domain
+    ,[Parameter(Mandatory=$false)]
+    [string]$UsersDomain = "z"
 )
 
-[String] ${stUserDomain},[String]  ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
-$AdminAccount = $stUserAccount + "_"
+.".\IncludePWL.ps1"
 
-if ($Domain -eq "au"){
-    $End = "@edmi.com.au"
-    $DomainController = "AuBneDC11.au.edmi.local"
-    $Server = "au.edmi.local"
-    $AdminAccount1 = "au\"+$AdminAccount
-    $Location = "Australia"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1
-    } 
-} elseif ($Domain -eq "nz"){
-    $End = "@edmi.co.nz"
-    # $DomainController = "NZwlgDC3.nz.edmi.local"
-    $DomainController = "NzBneDC5.nz.edmi.local"
-    $Server = "nz.edmi.local"
-    $AdminAccount1 = "nz\"+$AdminAccount
-    $Location = "New Zealand"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1
-    }
-} else {
-    Write-Host "Domain should be AU or NZ"
-    exit
-}
-
-$UserLowerCase      = $NewAccount.ToLower()
-$NewUser            = (Get-Culture).TextInfo.ToTitleCase($UserLowerCase) 
-$SamAccount         = $NewUser -replace ' ','.'
+$SamAccount         = $UserAccount
 
 $Params             = @("Department", 
                 "Office", 
@@ -79,7 +49,7 @@ $Params             = @("Department",
                 # ,"co"
                     )
 
-$CopyUserObject     = Get-ADUser -Identity $CopyUser -Properties $Params -Server $DomainController
+$CopyUserObject = Get-ADUser -Identity $FromUser -Properties $Params -Server $DomainController
 
 function Get-RandomCharacters($length, $characters) {
     $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length }
@@ -151,6 +121,7 @@ function Copy-Groups{
         $counter++
     }
 }
+
 function Copy-User{
     param(
         [Parameter(Mandatory=$true)]
@@ -213,7 +184,7 @@ function Copy-User{
     }Catch{
         Write-Host ""
         Write-Host "-- New-ADUser  @paramsCreate -Credential $Credential" -ForegroundColor Yellow 
-        Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Green 
+        Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Red 
         Write-Host "----------------------------------------------------"
     }
     $managerName = $manager.Split(",").substring(3)[0]
