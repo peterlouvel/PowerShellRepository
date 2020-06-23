@@ -4,9 +4,9 @@
 .DESCRIPTION
     Lock a users account in AD
 .EXAMPLE
-    PS C:\> Lock-User -UsersAccount "AMS Bob" -UsersDomain "au" 
+    PS C:\> Lock-User -UserName "AMS" -UsersDomain "au" 
     or to lock an account in your current domain
-    PS C:\> Lock-User -UsersAccount "AMS Bob"
+    PS C:\> Lock-User -UserName "AMS"
 .INPUTS
     .
 .OUTPUTS
@@ -21,15 +21,15 @@
 #>
 param(
     [Parameter(Mandatory=$true)]
-    [string]$UsersAccount
+    [string]$UserName
     ,[Parameter(Mandatory=$false)]
     [string]$UsersDomain = "z"
 )
 
-.".\Include.ps1"
+.".\IncludePWL.ps1"
 
 $Userinfo = Get-ADUser -Filter * -Properties LockedOut -Server $DomainController |
-    Where-Object { $_.SAMAccountName -like "*$user*" } |
+    Where-Object { $_.SAMAccountName -like "*$UserName*" } |
     Select-Object -Property SamAccountName, DistinguishedName, UserPrincipalName, LockedOut |
     Out-GridView -PassThru
 

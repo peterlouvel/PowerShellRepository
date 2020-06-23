@@ -71,6 +71,7 @@ param(
 )
 
 .".\IncludePWL.ps1"
+
 Write-Host
 Write-Host "Setup your Credentials for accessing the Office 365 systems - " -ForegroundColor Green  -NoNewline
 Write-Host $UPNAccount 

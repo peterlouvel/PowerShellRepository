@@ -4,9 +4,9 @@
 .DESCRIPTION
     Unlock a users account in AD
 .EXAMPLE
-    PS C:\> Unlock-User -UsersAccount "AMS Bob" -UsersDomain "au" 
+    PS C:\> Unlock-User -UserName "AMS" -UsersDomain "au" 
     or to unlock an account in your current domain
-    PS C:\> Unlock-User -UsersAccount "AMS Bob"
+    PS C:\> Unlock-User -UserName "AMS"
 .INPUTS
     .
 .OUTPUTS
@@ -22,7 +22,7 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$UsersAccount
+    [string]$UserName
     ,[Parameter(Mandatory=$false)]
     [string]$UsersDomain = "z"
 )
@@ -30,7 +30,7 @@ param(
 .".\IncludePWL.ps1"
 
 $Userinfo = Get-ADUser -Filter * -Properties LockedOut -Server $DomainController |
-    Where-Object { $_.SAMAccountName -like "*$user*" } |
+    Where-Object { $_.SAMAccountName -like "*$UserName*" } |
     Select-Object -Property SamAccountName, DistinguishedName, LockedOut |
     Out-GridView -PassThru
 
