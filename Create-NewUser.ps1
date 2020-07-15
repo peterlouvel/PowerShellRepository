@@ -27,7 +27,64 @@ param(
     [string]$UsersDomain = "z"
 )
 
-.".\IncludePWL.ps1"
+
+[String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+$AdminAccount = $stYourAccount + "_"
+
+if ($UsersDomain -eq "z"){
+    $UsersDomain=$stYourDomain
+}
+
+if ($UsersDomain -eq "au"){
+    $End = "@edmi.com.au"
+    $DomainController = "AuBneDC11.au.edmi.local"
+    $FQD = "au.edmi.local"
+    $AdminAccount1 = "au\"+$AdminAccount
+    $Location = "Australia"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1} 
+} elseif ($UsersDomain -eq "nz"){
+    $End = "@edmi.co.nz"
+    # $DomainController = "NZwlgDC3.nz.edmi.local"
+    $DomainController = "NzBneDC5.nz.edmi.local"
+    $FQD = "nz.edmi.local"
+    $AdminAccount1 = "nz\"+$AdminAccount
+    $Location = "New Zealand"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1}
+} elseif ($UsersDomain -eq "uk"){
+    $End = "@edmi-meters.com"
+    # $DomainController = "UkRdgDC1.uk.edmi.local"
+    $DomainController = "UkBneDC2.uk.edmi.local"
+    $FQD = "uk.edmi.local"
+    $AdminAccount1 = "uk\"+$AdminAccount
+    $Location = "United Kingdom"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1}
+} elseif ($UsersDomain -eq "sg"){
+    $End = "@edmi-meters.com"
+    $DomainController = "SgBneDC1.sg.edmi.local"
+    $FQD = "sg.edmi.local"
+    $AdminAccount1 = "sg\"+$AdminAccount
+    $Location = "Singapore"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1}
+} else {
+    Write-Host
+    Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
+    $ErrorActionPreference = "SilentlyContinue"
+}
+
+$UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
+if ($null -eq $EDMICREDS){
+    $EDMICREDS = Get-Credential "edmi\$AdminAccount"
+} 
+
+# $UserLowerCase  = $UserName.ToLower()
+$UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
+$UserAccount    = $UserName -replace ' ','.'
+$UserEmail      = $UserAccount.ToLower() + $End
+
 
 $SamAccount         = $UserAccount
 
@@ -99,9 +156,13 @@ function Copy-Groups{
         }elseif ($UserGroup.Contains("DC=nz")){
             Write-Host "NZ  -- "$GroupName.Substring(3)
             $Server = "nz.edmi.local"
+        }elseif ($UserGroup.Contains("DC=uk")){
+            Write-Host "UK  -- "$GroupName.Substring(3)
+            $Server = "uk.edmi.local"
         }elseif ($UserGroup.Contains("DC=sg")){
-            Write-Host "SG  -- "$GroupName.Substring(3) -ForegroundColor Red 
-            Continue
+            Write-Host "SG  -- "$GroupName.Substring(3)
+            $Server = "SG.edmi.local"
+            # Continue
             # Don't have access to Singapore Domain
         }else{
             Write-Host "ROOT  -- "$GroupName.Substring(3)
@@ -113,9 +174,9 @@ function Copy-Groups{
             Write-Host "-- [Worked] $server - $($NewAccountObject.DistinguishedName) " -ForegroundColor Yellow 
             Write-Host "----------------------------------------------------"
         }catch{
-            Write-Host "-- Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $Credential" -ForegroundColor Yellow            
-            Write-Host "-- [ERROR] $server - $($NewAccountObject.DistinguishedName) " -ForegroundColor Yellow 
-            Write-Host "   $($Error[0])" -ForegroundColor Red 
+            Write-Host "-- Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $Credential" -ForegroundColor Yellow
+            Write-Host "-- [ERROR] $server - $($NewAccountObject.DistinguishedName) " -ForegroundColor Cyan
+            Write-Host "   $($Error[0])" -ForegroundColor Red
             Write-Host "----------------------------------------------------"
         }
         $counter++
@@ -187,12 +248,14 @@ function Copy-User{
         Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Red 
         Write-Host "----------------------------------------------------"
     }
-    $managerName = $manager.Split(",").substring(3)[0]
-    Write-Host "Setting users manager to " -ForegroundColor Green -NoNewline
-    Write-Host "$managerName" -ForegroundColor Cyan
     Write-Host " --- give it 20 seconds to sync the AD Changes through"
     Start-Sleep -s 20
-    Set-ADUser -Identity "$SamAccount" -Replace @{manager="$Manager"} -Credential $Credential -Server $DomainController 
+    if ($manager){
+        $managerName = $manager.Split(",").substring(3)[0]
+        Write-Host "Setting users manager to " -ForegroundColor Green -NoNewline
+        Write-Host "$managerName" -ForegroundColor Cyan
+        Set-ADUser -Identity "$SamAccount" -Replace @{manager="$Manager"} -Credential $Credential -Server $DomainController 
+    }
     Write-Host "Setting users password to " -NoNewline  -ForegroundColor Cyan   
     Write-Host "$newPass" -ForegroundColor Green  
     Start-Sleep -s 5

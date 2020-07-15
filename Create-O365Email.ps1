@@ -102,7 +102,7 @@ Write-Host "Setting up remote mailbox for user " -ForegroundColor Green -NoNewli
 Write-Host " $UserName " -ForegroundColor Cyan  
 Write-Host
 
-$temp = Enable-RemoteMailbox -Identity $UserLowerCase  -DomainController $DomainController -RemoteRoutingAddress $UserO365email -erroraction 'silentlycontinue'
+$temp = Enable-RemoteMailbox -Identity $UserAccount  -DomainController $DomainController -RemoteRoutingAddress $UserO365email #-erroraction 'silentlycontinue'
 
 Exit-PSSession
 Remove-PSSession $Session1

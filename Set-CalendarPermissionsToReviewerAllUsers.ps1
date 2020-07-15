@@ -3,21 +3,21 @@
 # install  ==>  Microsoft.Online.CSE.PSModule.Client.application  
 # from  ===>  https://outlook.office365.com/ecp/
 
-[String] ${stUserDomain}, [String] ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
-Write-Host "Run this command with your AU or NZ Domain credentials that has admin access in Office 365"
+# [String] ${stUserDomain}, [String] ${stUserAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+# Write-Host "Run this command with your AU or NZ Domain credentials that has admin access in Office 365"
 
-# Setup correct ending for UPN
-if ($stUserDomain -eq "au"){
-    $End = "@edmi.com.au"
-} elseif ($stUserDomain -eq "nz"){
-    $End = "@edmi.co.nz"
-} else {
-    Write-Host "You are not running in an AU or NZ Domain"
-    exit
-}
+# # Setup correct ending for UPN
+# if ($stUserDomain -eq "au"){
+#     $End = "@edmi.com.au"
+# } elseif ($stUserDomain -eq "nz"){
+#     $End = "@edmi.co.nz"
+# } else {
+#     Write-Host "You are not running in an AU or NZ Domain"
+#     exit
+# }
 
-$UPNAccount = "$stUserAccount"+"$End"
-
+# $UPNAccount = "$stUserAccount"+"$End"
+$UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
 # This is if you don't have the $AppCREDS already setup and saved
 if ($null -eq $AppCREDS){
 	# doing this so we don't change the settings for all EDMI in Singapore and UK

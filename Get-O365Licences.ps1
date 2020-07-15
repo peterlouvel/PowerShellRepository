@@ -11,9 +11,6 @@
 .OUTPUTS
     .
 .NOTES
-    Domain can be
-        au
-        nz
         E3
         ENTERPRISEPACK
         E1
