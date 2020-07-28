@@ -1,5 +1,6 @@
-$UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
-
+if ($null -eq $UPNAccount){
+    $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
+}
 Connect-ExchangeOnline -UserPrincipalName $UPNAccount -ConnectionUri "https://outlook.office365.com/powershell-liveid/" 
 
 # To create dynamic distribution groups

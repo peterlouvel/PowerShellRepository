@@ -74,7 +74,10 @@ if ($UsersDomain -eq "au"){
     $ErrorActionPreference = "SilentlyContinue"
 }
 
-$UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
+if ($null -eq $UPNAccount){
+    $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
+}
+
 if ($null -eq $EDMICREDS){
     $EDMICREDS = Get-Credential "edmi\$AdminAccount"
 } 
