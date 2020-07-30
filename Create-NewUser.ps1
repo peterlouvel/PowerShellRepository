@@ -146,9 +146,6 @@ function Copy-Groups{
     $counter = 0
     foreach ($UserGroup in $CopyAccountObject.MemberOf){ 
         $GroupName = ($UserGroup -split ",",2)[0]
-        # Write-Host $GroupName.Substring(3)
-
-        # Write-Host $counter + " " + $UserGroup
 
         if ($UserGroup.Contains("DC=au")){
             Write-Host "AU  -- "$GroupName.Substring(3)
@@ -162,8 +159,6 @@ function Copy-Groups{
         }elseif ($UserGroup.Contains("DC=sg")){
             Write-Host "SG  -- "$GroupName.Substring(3)
             $Server = "SG.edmi.local"
-            # Continue
-            # Don't have access to Singapore Domain
         }else{
             Write-Host "ROOT  -- "$GroupName.Substring(3)
             $Server = "edmi.local"
