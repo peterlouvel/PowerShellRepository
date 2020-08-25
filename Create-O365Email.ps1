@@ -66,8 +66,8 @@ param(
     [string]$UserName
     ,[Parameter(Mandatory=$false)]
     [string]$UsersDomain = "z"
-    ,[Parameter(Mandatory=$true)]
-    [string]$LicenceCode
+    # ,[Parameter(Mandatory=$true)]
+    # [string]$LicenceCode
 )
 
 .".\IncludePWL.ps1"
@@ -107,43 +107,47 @@ $temp = Enable-RemoteMailbox -Identity $UserAccount  -DomainController $DomainCo
 Exit-PSSession
 Remove-PSSession $Session1
  
- Write-Host "------------------------------------------------------------------------------------------------"
- Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
- Write-Host "------------------------------------------------------------------------------------------------"
- Start-Sleep -s 15
- Write-Host "----- 0:15"
- Start-Sleep -s 15
- Write-Host "----- 0:30"
- Start-Sleep -s 15
- Write-Host "----- 0:45"
- Start-Sleep -s 15
- Write-Host "----- 1:00"
- Start-Sleep -s 15
- Write-Host "----- 1:15"
- Start-Sleep -s 15
- Write-Host "----- 1:30"
- Start-Sleep -s 15
- Write-Host "----- 1:45"
- Start-Sleep -s 15
- Write-Host "----- 2:00"
+Write-Host "------------------------------------------------------------------------------------------------"
+Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and give a licence to the user"
+Write-Host "------------------------------------------------------------------------------------------------"
 
-# Give licence to user
-Set-AzureADUser -ObjectId $UserEmail -UsageLocation $Domain
 
-If ($LicenceCode -eq "E3") {
-    $planName="ENTERPRISEPACK"
-}
-If ($LicenceCode -eq "E1") {
-    $planName="STANDARDPACK"
-}
-Write-Host "Give licence " -ForegroundColor Green -NoNewline
-Write-Host " $planName " -ForegroundColor Cyan -NoNewline
-Write-Host " to user " -ForegroundColor Green -NoNewline
-Write-Host " $User" -ForegroundColor Cyan
+#  Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
+#  Write-Host "------------------------------------------------------------------------------------------------"
+#  Start-Sleep -s 15
+#  Write-Host "----- 0:15"
+#  Start-Sleep -s 15
+#  Write-Host "----- 0:30"
+#  Start-Sleep -s 15
+#  Write-Host "----- 0:45"
+#  Start-Sleep -s 15
+#  Write-Host "----- 1:00"
+#  Start-Sleep -s 15
+#  Write-Host "----- 1:15"
+#  Start-Sleep -s 15
+#  Write-Host "----- 1:30"
+#  Start-Sleep -s 15
+#  Write-Host "----- 1:45"
+#  Start-Sleep -s 15
+#  Write-Host "----- 2:00"
 
-$License = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-$License.SkuId = (Get-AzureADSubscribedSku | Where-Object -Property SkuPartNumber -Value $planName -EQ).SkuID
-$LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-$LicensesToAssign.AddLicenses = $License
-Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
-Write-Host
+# # Give licence to user
+# Set-AzureADUser -ObjectId $UserEmail -UsageLocation $Domain
+
+# If ($LicenceCode -eq "E3") {
+#     $planName="ENTERPRISEPACK"
+# }
+# If ($LicenceCode -eq "E1") {
+#     $planName="STANDARDPACK"
+# }
+# Write-Host "Give licence " -ForegroundColor Green -NoNewline
+# Write-Host " $planName " -ForegroundColor Cyan -NoNewline
+# Write-Host " to user " -ForegroundColor Green -NoNewline
+# Write-Host " $User" -ForegroundColor Cyan
+
+# $License = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
+# $License.SkuId = (Get-AzureADSubscribedSku | Where-Object -Property SkuPartNumber -Value $planName -EQ).SkuID
+# $LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
+# $LicensesToAssign.AddLicenses = $License
+# Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
+# Write-Host
