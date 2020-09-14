@@ -102,6 +102,7 @@ $subscription.add("WINDOWS_STORE"             ,"6470687e-a428-4b7a-bef2-8a291ad9
 
 Write-Host $licenceName " = " $subscription[$licenceName]
 Write-Host "----------------------------------------------"
+Get-AzureADSubscribedSku | select -Property Sku*, ConsumedUnits -ExpandProperty PrepaidUnits | ft
 $Users = Get-AzureADUser -All $true | Where-Object {($_.AssignedLicenses).SkuID -eq $subscription[$licenceName]} | Sort-Object Country, City, DisplayName
 
 foreach ($User in $Users) {
