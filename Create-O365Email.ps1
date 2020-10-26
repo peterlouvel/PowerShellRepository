@@ -66,17 +66,78 @@ param(
     [string]$UserName
     ,[Parameter(Mandatory=$false)]
     [string]$UsersDomain = "z"
-    # ,[Parameter(Mandatory=$true)]
-    # [string]$LicenceCode
+    ,[Parameter(Mandatory=$true)]
+    [string]$LicenceCode
 )
 
-.".\IncludePWL.ps1"
+
+[String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+$AdminAccount = $stYourAccount + "_"
+
+if ($UsersDomain -eq "z"){
+    $UsersDomain=$stYourDomain
+}
+
+if ($UsersDomain -eq "au"){
+    $End = "@edmi.com.au"
+    $DomainController = "AuBneDC11.au.edmi.local"
+    $FQD = "au.edmi.local"
+    $AdminAccount1 = "au\"+$AdminAccount
+    $Location = "Australia"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1} 
+    } elseif ($UsersDomain -eq "nz"){
+    $End = "@edmi.co.nz"
+    # $DomainController = "NZwlgDC3.nz.edmi.local"
+    $DomainController = "NzBneDC5.nz.edmi.local"
+    $FQD = "nz.edmi.local"
+    $AdminAccount1 = "nz\"+$AdminAccount
+    $Location = "New Zealand"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1}
+    } elseif ($UsersDomain -eq "uk"){
+    $End = "@edmi-meters.com"
+    # $DomainController = "UkRdgDC1.uk.edmi.local"
+    $DomainController = "UkBneDC2.uk.edmi.local"
+    $FQD = "uk.edmi.local"
+    $AdminAccount1 = "uk\"+$AdminAccount
+    $Location = "United Kingdom"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1}
+    } elseif ($UsersDomain -eq "sg"){
+    $End = "@edmi-meters.com"
+    $DomainController = "SgBneDC1.sg.edmi.local"
+    $FQD = "sg.edmi.local"
+    $AdminAccount1 = "sg\"+$AdminAccount
+    $Location = "Singapore"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1}
+    } else {
+    Write-Host
+    Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
+    # $ErrorActionPreference = "SilentlyContinue"
+    exit
+}
+
+if ($null -eq $UPNAccount){
+    $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
+}
+
+if ($null -eq $EDMICREDS){
+    $EDMICREDS = Get-Credential "edmi\$AdminAccount"
+} 
+
+# $UserLowerCase  = $UserName.ToLower()
+$UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
+$UserAccount    = $UserName -replace ' ','.'
+$UserEmail      = $UserAccount.ToLower() + $End
+
 
 Write-Host
 Write-Host "Setup your Credentials for accessing the Office 365 systems - " -ForegroundColor Green  -NoNewline
 Write-Host $UPNAccount 
 
-$temp = Install-Module -Name AzureAD
+# $temp = Install-Module -Name AzureAD
 $temp = Connect-AzureAD -AccountId $UPNAccount
 
 try {
@@ -112,42 +173,42 @@ Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and g
 Write-Host "------------------------------------------------------------------------------------------------"
 
 
-#  Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
-#  Write-Host "------------------------------------------------------------------------------------------------"
-#  Start-Sleep -s 15
-#  Write-Host "----- 0:15"
-#  Start-Sleep -s 15
-#  Write-Host "----- 0:30"
-#  Start-Sleep -s 15
-#  Write-Host "----- 0:45"
-#  Start-Sleep -s 15
-#  Write-Host "----- 1:00"
-#  Start-Sleep -s 15
-#  Write-Host "----- 1:15"
-#  Start-Sleep -s 15
-#  Write-Host "----- 1:30"
-#  Start-Sleep -s 15
-#  Write-Host "----- 1:45"
-#  Start-Sleep -s 15
-#  Write-Host "----- 2:00"
+ Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
+ Write-Host "------------------------------------------------------------------------------------------------"
+ Start-Sleep -s 15
+ Write-Host "----- 0:15"
+ Start-Sleep -s 15
+ Write-Host "----- 0:30"
+ Start-Sleep -s 15
+ Write-Host "----- 0:45"
+ Start-Sleep -s 15
+ Write-Host "----- 1:00"
+ Start-Sleep -s 15
+ Write-Host "----- 1:15"
+ Start-Sleep -s 15
+ Write-Host "----- 1:30"
+ Start-Sleep -s 15
+ Write-Host "----- 1:45"
+ Start-Sleep -s 15
+ Write-Host "----- 2:00"
 
-# # Give licence to user
-# Set-AzureADUser -ObjectId $UserEmail -UsageLocation $Domain
+# Give licence to user
+Set-AzureADUser -ObjectId $UserEmail -UsageLocation $UsersDomain 
 
-# If ($LicenceCode -eq "E3") {
-#     $planName="ENTERPRISEPACK"
-# }
-# If ($LicenceCode -eq "E1") {
-#     $planName="STANDARDPACK"
-# }
-# Write-Host "Give licence " -ForegroundColor Green -NoNewline
-# Write-Host " $planName " -ForegroundColor Cyan -NoNewline
-# Write-Host " to user " -ForegroundColor Green -NoNewline
-# Write-Host " $User" -ForegroundColor Cyan
+If ($LicenceCode -eq "E3") {
+    $planName="ENTERPRISEPACK"
+}
+If ($LicenceCode -eq "E1") {
+    $planName="STANDARDPACK"
+}
+Write-Host "Give licence " -ForegroundColor Green -NoNewline
+Write-Host " $planName " -ForegroundColor Cyan -NoNewline
+Write-Host " to user " -ForegroundColor Green -NoNewline
+Write-Host " $User" -ForegroundColor Cyan
 
-# $License = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-# $License.SkuId = (Get-AzureADSubscribedSku | Where-Object -Property SkuPartNumber -Value $planName -EQ).SkuID
-# $LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-# $LicensesToAssign.AddLicenses = $License
-# Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
-# Write-Host
+$License = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
+$License.SkuId = (Get-AzureADSubscribedSku | Where-Object -Property SkuPartNumber -Value $planName -EQ).SkuID
+$LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
+$LicensesToAssign.AddLicenses = $License
+Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
+Write-Host

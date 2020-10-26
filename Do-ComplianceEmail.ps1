@@ -16,7 +16,7 @@ $NameSearchPurge = $NameSearch + "_Purge"
 Write-Host 
 Write-Host " To get the status of the search"
 Write-Host "Get-ComplianceSearch -Identity ""Search $NameSearch"""
-Write-Host "New-ComplianceSearchAction -SearchName ""Search $NameSearch"" -Preview"
+# Write-Host "New-ComplianceSearchAction -SearchName ""Search $NameSearch"" -Preview"
 Write-Host
 Write-Host "New-ComplianceSearchAction -SearchName ""Search $NameSearch"" -Purge -PurgeType SoftDelete"
 Write-Host

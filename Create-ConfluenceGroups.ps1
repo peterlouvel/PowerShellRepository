@@ -5,7 +5,7 @@
     Creates groups for confluence
 
 .EXAMPLE
-    PS C:\> Create-Create-ConfluenceGroup -Name "Test Group" -Description "A Test Distribution List"  
+    PS C:\> Create-ConfluenceGroup -Name "KEY" 
 
 .INPUTS
     .
@@ -27,10 +27,14 @@ if ($null -eq $EDMICREDS){
     $EDMICREDS = Get-Credential $AdminAccount
 } 
 $G1 = "confluence-space " + $GroupName + " (Design)"
+Write-Host $G1
 NEW-ADGroup -Name "$G1" -GroupScope "DomainLocal" -Path "OU=confluence,OU=New Groups,OU=EDMI,DC=edmi,DC=local" -Description "view and edit content and settings" -Credential $EDMICREDS -Server "edmi.local"
 $G1 = "confluence-space " + $GroupName + " (Contrib)"
+Write-Host $G1
 NEW-ADGroup -Name "$G1" -GroupScope "DomainLocal" -Path "OU=confluence,OU=New Groups,OU=EDMI,DC=edmi,DC=local" -Description "view and edit content" -Credential $EDMICREDS -Server "edmi.local"
 $G1 = "confluence-space " + $GroupName + " (Owner)"
+Write-Host $G1
 NEW-ADGroup -Name "$G1" -GroupScope "DomainLocal" -Path "OU=confluence,OU=New Groups,OU=EDMI,DC=edmi,DC=local" -Description "view edit content and restrict pages" -Credential $EDMICREDS -Server "edmi.local"
 $G1 = "confluence-space " + $GroupName + " (Read)"
+Write-Host $G1
 NEW-ADGroup -Name "$G1" -GroupScope "DomainLocal" -Path "OU=confluence,OU=New Groups,OU=EDMI,DC=edmi,DC=local" -Description "read contents" -Credential $EDMICREDS -Server "edmi.local"
