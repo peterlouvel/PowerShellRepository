@@ -61,7 +61,7 @@ Write-Host $AdminAccount1
 
 $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $Cred
 Import-PSSession $Session1 3>$null -AllowClobber
-$SamName = "Dist " + $Name 
+$SamName = "Distint " + $Name 
 Write-Host "--New Distribution List--"
 new-DistributionGroup -Name $Name -DisplayName $Name -OrganizationalUnit $OU -SamAccountName $SamName -Alias $UserAlias -Domain $DomainController 
 Write-Host " - Waiting 30 Seconds for AD to sync before makeing changes to the email list description"

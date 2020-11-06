@@ -72,7 +72,8 @@ if ($UsersDomain -eq "au"){
 } else {
     Write-Host
     Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
-    $ErrorActionPreference = "SilentlyContinue"
+    # $ErrorActionPreference = "SilentlyContinue"
+    exit
 }
 
 $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
@@ -262,7 +263,7 @@ Copy-User -SamAccount $SamAccount -CopyAccountObject $CopyUserObject -Credential
 Start-Sleep -s 5
 Get-ADUser -Identity $SamAccount -Server $DomainController | Set-ADObject -Replace @{co="$Location"} -Credential $Cred -Server $DomainController
 Write-Host "-----------------------------------------------------------------------"
-# can be qicker if staff is in your local comain, but longer when on the other domain
+# can be qicker if staff is in your local domain, but longer when on the other domain
 Write-Host "Waiting 120 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  
 Write-Host "-----------------------------------------------------------------------"
 Start-Sleep -s 120
