@@ -70,49 +70,47 @@ param(
     [string]$LicenceCode
 )
 
-
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
 
 if ($UsersDomain -eq "z"){
     $UsersDomain=$stYourDomain
 }
+$ex1=$true
+$LocationISO = $UsersDomain
 
 if ($UsersDomain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
     $FQD = "au.edmi.local"
-    $AdminAccount1 = "au\"+$AdminAccount
     $Location = "Australia"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1} 
-    } elseif ($UsersDomain -eq "nz"){
+    $ex1=$false
+ }
+ if ($UsersDomain -eq "nz"){
     $End = "@edmi.co.nz"
     # $DomainController = "NZwlgDC3.nz.edmi.local"
     $DomainController = "NzBneDC5.nz.edmi.local"
     $FQD = "nz.edmi.local"
-    $AdminAccount1 = "nz\"+$AdminAccount
     $Location = "New Zealand"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1}
-    } elseif ($UsersDomain -eq "uk"){
+    $ex1=$false
+ }
+if ($UsersDomain -eq "uk"){
     $End = "@edmi-meters.com"
     # $DomainController = "UkRdgDC1.uk.edmi.local"
     $DomainController = "UkBneDC2.uk.edmi.local"
     $FQD = "uk.edmi.local"
-    $AdminAccount1 = "uk\"+$AdminAccount
     $Location = "United Kingdom"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1}
-    } elseif ($UsersDomain -eq "sg"){
+    $LocationISO = "SG"
+    $ex1=$false
+}
+if ($UsersDomain -eq "sg"){
     $End = "@edmi-meters.com"
     $DomainController = "SgBneDC1.sg.edmi.local"
     $FQD = "sg.edmi.local"
-    $AdminAccount1 = "sg\"+$AdminAccount
     $Location = "Singapore"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1}
-    } else {
+    $ex1=$false
+}
+if ($ex1) {
     Write-Host
     Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
     # $ErrorActionPreference = "SilentlyContinue"
@@ -127,11 +125,9 @@ if ($null -eq $EDMICREDS){
     $EDMICREDS = Get-Credential "edmi\$AdminAccount"
 } 
 
-# $UserLowerCase  = $UserName.ToLower()
 $UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
 $UserAccount    = $UserName -replace ' ','.'
 $UserEmail      = $UserAccount.ToLower() + $End
-
 
 Write-Host
 Write-Host "Setup your Credentials for accessing the Office 365 systems - " -ForegroundColor Green  -NoNewline
@@ -152,11 +148,11 @@ catch {
 
 Write-Host "User " -ForegroundColor Green  -NoNewline
 Write-Host " $UserName " -ForegroundColor Cyan -NoNewline 
-Write-Host " exits. Creating Mailbox on O365" -ForegroundColor Green 
+Write-Host " exits. Creating Remote Mailbox on Exchange3 with your EDMI Admin account." -ForegroundColor Green 
+Write-Host "Which will create the O365 email account" -ForegroundColor Green 
 Write-Host
-Write-Host "Connecting to the Local Exchange Server" -ForegroundColor Green  
 # Create user local AD, sync AD to O365 then when synced, run the following
-$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $Cred
+$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $EDMICREDS
 $temp = Import-PSSession $Session1 3>$null
 $UserO365email = $UserAccount + "@edmi.mail.onmicrosoft.com"
 Write-Host "Setting up remote mailbox for user " -ForegroundColor Green -NoNewline
@@ -193,7 +189,8 @@ Write-Host "--------------------------------------------------------------------
  Write-Host "----- 2:00"
 
 # Give licence to user
-Set-AzureADUser -ObjectId $UserEmail -UsageLocation $UsersDomain 
+Write-Host "Setting user location to $Location"  -ForegroundColor Green  
+Set-AzureADUser -ObjectId $UserEmail -UsageLocation $LocationISO 
 
 If ($LicenceCode -eq "E3") {
     $planName="ENTERPRISEPACK"
@@ -201,6 +198,10 @@ If ($LicenceCode -eq "E3") {
 If ($LicenceCode -eq "E1") {
     $planName="STANDARDPACK"
 }
+If ($LicenceCode -eq "Ex") {
+    $planName="EXCHANGESTANDARD"
+}
+
 Write-Host "Give licence " -ForegroundColor Green -NoNewline
 Write-Host " $planName " -ForegroundColor Cyan -NoNewline
 Write-Host " to user " -ForegroundColor Green -NoNewline
