@@ -78,15 +78,15 @@ if ($UsersDomain -eq "z"){
 }
 $ex1=$true
 $LocationISO = $UsersDomain
-
 if ($UsersDomain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
     $FQD = "au.edmi.local"
     $Location = "Australia"
     $ex1=$false
- }
- if ($UsersDomain -eq "nz"){
+}
+
+if ($UsersDomain -eq "nz"){
     $End = "@edmi.co.nz"
     # $DomainController = "NZwlgDC3.nz.edmi.local"
     $DomainController = "NzBneDC5.nz.edmi.local"
@@ -94,15 +94,18 @@ if ($UsersDomain -eq "au"){
     $Location = "New Zealand"
     $ex1=$false
  }
+
 if ($UsersDomain -eq "uk"){
+    # $End = "@edmi.co.uk"
     $End = "@edmi-meters.com"
     # $DomainController = "UkRdgDC1.uk.edmi.local"
     $DomainController = "UkBneDC2.uk.edmi.local"
     $FQD = "uk.edmi.local"
     $Location = "United Kingdom"
-    $LocationISO = "SG"
+    $LocationISO = "GB"
     $ex1=$false
 }
+
 if ($UsersDomain -eq "sg"){
     $End = "@edmi-meters.com"
     $DomainController = "SgBneDC1.sg.edmi.local"
@@ -116,10 +119,10 @@ if ($ex1) {
     # $ErrorActionPreference = "SilentlyContinue"
     exit
 }
-
 if ($null -eq $UPNAccount){
     $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
 }
+# $UPNAccount
 
 if ($null -eq $EDMICREDS){
     $EDMICREDS = Get-Credential "edmi\$AdminAccount"
@@ -128,6 +131,7 @@ if ($null -eq $EDMICREDS){
 $UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
 $UserAccount    = $UserName -replace ' ','.'
 $UserEmail      = $UserAccount.ToLower() + $End
+# $UserEmail
 
 Write-Host
 Write-Host "Setup your Credentials for accessing the Office 365 systems - " -ForegroundColor Green  -NoNewline
@@ -170,26 +174,26 @@ Write-Host "--------------------------------------------------------------------
 
 
  Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
- Write-Host "------------------------------------------------------------------------------------------------"
- Start-Sleep -s 15
- Write-Host "----- 0:15"
- Start-Sleep -s 15
- Write-Host "----- 0:30"
- Start-Sleep -s 15
- Write-Host "----- 0:45"
- Start-Sleep -s 15
- Write-Host "----- 1:00"
- Start-Sleep -s 15
- Write-Host "----- 1:15"
- Start-Sleep -s 15
- Write-Host "----- 1:30"
- Start-Sleep -s 15
- Write-Host "----- 1:45"
- Start-Sleep -s 15
- Write-Host "----- 2:00"
+    Write-Host "------------------------------------------------------------------------------------------------"
+    Start-Sleep -s 15
+    Write-Host "----- 0:15"
+    Start-Sleep -s 15
+    Write-Host "----- 0:30"
+    Start-Sleep -s 15
+    Write-Host "----- 0:45"
+    Start-Sleep -s 15
+    Write-Host "----- 1:00"
+    Start-Sleep -s 15
+    Write-Host "----- 1:15"
+    Start-Sleep -s 15
+    Write-Host "----- 1:30"
+    Start-Sleep -s 15
+    Write-Host "----- 1:45"
+    Start-Sleep -s 15
+    Write-Host "----- 2:00"
 
 # Give licence to user
-Write-Host "Setting user location to $Location"  -ForegroundColor Green  
+Write-Host "Setting user location to $Location   $LocationISO"  -ForegroundColor Green  
 Set-AzureADUser -ObjectId $UserEmail -UsageLocation $LocationISO 
 
 If ($LicenceCode -eq "E3") {

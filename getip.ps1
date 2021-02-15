@@ -6,22 +6,27 @@ Function DigitToStrIPAddress($Digit9IPAddress) {
     $C=[convert]::ToByte($bin[16..23] -join "",2)
     $D=[convert]::ToByte($bin[24..31] -join "",2)
     return $($A,$B,$C,$D -join ".")
-   }
-   
-   $all = @()
-      
-   $users = get-aduser -filter * -Properties 'msRADIUSFramedIPAddress' | Where-Object { $_.msRADIUSFramedIPAddress -ne $null }
-   foreach( $user in $users)
-   {
-       $IP = DigitToStrIPAddress($user.msRADIUSFramedIPAddress)
-       $result = new-object psobject
-       $result | add-member noteproperty sAMAccountName $user.SamAccountName
-       $result | add-member noteproperty IP $IP
-   
-       $all += $result
-   }
-   
-      $all | export-csv c:\temp\results.csv -encoding UTF8
-   
-   
+}
+
+if (!(Test-Path c:\temp)) {MkDir c:\temp}
+
+$all = @()
+
+$users = get-aduser -filter * -Properties 'msRADIUSFramedIPAddress' | Where-Object { $_.msRADIUSFramedIPAddress -ne $null }
+# $users = get-aduser -filter * -Properties 'msRASSavedFramedIPAddress' | Where-Object { $_.msRASSavedFramedIPAddress -ne $null }
+$users
+foreach( $user in $users)
+{
+    $IP = DigitToStrIPAddress($user.msRADIUSFramedIPAddress)
+    $result = new-object psobject
+    $result | add-member noteproperty sAMAccountName $user.SamAccountName
+    $result | add-member noteproperty IP $IP
+
+    $all += $result
+}
+
+$all | export-csv c:\temp\results.csv -encoding UTF8
+
+c:\temp\results.csv
+
    
