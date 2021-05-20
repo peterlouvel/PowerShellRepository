@@ -85,7 +85,6 @@ if ($UsersDomain -eq "au"){
     $Location = "Australia"
     $ex1=$false
 }
-
 if ($UsersDomain -eq "nz"){
     $End = "@edmi.co.nz"
     # $DomainController = "NZwlgDC3.nz.edmi.local"
@@ -94,7 +93,6 @@ if ($UsersDomain -eq "nz"){
     $Location = "New Zealand"
     $ex1=$false
  }
-
 if ($UsersDomain -eq "uk"){
     # $End = "@edmi.co.uk"
     $End = "@edmi-meters.com"
@@ -105,7 +103,6 @@ if ($UsersDomain -eq "uk"){
     $LocationISO = "GB"
     $ex1=$false
 }
-
 if ($UsersDomain -eq "sg"){
     $End = "@edmi-meters.com"
     $DomainController = "SgBneDC1.sg.edmi.local"
@@ -168,10 +165,9 @@ $temp = Enable-RemoteMailbox -Identity $UserAccount  -DomainController $DomainCo
 Exit-PSSession
 Remove-PSSession $Session1
  
-Write-Host "------------------------------------------------------------------------------------------------"
-Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and give a licence to the user"
-Write-Host "------------------------------------------------------------------------------------------------"
-
+# Write-Host "------------------------------------------------------------------------------------------------"
+# Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and give a licence to the user"
+# Write-Host "------------------------------------------------------------------------------------------------"
 
  Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
     Write-Host "------------------------------------------------------------------------------------------------"

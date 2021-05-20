@@ -31,4 +31,4 @@ if ($null -eq $EDMICREDS){
 $UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
 $UserAccount    = $UserName -replace ' ','.'
 
-Get-ADUser "$UserAccount" -Server "nzwlgdc2.nz.edmi.local" | Move-ADObject -TargetPath "OU=Employees,OU=EDMI Australia,DC=au,DC=edmi,DC=local" -Credential $EDMICREDS -server "nzwlgdc2.nz.edmi.local" -TargetServer "aubnedc11.au.edmi.local"
+Get-ADUser "$UserAccount" -Server "NzWlgDC3.nz.edmi.local" | Move-ADObject -TargetPath "OU=Employees,OU=EDMI Australia,DC=au,DC=edmi,DC=local" -Credential $EDMICREDS -server "NzWlgDC3.nz.edmi.local" -TargetServer "aubnedc11.au.edmi.local"

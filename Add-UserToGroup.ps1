@@ -1,11 +1,10 @@
 <#
 .SYNOPSIS
-    Create a new User and copy other users groups and info
+    Add a User to a group
 .DESCRIPTION
     Long description
 .EXAMPLE
-    PS C:\> Create-NewUser -UserName "FirstName LastName" -FromUser "existing.user" -Title "New Users Job Title" -UsersDomain "au"
-    Creates user "new.user and copies some info from "existing.user" 
+    PS C:\> Add-UserToGroup -UserName "bob.hope" -UsersDomain "au" -GroupName "someGroup" -GroupDomain "au"
 .INPUTS
     .
 .OUTPUTS
@@ -23,51 +22,60 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$UserName
-    ,[Parameter(Mandatory=$true)]
-    [string]$UsersDomain 
+    ,[Parameter(Mandatory=$false)]
+    [string]$UsersDomain = "z"
     ,[Parameter(Mandatory=$true)]
     [string]$GroupName
-    ,[Parameter(Mandatory=$true)]
-    [string]$GroupsDomain
+    ,[Parameter(Mandatory=$false)]
+    [string]$GroupsDomain = "z"
 )
-
 
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
 
+if ($UsersDomain -eq "z"){
+    $UsersDomain=$stYourDomain
+}
+if ($GroupsDomain -eq "z"){
+    $GroupsDomain=$stYourDomain
+}
+
+if ($null -eq $Cred){
+        $Cred = Get-Credential "edmi\$AdminAccount"
+}
+
+if ($UsersDomain -eq "au"){
+    $UsersDomainFQN = "au.edmi.local"
+} elseif ($UsersDomain -eq "nz"){
+    $UsersDomainFQN = "nz.edmi.local"
+} elseif ($UsersDomain -eq "uk"){
+    $UsersDomainFQN = "uk.edmi.local"
+} elseif ($UsersDomain -eq "sg"){
+    $UsersDomainFQN = "sg.edmi.local"
+} else {
+    Write-Host
+    Write-Host "User Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
+    exit
+}
+
 if ($GroupsDomain -eq "au"){
-    $AdminAccount1 = "au\"+$AdminAccount
-    if ($null -eq $CredAU){
-        $Cred = Get-Credential $AdminAccount1} 
-    $Cred = $CredAU
+    $GroupsDomainFQN = "au.edmi.local"
 } elseif ($GroupsDomain -eq "nz"){
-    $AdminAccount1 = "nz\"+$AdminAccount
-    if ($null -eq $CredNZ){
-        $Cred = Get-Credential $AdminAccount1}
-    $Cred = $CredNZ
+    $GroupsDomainFQN = "nz.edmi.local"
 } elseif ($GroupsDomain -eq "uk"){
-    $End = "@edmi-meters.com"
-    $AdminAccount1 = "uk\"+$AdminAccount
-    if ($null -eq $CredUK){
-        $Cred = Get-Credential $AdminAccount1} 
-    $Cred = $CredUK
+    $GroupsDomainFQN = "uk.edmi.local"
 } elseif ($GroupsDomain -eq "sg"){
-    $AdminAccount1 = "sg\"+$AdminAccount
-    if ($null -eq $CredSG){
-        $Cred = Get-Credential $AdminAccount1} 
-    $Cred = $CredSG
+    $GroupsDomainFQN = "sg.edmi.local"
 } elseif ($GroupsDomain -eq "edmi"){
-    $AdminAccount1 = "edmi\"+$AdminAccount
-    if ($null -eq $CredEDMI){
-        $Cred = Get-Credential $AdminAccount1} 
-    $Cred = $CredEDMI
+    $GroupsDomainFQN = "edmi.local"
 } else {
     Write-Host
     Write-Host "Group Domain should be AU, NZ, UK, SG, EDMI" -ForegroundColor Red 
     exit
 }
 
-$Staff = Get-ADUser -Identity "$UserName" -Server "$UsersDomain.edmi.local"  
+# Write-Host "$UserName | $UsersDomain = $UsersDomainFQN | $GroupsDomain = $GroupsDomainFQN    "
+$Staff = Get-ADUser -Identity "$UserName" -Server "$UsersDomainFQN"  
 
 $GroupInfo = Get-ADGroup -Identity "$GroupName" -Server $GroupsDomain
 Set-ADObject -Identity $GroupInfo -Add @{"member"=$Staff.DistinguishedName} -Server $GroupsDomain -Credential $Cred
