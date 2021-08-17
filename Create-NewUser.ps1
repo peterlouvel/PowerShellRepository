@@ -76,7 +76,7 @@ if ($UsersDomain -eq "au"){
     exit
 }
 
-$UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
+# $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
 if ($null -eq $EDMICREDS){
     $EDMICREDS = Get-Credential "edmi\$AdminAccount"
 } 
@@ -271,3 +271,4 @@ Start-Sleep -s 120
 $NewUserObject = Get-ADUser -Identity $SamAccount -Properties $Params -Server $DomainController -Credential $Cred
 Write-Host "========================================================================"
 Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject -Credential $Cred
+Write-Host "$SamAccount" -ForegroundColor Green

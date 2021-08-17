@@ -157,7 +157,7 @@ $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri h
 $temp = Import-PSSession $Session1 3>$null
 $UserO365email = $UserAccount + "@edmi.mail.onmicrosoft.com"
 Write-Host "Setting up remote mailbox for user " -ForegroundColor Green -NoNewline
-Write-Host " $UserName " -ForegroundColor Cyan  
+Write-Host " $UserEmail " -ForegroundColor Cyan  
 Write-Host
 
 $temp = Enable-RemoteMailbox -Identity $UserAccount  -DomainController $DomainController -RemoteRoutingAddress $UserO365email #-erroraction 'silentlycontinue'
@@ -213,3 +213,8 @@ $LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLi
 $LicensesToAssign.AddLicenses = $License
 Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
 Write-Host
+
+Write-Host "Setup User to have access to Microsoft Teams  ANZ EDMI"
+Import-Module MicrosoftTeams
+Connect-MicrosoftTeams
+Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
