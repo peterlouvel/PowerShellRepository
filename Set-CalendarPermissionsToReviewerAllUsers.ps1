@@ -1,3 +1,5 @@
+$ErrorActionPreference = 'SilentlyContinue'
+cls
 # To run this command you will need to have installed RSAT to get Active Directory PowerShell commands Install Active Directory Modules
 $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
 
@@ -12,3 +14,4 @@ foreach ($user in $users) {
         Set-MailboxFolderPermission -Identity "$($user.alias):\calendar" -User Default -AccessRights Reviewer
     }
 }
+

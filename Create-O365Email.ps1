@@ -218,3 +218,11 @@ Write-Host "Setup User to have access to Microsoft Teams  ANZ EDMI"
 Import-Module MicrosoftTeams
 Connect-MicrosoftTeams
 Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
+
+
+
+# $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $EDMICREDS
+# Import-PSSession $Session1
+# Enable-RemoteMailbox -Identity "room-bne2-conference" -Room -DomainController "AuBneDC11.au.edmi.local" -RemoteRoutingAddress "room-bne2-conference@edmi.mail.onmicrosoft.com"
+# Exit-PSSession
+# Remove-PSSession $Session1

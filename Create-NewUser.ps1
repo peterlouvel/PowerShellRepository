@@ -244,7 +244,7 @@ function Copy-User{
         Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Red 
         Write-Host "----------------------------------------------------"
     }
-    Write-Host " --- give it 20 seconds to sync the AD Changes through"
+    Write-Host " --- give it 20 seconds to sync the AD Changes"
     Start-Sleep -s 20
     if ($manager){
         $managerName = $manager.Split(",").substring(3)[0]
