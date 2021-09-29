@@ -1,11 +1,5 @@
 # $ErrorActionPreference = 'SilentlyContinue'
 # Circular.ps1
-# List all AD groups that contain one or more circular nested groups
-# outputs the parent group's DN and a list of the nested groups.
-
-# Limitations
-# The script works by scanning through every group, so any circular relationships
-# will be listed twice, once for the parent group and once for the child.
 
 # ADSI has a limit of 1500 items for a multi-valued attribute so 
 # groups containing more than 1500 members may return the error:
@@ -17,18 +11,28 @@
 
 # This script only checks direct members A>B>A and inherited circular memberships A>B>C>A 
 
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$Group
+    ,[Parameter(Mandatory=$false)]
+    [string]$Server = "edmi.local"
+)
+
 cls
 # Import-Module Activedirectory
 
+[String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
+$AdminAccount = $stYourAccount + "_"
+
 write-host "Circular.ps1  Search for nested groups - getting Groups"
 # Retrieve all top/parent level AD groups.
-$Parents = get-adgroup -ResultPageSize 1000 -filter 'ObjectClass -eq "group"' -Server "edmi.local"
+$Parents = get-adgroup -ResultPageSize 1000 -filter 'ObjectClass -eq "group"' -Server "$Server" | Where-Object Name -eq "$Group"
 
 # Loop through each parent group
 ForEach ($Parent in $Parents) {
    [int]$Len = 0
    # Create an array of the group members, limited to sub-groups (not users)
-   $Children = @(Get-ADGroupMember "$Parent" -Server "edmi.local" | where {$_.objectClass -eq "group"} )
+   $Children = @(Get-ADGroupMember "$Parent" -Server "$Server" | where {$_.objectClass -eq "group"} )
    $Len = @($Children).Count
 
    if ($Len -eq 1) {
@@ -54,14 +58,10 @@ ForEach ($Parent in $Parents) {
             write-host " is both a parent and a member of " -ForegroundColor Red -NoNewline 
          }
 
-         # if ($Child.Contains("DC=au")){$Server = "au.edmi.local"
-         # }elseif ($Child.Contains("DC=nz")){$Server = "nz.edmi.local"
-         # }elseif ($Child.Contains("DC=uk")){$Server = "uk.edmi.local"
-         # }elseif ($Child.Contains("DC=sg")){$Server = "sg.edmi.local"
-         # }else{$Server = "edmi.local"}
 
-         write-host "---check further nesting" -ForegroundColor Green -NoNewline 
+         write-host "---check further nesting" -ForegroundColor Green 
          ForEach ($Parent1 in $Child) {
+            # write-host "$Parent1"
             $Server = "edmi.local"
             if ($Parent1 -like "*DC=au*"){$Server = "au.edmi.local"}
             if ($Parent1 -like "*DC=nz*"){$Server = "nz.edmi.local"}
@@ -69,6 +69,7 @@ ForEach ($Parent in $Parents) {
             if ($Parent1 -like "*DC=sg*"){$Server = "sg.edmi.local"}
 
             [int]$Len1 = 0
+            # write-host "$Server"
             # Create an array of the group members, limited to sub-groups (not users)       
             $Children1 = @(Get-ADGroupMember "$Parent1" -Server "$Server" | where {$_.objectClass -eq "group"}) 
             $Len1 = @($Children1).Count
