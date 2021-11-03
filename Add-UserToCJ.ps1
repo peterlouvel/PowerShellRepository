@@ -24,21 +24,10 @@ param(
     [string]$UserName
     ,[Parameter(Mandatory=$false)]
     [string]$UsersDomain = "z"
-    ,[Parameter(Mandatory=$true)]
-    [string]$GroupName
-    ,[Parameter(Mandatory=$false)]
-    [string]$GroupsDomain = "z"
 )
 
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
-
-if ($UsersDomain -eq "z"){
-    $UsersDomain=$stYourDomain
-}
-if ($GroupsDomain -eq "z"){
-    $GroupsDomain=$stYourDomain
-}
 
 if ($null -eq $Cred){
         $Cred = Get-Credential "edmi\$AdminAccount"
@@ -59,25 +48,17 @@ if ($UsersDomain -eq "au"){
     exit
 }
 
-#  FQDN is not used - check is just to see if a domain was put in correctly
-if ($GroupsDomain -eq "au"){
-    $GroupsDomainFQN = "au.edmi.local"
-} elseif ($GroupsDomain -eq "nz"){
-    $GroupsDomainFQN = "nz.edmi.local"
-} elseif ($GroupsDomain -eq "uk"){
-    $GroupsDomainFQN = "uk.edmi.local"
-} elseif ($GroupsDomain -eq "sg"){
-    $GroupsDomainFQN = "sg.edmi.local"
-} elseif ($GroupsDomain -eq "edmi"){
-    $GroupsDomainFQN = "edmi.local"
-} else {
-    Write-Host
-    Write-Host "Group Domain should be AU, NZ, UK, SG, EDMI" -ForegroundColor Red 
-    exit
-}
+$GroupsDomain = "edmi"
+$GroupsDomainFQN = "edmi.local"
 
 # Write-Host "$UserName | $UsersDomain = $UsersDomainFQN | $GroupsDomain = $GroupsDomainFQN    "
-$Staff = Get-ADUser -Identity "$UserName" -Server "$UsersDomain"  
+$Staff = Get-ADUser -Identity "$UserName" -Server "$UsersDomainFQN"  
+# Write-Host $Staff
 
+$GroupName = "Role EDMI User NZ Confluence Instance Colab"
+$GroupInfo = Get-ADGroup -Identity "$GroupName" -Server $GroupsDomain
+Set-ADObject -Identity $GroupInfo -Add @{"member"=$Staff.DistinguishedName} -Server $GroupsDomain -Credential $Cred
+
+$GroupName = "Role EDMI Team Jira Australasia"
 $GroupInfo = Get-ADGroup -Identity "$GroupName" -Server $GroupsDomain
 Set-ADObject -Identity $GroupInfo -Add @{"member"=$Staff.DistinguishedName} -Server $GroupsDomain -Credential $Cred
