@@ -31,10 +31,7 @@ Write-Host $AdminAccount1
 
 $Group = "Role EDMI Team " + $GroupName
 
-$Staff = Get-ADGroupMember -Identity "$Group" -Server "edmi.local" -Recursive |
-  Get-ADUser -Properties Mail,GivenName,Surname |
-  Select-Object Mail 
-  
-$Staff 
+New-ADGroup -Credential $Cred -Name "$Group" -Path "OU=agile,OU=roles,OU=New Groups,OU=EDMI,DC=edmi,DC=local" -GroupScope "Universal" -Server "edmi"
+.\Create-DistList.ps1 -Name "$GroupName" -Description "" -Domain "au" 
 
-$Staff | Export-Csv -Path "c:\temp\$GroupName.csv" -NoTypeInformation
+Add-AdGroupMember -Credential $Cred -Identity "Role EDMI Team Super Chief" -Members "$Group" -Server "edmi"
