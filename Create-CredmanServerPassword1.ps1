@@ -21,7 +21,7 @@ param(
     [string]$UserName
 )
 
-Initialize-PasswordStateRepository -ApiEndpoint 'https://credman.nz.edmi.local/api/'
+Initialize-PasswordStateRepository -ApiEndpoint 'https://credman.server.domain/api/'
  
 #Setup Password List to use
 $PasswordList = "thePasswordListName"
