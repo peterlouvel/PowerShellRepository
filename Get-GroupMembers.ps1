@@ -21,5 +21,7 @@ param(
     [string]$Domain
 )
 
-Get-ADGroupMember -Identity $GroupName -Recursive -Server $Domain | Get-ADUser -Property DisplayName | Select-Object DisplayName | Sort-Object DisplayName
+
+# Get-ADGroupMember -Identity $GroupName -Recursive -Server $Domain | Get-ADObject -LDAPFilter "objectClass=Contact" -Property DisplayName, DESCRIPTION | Select-Object DisplayName, DESCRIPTION | Sort-Object DisplayName
+Get-ADGroupMember -Identity $GroupName -Recursive -Server $Domain | Get-ADUser -Property DisplayName, DESCRIPTION | Select-Object DisplayName, DESCRIPTION | Sort-Object DisplayName
 # Get-ADGroupMember -Identity $GroupName -Recursive | Get-ADUser -Property DisplayName | Select Name,ObjectClass,DisplayName
