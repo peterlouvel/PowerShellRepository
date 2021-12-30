@@ -32,6 +32,8 @@ $CredPasswordList = New-Object System.Management.Automation.PSCredential ($Passw
 
 $Servers = Get-PasswordStateListPasswords -ApiKey $CredPasswordList -PasswordListId $PasswordListID   
 
+$Password = ""
+
 $ServerIsTrue = $False
 $ServerID = 0
 foreach ($Server in $Servers)
@@ -62,12 +64,27 @@ foreach ($Server in $Servers)
 }
 
 if (!$UserNameIsTrue) {
+    Write-Host "username is not true"
     #Create password in Password List
     $NewServerCred = New-PasswordStatePassword -ApiKey $CredPasswordList -PasswordListId $PasswordListID -Username $UserName -Title $ServerName -Description $ServerName -GeneratePassword
-    $NewServerCred.PasswordID
-    $NewServerCred.Password
-    $NewServerCred.UserName
+    Write-Host "$NewServerCred.PasswordID"
+    Write-Host "$NewServerCred.Password"
+    Write-Host "$NewServerCred.UserName"
+    $ServerPassword = $NewServerCred.Password
 } 
+
+Write-Host "continue"
+$Session1 = New-PSSession -ComputerName "$ServerName" -Credential $Cred 
+$CreateUser = $False
+
+Invoke-Command -Session $Session1 -FilePath $Env:OneDriveCommercial\vscode\Set-LocalUserAccount.ps1 -ArgumentList "$UserName", "$ServerPassword"
+
+Remove-Pssession $Session1
+
+# $adminUser = [ADSI] "WinNT://$ServerName/$UserName"
+# $adminUser.psbase.Username = $Cred.username
+# $adminUser.psbase.Password = $Cred.GetNetworkCredential().Password
+
 
 # $ServerIsTrue
 # $UserNameIsTrue
