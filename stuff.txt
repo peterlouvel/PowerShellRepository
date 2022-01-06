@@ -1,0 +1,16 @@
+$ComputerList = Get-ADComputer -filter 'Name -like "*"' -Properties Name, OperatingSystem | Select-Object Name,OperatingSystem | where-object {$_.OperatingSystem -like "Windows Server 201*" } | Select-Object Name | Sort-Object Name
+
+$computerlist.Name | out-file -filepath C:\temp\dump.txt -append
+
+# edit the file to remove computers you do not want then pull back into a variable
+
+$comp = Get-Content C:\temp\dump.txt
+
+
+foreach ($computer in $comp) { 
+    write-host $computer
+	$Session1 = New-PSSession -ComputerName "$computer" -Credential $Cred 
+	Invoke-Command -Session $Session1 -ScriptBlock {(Disable-LocalUser -Name "Administrator")}
+	Remove-Pssession $Session1
+}
+
