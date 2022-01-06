@@ -5,15 +5,14 @@
 # Creating a new user
 
 $token = "Your Token"
-$Header = @{
-        "authorization" = "Bearer $token"
-    }
+$Header = @{"authorization" = "Bearer $token"}
 
 $Body = @{
-	email = "test.test1@com.au"
-	first_name = "test"
-	last_name = "test1"
-	country = "au"
+	email       = "test.test1@com.au"
+	first_name  = "test"
+	last_name   = "test1"
+    time_zone   = "Australia/Queensland"
+	country     = "au"
 }
 
 $Parameters = @{
@@ -32,9 +31,7 @@ Invoke-RestMethod @Parameters
 
 $UserEmail = "someones-email@com.au"
 $token = "Your Token"
-$Header = @{
-        "authorization" = "Bearer $token"
-    }
+$Header = @{"authorization" = "Bearer $token"}
 
 $Parameters = @{
     Method 		= "GET"
@@ -44,5 +41,5 @@ $Parameters = @{
 }
 
 $UserDetails = Invoke-RestMethod @Parameters
-
+Write-Host $UserDetails.result.username
 
