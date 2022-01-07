@@ -35,14 +35,14 @@ if ($UsersDomain -eq "z"){
     $UsersDomain=$stYourDomain
 }
 
+if ($null -eq $Cred){ $Cred = Get-Credential $AdminAccount1 } 
+
 if ($UsersDomain -eq "au"){
     $End = "@edmi.com.au"
-    $DomainController = "AuBneDC11.au.edmi.local"
+    $DomainController = "AuBneDC12.au.edmi.local"
     $FQD = "au.edmi.local"
     $AdminAccount1 = "au\"+$AdminAccount
     $Location = "Australia"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1} 
 } elseif ($UsersDomain -eq "nz"){
     $End = "@edmi.co.nz"
     # $DomainController = "NZwlgDC3.nz.edmi.local"
@@ -50,25 +50,20 @@ if ($UsersDomain -eq "au"){
     $FQD = "nz.edmi.local"
     $AdminAccount1 = "nz\"+$AdminAccount
     $Location = "New Zealand"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1}
-} elseif ($UsersDomain -eq "uk"){
-    $End = "@edmi-meters.com"
-    # $DomainController = "UkRdgDC1.uk.edmi.local"
-    $DomainController = "UkBneDC2.uk.edmi.local"
-    $FQD = "uk.edmi.local"
-    $AdminAccount1 = "uk\"+$AdminAccount
-    $Location = "United Kingdom"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1}
-} elseif ($UsersDomain -eq "sg"){
-    $End = "@edmi-meters.com"
-    $DomainController = "SgBneDC1.sg.edmi.local"
-    $FQD = "sg.edmi.local"
-    $AdminAccount1 = "sg\"+$AdminAccount
-    $Location = "Singapore"
-    if ($null -eq $Cred){
-        $Cred = Get-Credential $AdminAccount1}
+# } elseif ($UsersDomain -eq "uk"){    #Not working for some reason
+#     $End = "@edmi-meters.com"
+#     # $DomainController = "UkRdgDC1.uk.edmi.local"
+#     $DomainController = "UkBneDC2.uk.edmi.local"
+#     $FQD = "uk.edmi.local"
+#     $AdminAccount1 = "uk\"+$AdminAccount
+#     $Location = "United Kingdom"
+# } elseif ($UsersDomain -eq "sg"){     #Not working for some reason
+#     $End = "@edmi-meters.com"
+#     # $DomainController = "SgBneDC1.sg.edmi.local"
+#     $DomainController = "sg.edmi.local"
+#     $FQD = "sg.edmi.local"
+#     $AdminAccount1 = "sg\"+$AdminAccount
+#     $Location = "Singapore"
 } else {
     Write-Host
     Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
@@ -154,9 +149,9 @@ function Copy-Groups{
         }elseif ($UserGroup.Contains("DC=nz")){
             Write-Host "NZ  -- "$GroupName.Substring(3)
             $Server = "nz.edmi.local"
-        }elseif ($UserGroup.Contains("DC=uk")){
-            Write-Host "UK  -- "$GroupName.Substring(3)
-            $Server = "uk.edmi.local"
+        # }elseif ($UserGroup.Contains("DC=uk")){
+        #     Write-Host "UK  -- "$GroupName.Substring(3)
+        #     $Server = "ukhookdc01.uk.edmi.local"
         }elseif ($UserGroup.Contains("DC=sg")){
             Write-Host "SG  -- "$GroupName.Substring(3)
             $Server = "SG.edmi.local"

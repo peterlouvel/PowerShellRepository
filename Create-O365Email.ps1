@@ -3,6 +3,7 @@
     Run this when the users account is synced to O365
 .DESCRIPTION
     Run this when the users account is synced to O365
+    PS --- replace the $token below with your bonusly token
 .EXAMPLE
     PS C:\> Create-O365Email -User "user.name" -Domain "au" -LicenceCode "E1"
     Creates the users mailbox on O365 and enables Office 365 licence 
@@ -70,20 +71,23 @@ param(
     [string]$LicenceCode
 )
 
+$token = "Your token"
+
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
 
 if ($UsersDomain -eq "z"){
-    $UsersDomain=$stYourDomain
+    $UsersDomain = $stYourDomain
 }
-$ex1=$true
+$ex1 = $true
 $LocationISO = $UsersDomain
 if ($UsersDomain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
     $FQD = "au.edmi.local"
     $Location = "Australia"
-    $ex1=$false
+    $LocationBonusly = "Australia/Queensland"
+    $ex1 = $false
 }
 if ($UsersDomain -eq "nz"){
     $End = "@edmi.co.nz"
@@ -91,39 +95,20 @@ if ($UsersDomain -eq "nz"){
     $DomainController = "NzBneDC5.nz.edmi.local"
     $FQD = "nz.edmi.local"
     $Location = "New Zealand"
-    $ex1=$false
+    $LocationBonusly = "Pacific/Auckland"
+    $ex1 = $false
  }
-if ($UsersDomain -eq "uk"){
-    # $End = "@edmi.co.uk"
-    $End = "@edmi-meters.com"
-    # $DomainController = "UkRdgDC1.uk.edmi.local"
-    $DomainController = "UkBneDC2.uk.edmi.local"
-    $FQD = "uk.edmi.local"
-    $Location = "United Kingdom"
-    $LocationISO = "GB"
-    $ex1=$false
-}
-if ($UsersDomain -eq "sg"){
-    $End = "@edmi-meters.com"
-    $DomainController = "SgBneDC1.sg.edmi.local"
-    $FQD = "sg.edmi.local"
-    $Location = "Singapore"
-    $ex1=$false
-}
+
 if ($ex1) {
     Write-Host
     Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
     # $ErrorActionPreference = "SilentlyContinue"
     exit
 }
-if ($null -eq $UPNAccount){
-    $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
-}
-# $UPNAccount
+if ($null -eq $UPNAccount){ $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname } # $UPNAccount
 
-if ($null -eq $EDMICREDS){
-    $EDMICREDS = Get-Credential "edmi\$AdminAccount"
-} 
+#using your Root EDMI account so that you can get access to all the domains (if it's setup that way)
+if ($null -eq $EDMICREDS){ $EDMICREDS = Get-Credential "edmi\$AdminAccount" } 
 
 $UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
 $UserAccount    = $UserName -replace ' ','.'
@@ -159,11 +144,16 @@ $UserO365email = $UserAccount + "@edmi.mail.onmicrosoft.com"
 Write-Host "Setting up remote mailbox for user " -ForegroundColor Green -NoNewline
 Write-Host " $UserEmail " -ForegroundColor Cyan  
 Write-Host
+try {
+    $temp = Enable-RemoteMailbox -Identity $UserAccount  -DomainController $DomainController -RemoteRoutingAddress $UserO365email #-erroraction 'silentlycontinue'
+}
+catch {
+    Write-Host "user account might already exist " -ForegroundColor Green
+}
 
-$temp = Enable-RemoteMailbox -Identity $UserAccount  -DomainController $DomainController -RemoteRoutingAddress $UserO365email #-erroraction 'silentlycontinue'
 
-Exit-PSSession
-Remove-PSSession $Session1
+$temp = Exit-PSSession
+$temp = Remove-PSSession $Session1
  
 # Write-Host "------------------------------------------------------------------------------------------------"
 # Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and give a licence to the user"
@@ -171,6 +161,7 @@ Remove-PSSession $Session1
 
  Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
     Write-Host "------------------------------------------------------------------------------------------------"
+    Write-Host "----- 0:00"
     Start-Sleep -s 15
     Write-Host "----- 0:15"
     Start-Sleep -s 15
@@ -190,16 +181,16 @@ Remove-PSSession $Session1
 
 # Give licence to user
 Write-Host "Setting user location to $Location   $LocationISO"  -ForegroundColor Green  
-Set-AzureADUser -ObjectId $UserEmail -UsageLocation $LocationISO 
+$Temp = Set-AzureADUser -ObjectId $UserEmail -UsageLocation $LocationISO 
 
 If ($LicenceCode -eq "E3") {
-    $planName="ENTERPRISEPACK"
+    $planName = "ENTERPRISEPACK"
 }
 If ($LicenceCode -eq "E1") {
-    $planName="STANDARDPACK"
+    $planName = "STANDARDPACK"
 }
 If ($LicenceCode -eq "Ex") {
-    $planName="EXCHANGESTANDARD"
+    $planName = "EXCHANGESTANDARD"
 }
 
 Write-Host "Give licence " -ForegroundColor Green -NoNewline
@@ -211,14 +202,56 @@ $License = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
 $License.SkuId = (Get-AzureADSubscribedSku | Where-Object -Property SkuPartNumber -Value $planName -EQ).SkuID
 $LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
 $LicensesToAssign.AddLicenses = $License
-Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
+$Temp = Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
 Write-Host
 
 Write-Host "Setup User to have access to Microsoft Teams  ANZ EDMI"
-Import-Module MicrosoftTeams
-Connect-MicrosoftTeams
-Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
+write-host " -- select the account from the popup window --"
+$Temp = Import-Module MicrosoftTeams
+# Install-Module MicrosoftTeams
+$Temp = Connect-MicrosoftTeams 
+$Temp = Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
 
-Write-Host "$UserEmail" -ForegroundColor Green
+Write-Host "Users email address is " -NoNewline -ForegroundColor Green
+write-host $UserEmail
 Write-Host
+
+# $LocationBonusly = "Pacific/Auckland"
+# $LocationISO = "nz"
+# $username = "test1.test"
+# $UserEmail = "$username@edmi.com.au"
+
+
+
+$Header = @{"authorization" = "Bearer $token"}
+$Name = $UserEmail.split(".")
+
+# Write-Host "$UserEmail"
+# Write-Host  "$Name[0]"
+# Write-Host  "$Name[1]"
+# Write-Host  "$LocationBonusly"
+# Write-Host  "$LocationISO"
+
+$Body = @{
+    email       = $UserEmail
+    first_name  = $Name[0]
+    last_name   = $Name[1]
+    time_zone   = $LocationBonusly
+    country     = $LocationISO
+}
+
+$Parameters = @{
+    Method 		= "POST"
+    Uri 		= "https://bonus.ly/api/v1/users"
+	Headers     = $Header
+    ContentType = "application/json"
+	Body 		= ($Body | ConvertTo-Json) 
+}
+
+# Write-Host "Creating bonusly account" -ForegroundColor Cyan  
+# Start-Sleep -s 5
+
+$CreatedUserDetails = Invoke-RestMethod @Parameters
+Write-Host "User Created on bonus.ly " -NoNewline -ForegroundColor Green
+write-host $CreatedUserDetails.result.username
 
