@@ -71,7 +71,13 @@ param(
     [string]$LicenceCode
 )
 
+
+
 $token = "Your token"
+
+
+
+
 
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
