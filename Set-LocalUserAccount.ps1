@@ -5,13 +5,11 @@
     Set Local User Password and create User if doesn't exist and adds user to the Administrators group
 .EXAMPLE
     PS C:\> Set-LocalUserAccount  -UserName "Username" -Password "Password"
-    
 .INPUTS
     .
 .OUTPUTS
     .
 .NOTES
-
 #>
 
 param(

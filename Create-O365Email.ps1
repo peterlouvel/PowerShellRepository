@@ -3,7 +3,6 @@
     Run this when the users account is synced to O365
 .DESCRIPTION
     Run this when the users account is synced to O365
-    PS --- replace the $token below with your bonusly token
 .EXAMPLE
     PS C:\> Create-O365Email -User "user.name" -Domain "au" -LicenceCode "E1"
     Creates the users mailbox on O365 and enables Office 365 licence 
@@ -71,13 +70,11 @@ param(
     [string]$LicenceCode
 )
 
-
-
-$token = "Your token"
-
-
-
-
+# This will get the API $token for the bonus.ly website
+Get-Content ".\variables.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
+    $var = $_.Split('=',2).Trim()
+    New-Variable -Scope Script -Name $var[0] -Value $var[1]
+}
 
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
