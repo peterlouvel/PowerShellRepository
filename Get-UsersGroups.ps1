@@ -4,8 +4,8 @@
 .DESCRIPTION
     Long description
 .EXAMPLE
-    PS C:\> Get-UsersGroup -FromUser "existing.user" -UsersDomain "au"
-    Creates user "new.user and copies some info from "existing.user" 
+    PS C:\> Get-UsersGroup -User "existing.user" -UsersDomain "au"
+    
 .INPUTS
     .
 .OUTPUTS
@@ -18,7 +18,7 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$FromUser
+    [string]$User
     ,[Parameter(Mandatory=$false)]
     [string]$UsersDomain = "z"
 )
@@ -69,35 +69,11 @@ if ($UsersDomain -eq "au"){
     exit
 }
 
-# $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
-if ($null -eq $EDMICREDS){
-    $EDMICREDS = Get-Credential "edmi\$AdminAccount"
-} 
+# # $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
+# if ($null -eq $EDMICREDS){
+#     $EDMICREDS = Get-Credential "edmi\$AdminAccount"
+# } 
 
+Remove-Item -Path ".\usersgroups\$User.csv"
+$CopyUserObject = Get-ADUser -Identity $User -Server $DomainController -Properties memberof | Select-Object -ExpandProperty memberof | Out-File -FilePath ".\usersgroups\$User.csv"
 
-$Params             = @("Department", 
-                "Office", 
-                "physicalDeliveryOfficeName", 
-                "City", 
-                "wWWHomePage", 
-                "PostalCode", 
-                "POBox", 
-                "postOfficeBox", 
-                "DistinguishedName",
-                "StreetAddress",
-                "State",
-                "Country",
-                "Company",
-                "Manager",
-                "MemberOf"
-                # ,"co"
-                    )
-
-$CopyUserObject = Get-ADUser -Identity $FromUser -Properties $Params -Server $DomainController
-
-
-# Write-Host "- ready to copy groups -"
-
-Remove-Item -Path "c:\temp\$FromUser.csv"
-
-$CopyUserObject | Select-Object $_.MemberOf | Export-CSV -Path "c:\temp\$FromUser.csv"

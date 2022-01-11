@@ -29,13 +29,11 @@ Try {
     else {
         throw $error[0].Exception
     }
-} 
-Catch [Microsoft.PowerShell.Commands.UserNotFoundException] {
+} Catch [Microsoft.PowerShell.Commands.UserNotFoundException] {
     Write-Host " $UserName was not found here" -ForegroundColor Green
     $CreateUser = $True
-} 
-Catch {
-    Write-Host "error" -ForegroundColor Green
+} Catch {
+    Write-Verbose $Error[0].ToString() -ForegroundColor Green
 }
 
 $error.Clear()
