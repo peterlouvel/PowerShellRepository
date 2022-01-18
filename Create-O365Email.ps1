@@ -219,42 +219,4 @@ Write-Host "Users email address is " -NoNewline -ForegroundColor Green
 write-host $UserEmail
 Write-Host
 
-# $LocationBonusly = "Pacific/Auckland"
-# $LocationISO = "nz"
-# $username = "test1.test"
-# $UserEmail = "$username@edmi.com.au"
-
-
-
-$Header = @{"authorization" = "Bearer $token"}
-$Name = $UserEmail.split(".")
-
-# Write-Host "$UserEmail"
-# Write-Host  "$Name[0]"
-# Write-Host  "$Name[1]"
-# Write-Host  "$LocationBonusly"
-# Write-Host  "$LocationISO"
-
-$Body = @{
-    email       = $UserEmail
-    first_name  = $Name[0]
-    last_name   = $Name[1]
-    time_zone   = $LocationBonusly
-    country     = $LocationISO
-}
-
-$Parameters = @{
-    Method 		= "POST"
-    Uri 		= "https://bonus.ly/api/v1/users"
-	Headers     = $Header
-    ContentType = "application/json"
-	Body 		= ($Body | ConvertTo-Json) 
-}
-
-# Write-Host "Creating bonusly account" -ForegroundColor Cyan  
-# Start-Sleep -s 5
-
-$CreatedUserDetails = Invoke-RestMethod @Parameters
-Write-Host "User Created on bonus.ly " -NoNewline -ForegroundColor Green
-write-host $CreatedUserDetails.result.username
 
