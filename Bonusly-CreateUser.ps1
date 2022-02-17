@@ -4,7 +4,7 @@
 .DESCRIPTION
     Creating a new user in Bonus.ly
 .EXAMPLE
-    PS C:\> Create-BonuslyUser -UserEmail "users.email@com"
+    PS C:\> Bonusly-CreateUser -UserEmail "users.email@com"
 .INPUTS
     .
 .OUTPUTS

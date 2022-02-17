@@ -4,7 +4,7 @@
 .DESCRIPTION
     Creating a new user in Bonus.ly
 .EXAMPLE
-    PS C:\> Create-BonuslyUser -UserEmail "users.email@com"
+    PS C:\> Bonusly-GetUser -UserEmail "users.email@com"
 .INPUTS
     .
 .OUTPUTS
@@ -22,7 +22,7 @@ param(
 # This code will get the API $token from the variables.txt file
 # This will retreive variables from a text file  don't put quotes around strings in the file
 # token = 847d93094
-Get-Content ".\variables.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
+Get-Content ".\VariablesBonusly.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
     $var = $_.Split('=',2).Trim()
     New-Variable -Scope Script -Name $var[0] -Value $var[1]
 }

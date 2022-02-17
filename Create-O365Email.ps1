@@ -70,11 +70,6 @@ param(
     [string]$LicenceCode
 )
 
-# This will get the API $token for the bonus.ly website
-Get-Content ".\variables.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
-    $var = $_.Split('=',2).Trim()
-    New-Variable -Scope Script -Name $var[0] -Value $var[1]
-}
 
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
@@ -206,14 +201,14 @@ $License.SkuId = (Get-AzureADSubscribedSku | Where-Object -Property SkuPartNumbe
 $LicensesToAssign = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
 $LicensesToAssign.AddLicenses = $License
 $Temp = Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
-Write-Host
+Write-Host " "
 
-Write-Host "Setup User to have access to Microsoft Teams  ANZ EDMI"
-write-host " -- select the account from the popup window --"
-$Temp = Import-Module MicrosoftTeams
-# Install-Module MicrosoftTeams
-$Temp = Connect-MicrosoftTeams 
-$Temp = Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
+# Write-Host "Setup User to have access to Microsoft Teams  ANZ EDMI"
+# write-host " -- select the account from the popup window --"
+# $Temp = Import-Module MicrosoftTeams
+# # Install-Module MicrosoftTeams
+# $Temp = Connect-MicrosoftTeams 
+# $Temp = Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
 
 Write-Host "Users email address is " -NoNewline -ForegroundColor Green
 write-host $UserEmail

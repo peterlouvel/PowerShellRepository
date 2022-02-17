@@ -11,3 +11,5 @@ usersgroups/
 variables.txt
 VariablesCredman.txt
 VariablesBonusly.txt
+VariablesLucidChart.txt
+*.csv

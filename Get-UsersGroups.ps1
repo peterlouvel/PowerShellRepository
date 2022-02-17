@@ -74,6 +74,9 @@ if ($UsersDomain -eq "au"){
 #     $EDMICREDS = Get-Credential "edmi\$AdminAccount"
 # } 
 
-Remove-Item -Path ".\usersgroups\$User.csv"
+if (Test-Path -Path ".\usersgroups\$User.csv" -PathType Leaf) {
+    Remove-Item -Path ".\usersgroups\$User.csv"
+}
+
 $CopyUserObject = Get-ADUser -Identity $User -Server $DomainController -Properties memberof | Select-Object -ExpandProperty memberof | Out-File -FilePath ".\usersgroups\$User.csv"
 

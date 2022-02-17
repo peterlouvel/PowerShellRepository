@@ -88,14 +88,9 @@ if (!$UserNameIsTrue) {
     $ServerPassword = $NewServerCred.Password
 } 
 
-Write-Host "continue"
-$Session1 = New-PSSession -ComputerName "$ServerName" -Credential $Cred 
-$CreateUser = $False
+# $Session1 = New-PSSession -ComputerName "$ServerName" -Credential $Cred 
+# $CreateUser = $False
 
-Invoke-Command -Session $Session1 -FilePath $Env:OneDriveCommercial\vscode\Set-LocalUserAccount.ps1 -ArgumentList "$UserName", "$ServerPassword"
+# Invoke-Command -Session $Session1 -FilePath $Env:OneDriveCommercial\vscode\Set-LocalUserAccount.ps1 -ArgumentList "$UserName", "$ServerPassword"
 
-Remove-Pssession $Session1
-
-# $adminUser = [ADSI] "WinNT://$ServerName/$UserName"
-# $adminUser.psbase.Username = $Cred.username
-# $adminUser.psbase.Password = $Cred.GetNetworkCredential().Password
+# Remove-Pssession $Session1
