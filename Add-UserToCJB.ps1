@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Add a User to a group
+    Add a User to a Confluence, Jira & bitbucket
 .DESCRIPTION
     Long description
 .EXAMPLE
-    PS C:\> Add-UserToGroup -UserName "bob.hope" -UsersDomain "au" -GroupName "someGroup" -GroupDomain "au"
+    PS C:\> Add-UserToCJB -UserName "bob.hope" -UsersDomain "au" 
 .INPUTS
     .
 .OUTPUTS
@@ -60,5 +60,9 @@ $GroupInfo = Get-ADGroup -Identity "$GroupName" -Server $GroupsDomain
 Set-ADObject -Identity $GroupInfo -Add @{"member"=$Staff.DistinguishedName} -Server $GroupsDomain -Credential $Cred
 
 $GroupName = "Role EDMI Team Jira Australasia"
+$GroupInfo = Get-ADGroup -Identity "$GroupName" -Server $GroupsDomain
+Set-ADObject -Identity $GroupInfo -Add @{"member"=$Staff.DistinguishedName} -Server $GroupsDomain -Credential $Cred
+
+$GroupName = "Role EDMI User Bitbucket"
 $GroupInfo = Get-ADGroup -Identity "$GroupName" -Server $GroupsDomain
 Set-ADObject -Identity $GroupInfo -Add @{"member"=$Staff.DistinguishedName} -Server $GroupsDomain -Credential $Cred

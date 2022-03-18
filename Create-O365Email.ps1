@@ -82,24 +82,25 @@ $LocationISO = $UsersDomain
 if ($UsersDomain -eq "au"){
     $End = "@edmi.com.au"
     $DomainController = "AuBneDC11.au.edmi.local"
-    $FQD = "au.edmi.local"
     $Location = "Australia"
-    $LocationBonusly = "Australia/Queensland"
     $ex1 = $false
 }
 if ($UsersDomain -eq "nz"){
     $End = "@edmi.co.nz"
-    # $DomainController = "NZwlgDC3.nz.edmi.local"
     $DomainController = "NzBneDC5.nz.edmi.local"
-    $FQD = "nz.edmi.local"
     $Location = "New Zealand"
-    $LocationBonusly = "Pacific/Auckland"
     $ex1 = $false
  }
-
+ if ($UsersDomain -eq "sg"){
+    $End = "@edmi-meters.com"
+    $DomainController = "SgBneDC1.sg.edmi.local"
+    # $DomainController = "SgSinDC11.sg.edmi.local"
+    $Location = "Singapore"
+    $ex1 = $false
+ }
 if ($ex1) {
     Write-Host
-    Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
+    Write-Host "Domain should be AU, NZ, SG" -ForegroundColor Red 
     # $ErrorActionPreference = "SilentlyContinue"
     exit
 }
@@ -108,10 +109,13 @@ if ($null -eq $UPNAccount){ $UPNAccount = (get-aduser ($Env:USERNAME)).userprinc
 #using your Root EDMI account so that you can get access to all the domains (if it's setup that way)
 if ($null -eq $EDMICREDS){ $EDMICREDS = Get-Credential "edmi\$AdminAccount" } 
 
+# Write-Host "UsersName before ------  $UserName"
 $UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
+# Write-Host "UsersName after ------  $UserName"
 $UserAccount    = $UserName -replace ' ','.'
+# Write-Host "UsersAccopunt ------  $UserAccount"
 $UserEmail      = $UserAccount.ToLower() + $End
-# $UserEmail
+Write-Host "Users eMail ------  $UserEmail"
 
 Write-Host
 Write-Host "Setup your Credentials for accessing the Office 365 systems - " -ForegroundColor Green  -NoNewline
@@ -135,7 +139,10 @@ Write-Host " $UserName " -ForegroundColor Cyan -NoNewline
 Write-Host " exits. Creating Remote Mailbox on Exchange3 with your EDMI Admin account." -ForegroundColor Green 
 Write-Host "Which will create the O365 email account" -ForegroundColor Green 
 Write-Host
-# Create user local AD, sync AD to O365 then when synced, run the following
+
+# 1st, create user local AD
+# 2nd, wait for AD to sync to Azure for O365 
+# 3rd, run this script to run the following command with root domain creds that can access the local exchange server
 $Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $EDMICREDS
 $temp = Import-PSSession $Session1 3>$null
 $UserO365email = $UserAccount + "@edmi.mail.onmicrosoft.com"
@@ -153,9 +160,11 @@ catch {
 $temp = Exit-PSSession
 $temp = Remove-PSSession $Session1
  
-# Write-Host "------------------------------------------------------------------------------------------------"
-# Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and give a licence to the user"
-# Write-Host "------------------------------------------------------------------------------------------------"
+Write-Host "------------------------------------------------------------------------------------------------"
+Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and give a licence to the user"
+Write-Host "------------------------------------------------------------------------------------------------"
+
+# Wait for the Account in Office365 to get updated info about the email address.
 
  Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
     Write-Host "------------------------------------------------------------------------------------------------"
@@ -206,12 +215,11 @@ Write-Host " "
 Write-Host "Setup User to have access to Microsoft Teams  ANZ EDMI"
 write-host " -- select the account from the popup window --"
 $Temp = Import-Module MicrosoftTeams
-# Install-Module MicrosoftTeams
+$Temp = Install-Module MicrosoftTeams
 $Temp = Connect-MicrosoftTeams 
 $Temp = Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
 
 Write-Host "Users email address is " -NoNewline -ForegroundColor Green
 write-host $UserEmail
 Write-Host
-
 

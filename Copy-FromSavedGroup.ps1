@@ -4,7 +4,7 @@
 .DESCRIPTION
     Long description
 .EXAMPLE
-    PS C:\> Create-NewUser -UserName "FirstName LastName" -FromUser "existing.user" -Title "New Users Job Title" -UsersDomain "au"
+    PS C:\> Copy-FromSavedGroup -UserName "FirstName LastName" -FromSavedGroup "existing.user" -Title "New Users Job Title" -UsersDomain "au"
     Creates user "new.user and copies some info from "existing.user" 
 .INPUTS
     .
@@ -20,7 +20,7 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$UserName
     ,[Parameter(Mandatory=$true)]
-    [string]$FromUser
+    [string]$FromSavedGroup
     ,[Parameter(Mandatory=$true)]
     [string]$Title
     ,[Parameter(Mandatory=$false)]
@@ -102,7 +102,7 @@ $Params             = @("Department",
                 # ,"co"
                     )
 
-$CopyUserObject = Get-ADUser -Identity $FromUser -Properties $Params -Server $DomainController
+$CopyUserObject = Get-ADUser -Identity $FromSavedGroup -Properties $Params -Server $DomainController
 
 function Get-RandomCharacters($length, $characters) {
     $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length }
@@ -119,9 +119,9 @@ function Scramble-String([string]$inputString){
 
 function Create-Password{
     $password = ""
-    $password = Get-RandomCharacters -length 5 -characters 'abcdefghkmnprstuvwxyz'
-    $password += Get-RandomCharacters -length 3 -characters 'ABCDEFGHKMNPRSTUVWXYZ'
-    $password += Get-RandomCharacters -length 2 -characters '23456789'
+    $password = Get-RandomCharacters -length 5 -characters 'abcdefghiklmnoprstuvwxyz'
+    $password += Get-RandomCharacters -length 3 -characters 'ABCDEFGHKLMNOPRSTUVWXYZ'
+    $password += Get-RandomCharacters -length 2 -characters '1234567890'
     $password += Get-RandomCharacters -length 1 -characters '$()=?}][{#*'
     $password = Scramble-String $password   
     return $password 
