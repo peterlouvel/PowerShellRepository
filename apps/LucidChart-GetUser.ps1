@@ -17,9 +17,11 @@ param(
     [string]$UserEmail
 )
 
+$scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+
 # https://www.postman.com/
 
-Get-Content ".\VariablesLucidChart.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
+Get-Content "$scriptPath\VariablesLucidChart.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
     $var = $_.Split('=',2).Trim()
     New-Variable -Scope Script -Name $var[0] -Value $var[1]
 }
@@ -59,4 +61,5 @@ $Parameters = @{
 }
 
 $UserDetails = Invoke-RestMethod @Parameters
-Write-Host $UserDetails
+
+$UserDetails

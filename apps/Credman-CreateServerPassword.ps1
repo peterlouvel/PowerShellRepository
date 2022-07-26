@@ -14,10 +14,12 @@ param(
     [string]$UserName
 )
 
+$scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+
 # This code will get the API $token from the variables.txt file
 # This will retreive variables from a text file  don't put quotes around strings in the file
 # token = 847d93094
-Get-Content ".\VariablesCredman.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
+Get-Content "$scriptPath\VariablesCredman.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
     $var = $_.Split('=',2).Trim()
     New-Variable -Scope Script -Name $var[0] -Value $var[1]
 }

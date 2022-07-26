@@ -27,13 +27,6 @@ param(
     [string]$UsersDomain = "z"
 )
 
-$ServerAU = "AuBneDC12.au.edmi.local"
-$ServerNZ = "NzBneDC5.nz.edmi.local"
-#  "NZwlgDC3.nz.edmi.local"
-$ServerSG = "SgBneDC1.sg.edmi.local"
-$ServerUK = "UkBneDC2.uk.edmi.local"
-#  "UkRdgDC1.uk.edmi.local"
-$ServerEDMI = "EdmiBneDC11.edmi.local"
 
 [String] ${stYourDomain},[String]  ${stYourAccount} = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.split("\")
 $AdminAccount = $stYourAccount + "_"
@@ -46,31 +39,30 @@ if ($UsersDomain -eq "z"){
 
 if ($UsersDomain -eq "au"){
     $End = "@edmi.com.au"
-    $DomainController = $ServerAU
+    $DomainController = "AuBneDC12.au.edmi.local"
     $FQD = "au.edmi.local"
-    if ($null -eq $CredAU) { $CredAU = Get-Credential "au\"$AdminAccount } 
-    $AdminAccount1 = $CredAU
+    $AdminAccount1 = "au\"+$AdminAccount
     $Location = "Australia"
 } elseif ($UsersDomain -eq "nz"){
     $End = "@edmi.co.nz"
-    $DomainController = $ServerNZ
+    # $DomainController = "NZwlgDC3.nz.edmi.local"
+    $DomainController = "NzBneDC5.nz.edmi.local"
     $FQD = "nz.edmi.local"
-    if ($null -eq $CredNZ) { $CredNZ = Get-Credential "nz\"$AdminAccount } 
-    $AdminAccount1 = $CredNZ
+    $AdminAccount1 = "nz\"+$AdminAccount
     $Location = "New Zealand"
-} elseif ($UsersDomain -eq "uk"){   
+} elseif ($UsersDomain -eq "uk"){    #Not working for some reason
     $End = "@edmi-meters.com"
-    $DomainController = $ServerUK
+    # $DomainController = "UkRdgDC1.uk.edmi.local"
+    $DomainController = "UkBneDC2.uk.edmi.local"
     $FQD = "uk.edmi.local"
-    if ($null -eq $CredUK) { $CredUK = Get-Credential "uk\"$AdminAccount } 
-    $AdminAccount1 = $CredUK
+    $AdminAccount1 = "uk\"+$AdminAccount
     $Location = "United Kingdom"
-} elseif ($UsersDomain -eq "sg"){    
+} elseif ($UsersDomain -eq "sg"){     #Not working for some reason
     $End = "@edmi-meters.com"
-    $DomainController = $ServerSG
+    # $DomainController = "SgBneDC1.sg.edmi.local"
+    $DomainController = "sg.edmi.local"
     $FQD = "sg.edmi.local"
-    if ($null -eq $CredSG) { $CredSG = Get-Credential "sg\"$AdminAccount } 
-    $AdminAccount1 = $CredSG
+    $AdminAccount1 = "sg\"+$AdminAccount
     $Location = "Singapore"
 } else {
     Write-Host
@@ -79,7 +71,7 @@ if ($UsersDomain -eq "au"){
     exit
 }
 
-if ($null -eq $AdminAccount1){ $AdminAccount1 = Get-Credential $AdminAccount1 } 
+if ($null -eq $Cred){ $Cred = Get-Credential $AdminAccount1 } 
 
 $UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
 $UserAccount    = $UserName -replace ' ','.'
@@ -136,9 +128,9 @@ function Copy-Groups{
         ,
         [Parameter(Mandatory=$true)]
         [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject
-        # ,
-        # [Parameter(Mandatory=$true)]
-        # [PSCredential]$Credential
+        ,
+        [Parameter(Mandatory=$true)]
+        [PSCredential]$Credential
     )
 
     $counter = 0
@@ -147,38 +139,27 @@ function Copy-Groups{
 
         if ($UserGroup.Contains("DC=au")){
             Write-Host "AU  -- "$GroupName.Substring(3)
-            $Server = $ServerAU
-            if ($null -eq $CredAU) { $CredAU = Get-Credential "au\"$AdminAccount } 
-            $AdminAccount1 = $CredAU
+            $Server = "au.edmi.local"
         }elseif ($UserGroup.Contains("DC=nz")){
             Write-Host "NZ  -- "$GroupName.Substring(3)
-            $Server = $ServerNZ
-            if ($null -eq $CredNZ) { $CredAU = Get-Credential "nz\"$AdminAccount } 
-            $AdminAccount1 = $CredNZ
+            $Server = "nz.edmi.local"
         }elseif ($UserGroup.Contains("DC=uk")){
             Write-Host "UK  -- "$GroupName.Substring(3)
-            $Server = $ServerUK
-            if ($null -eq $CredUK) { $CredUK = Get-Credential "uk\"$AdminAccount } 
-            $AdminAccount1 = $CredUK
+            $Server = "uk.edmi.local"
         }elseif ($UserGroup.Contains("DC=sg")){
             Write-Host "SG  -- "$GroupName.Substring(3)
-            $Server = $ServerSG
-            if ($null -eq $CredUK) { $CredSG = Get-Credential "sg\"$AdminAccount } 
-            $AdminAccount1 = $CredSG
+            $Server = "SG.edmi.local"
         }else{
             Write-Host "ROOT  -- "$GroupName.Substring(3)
-            $Server = $ServerEDMI
-            if ($null -eq $CredEDMI) { $CredEDMI = Get-Credential "edmi\"$AdminAccount } 
-            $AdminAccount1 = $CredEDMI
+            $Server = "edmi.local"
         }
-
+        
         try{
-            # Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $Credential
-            Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $AdminAccount1
+            Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $Credential
             Write-Host "-- [Worked] $server - $($NewAccountObject.DistinguishedName) " -ForegroundColor Yellow 
             Write-Host "----------------------------------------------------"
         }catch{
-            Write-Host "-- Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $AdminAccount1" -ForegroundColor Yellow
+            Write-Host "-- Set-ADObject -Identity $UserGroup -Add @{"member"=$NewAccountObject.DistinguishedName} -Server $Server -Credential $Credential" -ForegroundColor Yellow
             Write-Host "-- [ERROR] $server - $($NewAccountObject.DistinguishedName) " -ForegroundColor Cyan
             Write-Host "   $($Error[0])" -ForegroundColor Red
             Write-Host "----------------------------------------------------"
@@ -187,16 +168,14 @@ function Copy-Groups{
     }
 }
 
-
-
 function Copy-User{
     param(
         [Parameter(Mandatory=$true)]
-        [String]$SamAccount
-        ,[Parameter(Mandatory=$true)]
-        [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject
-        # ,[Parameter(Mandatory=$true)]
-        # [PSCredential]$Credential
+        [String]$SamAccount,
+        [Parameter(Mandatory=$true)]
+        [Microsoft.ActiveDirectory.Management.ADObject]$CopyAccountObject,
+        [Parameter(Mandatory=$true)]
+        [PSCredential]$Credential
     )
     
     $UserOU             = ($CopyAccountObject.DistinguishedName -split ",",2)[1]
@@ -217,7 +196,7 @@ function Copy-User{
     $Company            = $CopyAccountObject.Company
     $Manager            = $CopyAccountObject.Manager
     # $co                 = $CopyAccountObject.co
-
+    $newPass            = Create-Password
     $paramsCreate       = @{  
         Instance            = "$CopyAccountObject" 
         Path                = "$UserOU"
@@ -247,10 +226,10 @@ function Copy-User{
     Write-Host "$SamAccount" -ForegroundColor Green
 
     Try{
-        New-ADUser  @paramsCreate -Credential $AdminAccount1 -Server $DomainController  
+        New-ADUser  @paramsCreate -Credential $Credential -Server $DomainController  
     }Catch{
         Write-Host ""
-        Write-Host "-- New-ADUser  @paramsCreate -Credential $AdminAccount1" -ForegroundColor Yellow 
+        Write-Host "-- New-ADUser  @paramsCreate -Credential $Credential" -ForegroundColor Yellow 
         Write-Host "-- [ERROR] $DomainController - $($SamAccount) - $($Error[0])" -ForegroundColor Red 
         Write-Host "----------------------------------------------------"
     }
@@ -260,31 +239,25 @@ function Copy-User{
         $managerName = $manager.Split(",").substring(3)[0]
         Write-Host "Setting users manager to " -ForegroundColor Green -NoNewline
         Write-Host "$managerName" -ForegroundColor Cyan
-        Set-ADUser -Identity "$SamAccount" -Replace @{manager="$Manager"} -Credential $AdminAccount1 -Server $DomainController 
+        Set-ADUser -Identity "$SamAccount" -Replace @{manager="$Manager"} -Credential $Credential -Server $DomainController 
     }
     Write-Host "Setting users password to " -NoNewline  -ForegroundColor Cyan   
     Write-Host "$newPass" -ForegroundColor Green  
     Start-Sleep -s 5
-    Set-ADAccountPassword -Identity "$SamAccount" -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$newPass" -Force) -Credential $AdminAccount1 -Server $DomainController
-    Enable-ADAccount -Identity "$SamAccount" -Credential $AdminAccount1 -Server $DomainController
-    Set-ADUser -ChangePasswordAtLogon $true -Identity "$SamAccount" -Credential $AdminAccount1 -Server $DomainController -Confirm:$false
+    Set-ADAccountPassword -Identity "$SamAccount" -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$newPass" -Force) -Credential $Credential -Server $DomainController
+    Enable-ADAccount -Identity "$SamAccount" -Credential $Credential -Server $DomainController
 }
 
-$newPass = Create-Password
-
-Copy-User -SamAccount $SamAccount -CopyAccountObject $CopyUserObject 
-# -Credential $DomainAdminCred
+Copy-User -SamAccount $SamAccount -CopyAccountObject $CopyUserObject -Credential $Cred
 Start-Sleep -s 5
-Get-ADUser -Identity $SamAccount -Server $DomainController | Set-ADObject -Replace @{co="$Location"} -Credential $AdminAccount1 -Server $DomainController
+Get-ADUser -Identity $SamAccount -Server $DomainController | Set-ADObject -Replace @{co="$Location"} -Credential $Cred -Server $DomainController
 Write-Host "-----------------------------------------------------------------------"
 # can be qicker if staff is in your local domain, but longer when on the other domain
 Write-Host "Waiting 120 seconds for AD systems to update before copying user groups." -ForegroundColor Cyan  
 Write-Host "-----------------------------------------------------------------------"
 Start-Sleep -s 120
 
-$NewUserObject = Get-ADUser -Identity $SamAccount -Properties $Params -Server $DomainController -Credential $AdminAccount1
-# -Credential $DomainAdminCred
+$NewUserObject = Get-ADUser -Identity $SamAccount -Properties $Params -Server $DomainController -Credential $Cred
 Write-Host "========================================================================"
-Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject 
-# -Credential $DomainAdminCred
-Write-Host "$SamAccount   ---  $newPass" -ForegroundColor Green
+Copy-Groups -NewAccountObject $NewUserObject -CopyAccountObject $CopyUserObject -Credential $Cred
+Write-Host "$SamAccount" -ForegroundColor Green

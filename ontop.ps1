@@ -1,4 +1,4 @@
-$numberButtons = 5
+$numberButtons = 8
 $buttonWidth = 110
 $sizeWidth = $numberButtons * $buttonWidth
 $global:runCount = 0
@@ -29,6 +29,20 @@ Function ButtonPassword_Click() {
     StopBrowser
     & "C:\Program Files\Google\Chrome\Application\chrome.exe" -kiosk -app=https://adfs.edmi-meters.com/adfs/portal/updatepassword/
 }
+Function ButtonTimesheet_Click() {
+    StopBrowser
+    & "C:\Program Files\Google\Chrome\Application\chrome.exe" -kiosk -app=https://timesheet.edmi.com.au
+}
+Function ButtonEmploymentHero_Click() {
+    StopBrowser
+    & "C:\Program Files\Google\Chrome\Application\chrome.exe" -kiosk -app=https://secure.employmenthero.com/app/v2/organisations/109944/dashboard
+}
+Function ButtonGlobalSurvey_Click() {
+    StopBrowser
+    & "C:\Program Files\Google\Chrome\Application\chrome.exe" -kiosk -app=https://www.surveymonkey.com/r/GlobalEng2022
+}
+
+
 Function ButtonReboot_Click() {
     StopBrowser
     Restart-Computer -f 
@@ -72,6 +86,7 @@ $ButtonOkta.Text = "Okta"
 $ButtonOkta.Add_Click({ButtonOkta_Click})
 $formPrimary.Controls.Add($ButtonOkta)
 
+
 $ButtonNumber = 2
 $ButtonWHS = New-Object System.Windows.Forms.Button
 $ButtonWHS.Location = New-Object System.Drawing.Size(0,17)
@@ -91,6 +106,33 @@ $ButtonPassword.Add_Click({ButtonPassword_Click})
 $formPrimary.Controls.Add($ButtonPassword)
 
 $ButtonNumber = 4
+$ButtonTimesheet = New-Object System.Windows.Forms.Button
+$ButtonTimesheet.Location = New-Object System.Drawing.Size(0,17)
+$ButtonTimesheet.Width = $buttonWidth
+$ButtonTimesheet.left = $buttonWidth * $ButtonNumber
+$ButtonTimesheet.Text = "Aussie Timesheets"
+$ButtonTimesheet.Add_Click({ButtonTimesheet_Click})
+$formPrimary.Controls.Add($ButtonTimesheet)
+
+$ButtonNumber = 5
+$ButtonEmploymentHero = New-Object System.Windows.Forms.Button
+$ButtonEmploymentHero.Location = New-Object System.Drawing.Size(0,17)
+$ButtonEmploymentHero.Width = $buttonWidth
+$ButtonEmploymentHero.left = $buttonWidth * $ButtonNumber
+$ButtonEmploymentHero.Text = "Employment Hero"
+$ButtonEmploymentHero.Add_Click({ButtonEmploymentHero_Click})
+$formPrimary.Controls.Add($ButtonEmploymentHero)
+
+$ButtonNumber = 6
+$ButtonGlobalSurvey = New-Object System.Windows.Forms.Button
+$ButtonGlobalSurvey.Location = New-Object System.Drawing.Size(0,17)
+$ButtonGlobalSurvey.Width = $buttonWidth
+$ButtonGlobalSurvey.left = $buttonWidth * $ButtonNumber
+$ButtonGlobalSurvey.Text = "Global Survey"
+$ButtonGlobalSurvey.Add_Click({ButtonGlobalSurvey_Click})
+$formPrimary.Controls.Add($ButtonGlobalSurvey)
+
+$ButtonNumber = 7
 $ButtonReboot = New-Object System.Windows.Forms.Button
 $ButtonReboot.Location = New-Object System.Drawing.Size(0,17)
 $ButtonReboot.Width = $buttonWidth

@@ -56,6 +56,23 @@
         STANDARDWOFFPACKPACK_STUDENT	Office 365 (Plan A2) for Students
         VISIOCLIENT	                Visio Pro Online
 
+        VISIOCLIENT                 74430ce8-49b7-4f72-8b54-1c334958bf25_c5928f49-12ba-48f7-ada3-0d743a3601d5                                         
+        STREAM                      74430ce8-49b7-4f72-8b54-1c334958bf25_1f2f344a-700d-42c9-9427-5cea1d5d7ba6                                              
+        POWER_BI_PRO                74430ce8-49b7-4f72-8b54-1c334958bf25_f8a1db68-be16-40ed-86d5-cb42ce701560 
+        WINDOWS_STORE               74430ce8-49b7-4f72-8b54-1c334958bf25_6470687e-a428-4b7a-bef2-8a291ad947c9 
+        ENTERPRISEPACK              74430ce8-49b7-4f72-8b54-1c334958bf25_6fd2c87f-b296-42f0-b197-1e91e994b900                                      
+        FLOW_FREE                   74430ce8-49b7-4f72-8b54-1c334958bf25_f30db892-07e9-47e9-837c-80727f46fd3d                                           
+        MICROSOFT_BUSINESS_CENTER   74430ce8-49b7-4f72-8b54-1c334958bf25_726a0894-2c77-4d65-99da-9775ef05aad1 
+        PROJECT_P1                  74430ce8-49b7-4f72-8b54-1c334958bf25_beb6439c-caad-48d3-bf46-0c82871e12be 
+        POWERAPPS_VIRAL             74430ce8-49b7-4f72-8b54-1c334958bf25_dcb1a3ae-b33f-4487-846a-a640262fadf4                                     
+        EXCHANGESTANDARD            74430ce8-49b7-4f72-8b54-1c334958bf25_4b9405b0-7788-4568-add1-99614e613b69                                    
+        POWER_BI_STANDARD           74430ce8-49b7-4f72-8b54-1c334958bf25_a403ebcc-fae0-4ca2-8c8c-7a907fd6c235                                   
+        TEAMS_EXPLORATORY           74430ce8-49b7-4f72-8b54-1c334958bf25_710779e8-3d4a-4c88-adb9-386c958d1fdf                                   
+        PROJECTPROFESSIONAL         74430ce8-49b7-4f72-8b54-1c334958bf25_53818b1b-4a27-454b-8896-0dba576410e6                                 
+        Microsoft_Teams_Audio_Conferencing_select_dial_out  74430ce8-49b7-4f72-8b54-1c334958bf25_1c27243e-fb4d-42b1-ae8c-fe25c9616588 
+        POWERAPPS_DEV               74430ce8-49b7-4f72-8b54-1c334958bf25_5b631642-bd26-49fe-bd20-1daaa972ef80 
+        STANDARDPACK                74430ce8-49b7-4f72-8b54-1c334958bf25_18181a46-0d4e-45cd-891e-60aabd171b4e                                        
+
         Get-MsolSubscription | Where-Object {($_.Status -ne "Suspended")}
 #>
 
@@ -106,7 +123,7 @@ if ($ex1) {
 }
 if ($null -eq $UPNAccount){ $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname } # $UPNAccount
 
-# using your Root EDMI account so that you can get access to all the domains (if it's setup that way)
+#using your Root EDMI account so that you can get access to all the domains (if it's setup that way)
 if ($null -eq $EDMICREDS){ $EDMICREDS = Get-Credential "edmi\$AdminAccount" } 
 
 # Write-Host "UsersName before ------  $UserName"
@@ -128,77 +145,20 @@ try {
     $temp = Get-AzureADUser -ObjectId $UserEmail #-erroraction 'silentlycontinue'
 }
 catch {
-    Write-Host "User" -ForegroundColor Red  -NoNewline
+    Write-Host "Account" -ForegroundColor Red  -NoNewline
     Write-Host " $UserName " -ForegroundColor Cyan  -NoNewline
-    Write-Host "doesn't exist on Office 365 yet - wait till the user is on O365" -ForegroundColor Red  
+    Write-Host "doesn't exist on Office 365 - wait till the user is on O365" -ForegroundColor Red  
     exit
 }
 
-Write-Host "User " -ForegroundColor Green  -NoNewline
-Write-Host " $UserName " -ForegroundColor Cyan -NoNewline 
-Write-Host " exists. Creating Remote Mailbox on Exchange3 with your EDMI Admin account." -ForegroundColor Green 
-Write-Host "Which will create the O365 email account" -ForegroundColor Green 
-Write-Host
-
-# 1st, create user local AD
-# 2nd, wait for AD to sync to Azure for O365 
-# 3rd, run this script to run the following command with root domain creds that can access the local exchange server
-$Session1 = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://edmibneexch3.edmi.local/powershell -Credential $EDMICREDS
-$temp = Import-PSSession $Session1 3>$null
-$UserO365email = $UserAccount + "@edmi.mail.onmicrosoft.com"
-Write-Host "Setting up remote mailbox for user " -ForegroundColor Green -NoNewline
-Write-Host " $UserEmail " -ForegroundColor Cyan  
-Write-Host
-try {
-    $temp = Enable-RemoteMailbox -Identity $UserAccount  -DomainController $DomainController -RemoteRoutingAddress $UserO365email #-erroraction 'silentlycontinue'
-}
-catch {
-    Write-Host "user account might already exist " -ForegroundColor Green
-}
-
-
-$temp = Exit-PSSession
-$temp = Remove-PSSession $Session1
- 
 Write-Host "------------------------------------------------------------------------------------------------"
 Write-Host "  Log into https://admin.microsoft.com/AdminPortal/Home#/users and give a licence to the user"
 Write-Host "------------------------------------------------------------------------------------------------"
 
-# Wait for the Account in Office365 to get updated info about the email address.
-
- Write-Host "Waiting a couple minutes for O365 email account to be created before enabling licence." -ForegroundColor Cyan  
-    Write-Host "------------------------------------------------------------------------------------------------"
-    Write-Host "----- 0:00"
-    Start-Sleep -s 15
-    Write-Host "----- 0:15"
-    Start-Sleep -s 15
-    Write-Host "----- 0:30"
-    Start-Sleep -s 15
-    Write-Host "----- 0:45"
-    Start-Sleep -s 15
-    Write-Host "----- 1:00"
-    Start-Sleep -s 15
-    Write-Host "----- 1:15"
-    Start-Sleep -s 15
-    Write-Host "----- 1:30"
-    Start-Sleep -s 15
-    Write-Host "----- 1:45"
-    Start-Sleep -s 15
-    Write-Host "----- 2:00"
-
 # Give licence to user
 Write-Host "Setting user location to $Location   $LocationISO"  -ForegroundColor Green  
 $Temp = Set-AzureADUser -ObjectId $UserEmail -UsageLocation $LocationISO 
-
-If ($LicenceCode -eq "E3") {
-    $planName = "ENTERPRISEPACK"
-}
-If ($LicenceCode -eq "E1") {
-    $planName = "STANDARDPACK"
-}
-If ($LicenceCode -eq "Ex") {
-    $planName = "EXCHANGESTANDARD"
-}
+$planName = "Microsoft_Teams_Audio_Conferencing_select_dial_out"
 
 Write-Host "Give licence " -ForegroundColor Green -NoNewline
 Write-Host " $planName " -ForegroundColor Cyan -NoNewline
@@ -218,7 +178,6 @@ $Temp = Import-Module MicrosoftTeams
 $Temp = Install-Module MicrosoftTeams
 $Temp = Connect-MicrosoftTeams 
 $Temp = Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
-$Temp = Get-Team -DisplayName "EDMI Super Chief" | Add-TeamUser  -User "$UserEmail"
 
 Write-Host "Users email address is " -NoNewline -ForegroundColor Green
 write-host $UserEmail

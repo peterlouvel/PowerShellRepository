@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Creating a new user in Bonus.ly
+    Getting app info OKTA
 .DESCRIPTION
-    Creating a new user in Bonus.ly
+    OKTA
 .EXAMPLE
-    PS C:\> Bonusly-GetUser -UserEmail "users.email@com"
+    PS C:\> Okta-GetApp -App "App Name"
 .INPUTS
     .
 .OUTPUTS
@@ -14,33 +14,35 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$UserEmail
+    [string]$App
 )
+
+$scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 
 # https://www.postman.com/
 
 # This code will get the API $token from the variables.txt file
 # This will retreive variables from a text file  don't put quotes around strings in the file
 # token = 847d93094
-Get-Content ".\VariablesBonusly.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
+Get-Content "$scriptPath\VariablesOKTA.txt" | Where-Object {$_.length -gt 0} | Where-Object {!$_.StartsWith("#")} | ForEach-Object {
     $var = $_.Split('=',2).Trim()
     New-Variable -Scope Script -Name $var[0] -Value $var[1]
 }
 
 # $token = "get API token for bonus.ly"   # use quotes here if the token is entered into your script directly
-$Name = $UserEmail.Split(".@")
+$Name = $App
 
-$Header = @{"authorization" = "Bearer $token"}
+$Header = @{"authorization" = "SSWS $token"}
 
 # ------------------------------------------------------------
 # checking a user exists
 
 $Parameters = @{
     Method 		= "GET"
-    Uri 		= "https://bonus.ly/api/v1/users?limit=1&email=$UserEmail"
+    Uri 		= "https://edmi.okta.com/api/v1/apps/$AppID"
 	Headers     = $Header
     ContentType = "application/json"
 }
 
-$UserDetails = Invoke-RestMethod @Parameters
-$UserDetails.result
+$AppDetails = Invoke-RestMethod @Parameters
+$AppDetails.result

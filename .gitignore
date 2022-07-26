@@ -1,15 +1,3 @@
-PI/Chip.txt
-PI/CloudBoiz.txt
-PI/Code Bandits.txt
-PI/Garbage Collectors.txt
-PI/Go With the Flow.txt
-PI/Silicon Blend.txt
-PI/Starship Troopers.txt
-PI/TheInfiniteTentacles.txt
-PI/Windy Thunderballs.txt
 usersgroups/
-variables.txt
-VariablesCredman.txt
-VariablesBonusly.txt
-VariablesLucidChart.txt
+variables*.txt
 *.csv

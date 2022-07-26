@@ -68,9 +68,17 @@ if ($UsersDomain -eq "au"){
     $Location = "Singapore"
     if ($null -eq $Cred){
         $Cred = Get-Credential $AdminAccount1}
+} elseif ($UsersDomain -eq "edmi"){
+    $End = "@edmi-meters.com"
+    $DomainController = "edmiBneDC11.edmi.local"
+    $FQD = "edmi.local"
+    $AdminAccount1 = "edmi\"+$AdminAccount
+    $Location = "Brisbane"
+    if ($null -eq $Cred){
+        $Cred = Get-Credential $AdminAccount1}
 } else {
     Write-Host
-    Write-Host "Domain should be AU, NZ, UK, SG" -ForegroundColor Red 
+    Write-Host "Domain should be edmi, AU, NZ, UK, SG" -ForegroundColor Red 
     $ErrorActionPreference = "SilentlyContinue"
 }
 

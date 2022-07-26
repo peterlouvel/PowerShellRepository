@@ -7,11 +7,17 @@ $UPNAccount = (get-aduser ($Env:USERNAME)).userprincipalname
 Connect-ExchangeOnline -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -UserPrincipalName $UPNAccount -ShowProgress $true
 
 # Set default calendar permissions for AU and NZ. Modify script for your own location if SG or UK
-$users = Get-Mailbox -Resultsize Unlimited | Sort-Object Name 
+# $users = Get-Mailbox -Resultsize Unlimited | Sort-Object Name 
+$users = Get-EXOMailbox -Properties office -Resultsize Unlimited | Sort-Object Name 
 foreach ($user in $users) {
-    if ($user.UsageLocation -eq "Australia"-or $user.UsageLocation -eq "New Zealand"){
+    if ($user.Office -eq "Brisbane" -or $user.Office -eq "Wellington" -or $user.Office -eq "Melbourne"){
         Write-Host -ForegroundColor green "Setting permission for $($user.alias)...$($user.UsageLocation)"
         Set-MailboxFolderPermission -Identity "$($user.alias):\calendar" -User Default -AccessRights Reviewer
     }
+# foreach ($user in $users) {
+#     if ($user.UsageLocation -eq "Australia"-or $user.UsageLocation -eq "New Zealand"){
+#         Write-Host -ForegroundColor green "Setting permission for $($user.alias)...$($user.UsageLocation)"
+#         Set-MailboxFolderPermission -Identity "$($user.alias):\calendar" -User Default -AccessRights Reviewer
+#     }
 }
 
