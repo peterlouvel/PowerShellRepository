@@ -83,7 +83,7 @@ if ($null -eq $AdminAccount1){ $AdminAccount1 = Get-Credential $AdminAccount1 }
 
 $UserName       = (Get-Culture).TextInfo.ToTitleCase($UserName.ToLower()) 
 $UserAccount    = $UserName -replace ' ','.'
-$UserEmail      = $UserAccount.ToLower() + $End
+# $UserEmail      = $UserAccount.ToLower() + $End
 $SamAccount         = $UserAccount
 
 $Params             = @("Department", 
