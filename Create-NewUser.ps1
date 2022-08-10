@@ -187,8 +187,6 @@ function Copy-Groups{
     }
 }
 
-
-
 function Copy-User{
     param(
         [Parameter(Mandatory=$true)]
