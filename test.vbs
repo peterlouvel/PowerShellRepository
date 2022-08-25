@@ -35,3 +35,28 @@ else
 end if
 
 
+  ForEach-Object { 
+    "{0}={1}" -f $_.Name, (
+      $_.Value.ForEach({ 
+       (("'{0}'" -f ($_ -replace "'", "''")), $_)[$_.GetType().IsPrimitive] 
+      }) -join ','
+    )
+  }
+  # Create a hashtable-literal representation and save it to file settings.psd1
+
+@"
+@{
+$(
+  ($Params.GetEnumerator() |
+    ForEach-Object { 
+      "  {0}={1}" -f $_.Name, (
+        $_.Value.ForEach({ 
+          (("'{0}'" -f ($_ -replace "'", "''")), $_)[$_.GetType().IsPrimitive] 
+         }) -join ','
+      )
+    }
+  ) -join "`n"
+)
+}
+"@ > c:\temp\settings.txt
+

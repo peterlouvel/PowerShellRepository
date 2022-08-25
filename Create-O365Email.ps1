@@ -212,11 +212,12 @@ $LicensesToAssign.AddLicenses = $License
 $Temp = Set-AzureADUserLicense -ObjectId $UserEmail -AssignedLicenses $LicensesToAssign
 Write-Host " "
 
-Write-Host "Setup User to have access to Microsoft Teams  ANZ EDMI"
+Write-Host "Setup User to have access to Microsoft Teams - ANZ EDMI"
 write-host " -- select the account from the popup window --"
-$Temp = Import-Module MicrosoftTeams
+# $Temp = Import-Module MicrosoftTeams
 $Temp = Install-Module MicrosoftTeams
 $Temp = Connect-MicrosoftTeams 
+
 $Temp = Get-Team -DisplayName "ANZ EDMI" | Add-TeamUser  -User "$UserEmail"
 $Temp = Get-Team -DisplayName "EDMI Super Chief" | Add-TeamUser  -User "$UserEmail"
 
